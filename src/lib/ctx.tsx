@@ -21,7 +21,6 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        console.log("session onAuthStateChange: ", session);
         setSession(session);
         setUser(session?.user || null);
         setLoading(false);
@@ -34,7 +33,6 @@ const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    console.log("error: ", error);
     if (!error) {
       setUser(null);
       setSession(null);

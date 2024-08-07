@@ -19,10 +19,9 @@ export default function Auth() {
       email: email,
       password: password,
     });
-    console.log({ data: { session } });
     if (error) Alert.alert(error.message);
     setLoading(false);
-    router.replace("/");
+    router.replace("/home");
   };
 
   const signUpWithEmail = async () => {
@@ -34,7 +33,6 @@ export default function Auth() {
       email: email,
       password: password,
     });
-    console.log({ data: { session } });
     if (error) Alert.alert(error.message);
     if (!session)
       Alert.alert("Please check your inbox for email verification!");
