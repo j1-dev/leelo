@@ -6,26 +6,15 @@ import { supabase } from "@/lib/supabase";
 import { Post } from "@/lib/types";
 import { Button } from "@rneui/themed";
 import { useLocalSearchParams, router } from "expo-router";
+import { fetchPosts } from "@/lib/api";
 
 export default function Sub() {
   const [posts, setPosts] = useState<Post[]>([]);
   const { user, signOut, loading } = useAuth();
   const { sub } = useLocalSearchParams();
-
-  useEffect(() => {
-    console.log(sub);
-    const getPosts = async () => {
-      await supabase
-        .from("posts")
-        .select("*")
-        .eq("subforum_id", sub)
-        .then((res) => res.data)
-        .then((data: Post[]) => {
-          setPosts([...data]);
-        });
-    };
-    getPosts();
-  }, [sub]);
+  fetchPosts(sub).then((data: Post[]) => {
+    setPosts([...data]);
+  });
 
   if (loading) {
     return <Text>Loading...</Text>;

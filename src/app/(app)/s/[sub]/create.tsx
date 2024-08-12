@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Post } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
-
 import { useLocalSearchParams, router } from "expo-router";
+import { submitPost } from "@/lib/api";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -13,25 +13,18 @@ export default function CreatePost() {
   const { user, signOut, loading } = useAuth();
 
   const handleSubmit = async () => {
-    const post = {
-      subforum_id: sub,
+    const post: Post = {
+      subforum_id: sub as string,
       user_id: user.id,
       title,
       content,
       score: 0,
       created_at: new Date().toISOString(),
     };
-
     try {
-      // Insert the new post into the "posts" table
-      const { data, error } = await supabase.from("posts").insert([post]);
-
-      if (error) {
-        throw error;
-      }
-
+      await submitPost(post);
       Alert.alert("Success", "Your post has been submitted!");
-      router.navigate(`s/${sub}/`); // Redirect to the desired page after submission
+      router.push(`s/${sub}/`); // Redirect to the desired page after submission
     } catch (error) {
       console.error("Error submitting post:", error.message);
       Alert.alert("Error", "There was an issue submitting your post.");

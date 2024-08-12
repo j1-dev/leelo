@@ -65,6 +65,18 @@ export default function AppLayout() {
             tabBarButton: () => null,
           }}
         />
+        <Tabs.Screen
+          name="s/[sub]/p/[pub]"
+          options={{
+            tabBarButton: () => null,
+          }}
+        />
+        <Tabs.Screen
+          name="s/[sub]/p/[pub]/c/[comm]"
+          options={{
+            tabBarButton: () => null,
+          }}
+        />
       </Tabs>
     </View>
   );

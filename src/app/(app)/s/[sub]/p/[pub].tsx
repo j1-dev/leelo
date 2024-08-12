@@ -5,11 +5,15 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  StyleSheet,
+  TextInput,
+  Alert,
 } from "react-native";
+import { Button } from "@rneui/themed";
 import { Post, Comment } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
-import { useLocalSearchParams } from "expo-router";
+import { useAuth } from "@/lib/ctx";
+import { fetchPost, fetchComments, submitComment } from "@/lib/api";
+import { useLocalSearchParams, router } from "expo-router";
 
 interface PostScreenProps {
   route: {
@@ -22,27 +26,26 @@ interface PostScreenProps {
 export default function Pub() {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
+  const [newComment, setNewComment] = useState("");
+  const { user, signOut, loading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
 
-  const fetchPost = async (postId) => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", postId)
-      .single();
-    if (error) throw error;
-    return data;
-  };
+  const handleCommentSubmit = async () => {
+    if (newComment.trim().length === 0) {
+      Alert.alert("Error", "Comment cannot be empty");
+      return;
+    }
 
-  const fetchComments = async (postId) => {
-    const { data, error } = await supabase
-      .from("comments")
-      .select("*")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: true });
-    if (error) throw error;
-    return data;
+    try {
+      await submitComment(user.id, pub as string, newComment);
+      setNewComment("");
+      // Fetch the updated comments after submitting a new comment
+      const updatedComments = await fetchComments(pub as string);
+      setComments(updatedComments);
+    } catch (error) {
+      Alert.alert("Error", "Failed to submit comment");
+    }
   };
 
   useEffect(() => {
@@ -69,11 +72,14 @@ export default function Pub() {
     return (
       <FlatList
         data={commentList.filter(
-          (comment) => comment.parent_comment_id === parentId
+          (comment) => comment.parent_comment === parentId
         )}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View className="p-4 bg-white rounded-lg shadow-md mb-2">
+          <View
+            className="p-4 bg-white rounded-lg shadow-md mb-2"
+            onTouchStart={() => router.push(`s/${sub}/p/${pub}/c/${item.id}`)}
+          >
             <Text className="text-base">{item.content}</Text>
             <Text className="text-xs text-gray-500 mt-1">
               {new Date(item.created_at).toLocaleString()}
@@ -88,7 +94,7 @@ export default function Pub() {
     );
   };
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
     <View className="flex-1 p-4 bg-gray-100">
@@ -102,6 +108,21 @@ export default function Pub() {
         </View>
       )}
       {renderComments(comments)}
+
+      <View className="mt-4">
+        <TextInput
+          className="p-2 bg-white rounded-lg shadow-md"
+          placeholder="Write a comment..."
+          value={newComment}
+          onChangeText={setNewComment}
+        />
+        <Button
+          title="Submit Comment"
+          onPress={handleCommentSubmit}
+          buttonStyle={{ backgroundColor: "#2196F3" }}
+          containerStyle={{ marginTop: 8, borderRadius: 8 }}
+        />
+      </View>
     </View>
   );
 }
