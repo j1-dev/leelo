@@ -7,6 +7,7 @@ import { Button, Input, Switch } from "@rneui/themed";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(""); // Add username state
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -21,21 +22,42 @@ export default function Auth() {
     });
     if (error) Alert.alert(error.message);
     setLoading(false);
-    router.replace("/home");
+    router.push("/home");
   };
 
   const signUpWithEmail = async () => {
     setLoading(true);
     const {
-      data: { session },
+      data: { user, session },
       error,
     } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert("Please check your inbox for email verification!");
+
+    if (error) {
+      Alert.alert(error.message);
+      setLoading(false);
+      return;
+    }
+
+    if (user) {
+      // Insert the user into the users table
+      const { error: insertError } = await supabase.from("users").insert([
+        {
+          id: user.id, // Use the user's ID from Supabase auth
+          username: username,
+          email: email,
+        },
+      ]);
+
+      if (insertError) {
+        Alert.alert(insertError.message);
+      } else {
+        Alert.alert("Please check your inbox for email verification!");
+      }
+    }
+
     setLoading(false);
   };
 
@@ -46,6 +68,21 @@ export default function Auth() {
   return (
     <View className="flex h-screen">
       <View className="w-11/12 max-w-md m-auto">
+        {!isEnabled && (
+          <View className="mb-4">
+            <Input
+              label="Username"
+              leftIcon={{ type: "font-awesome", name: "user" }}
+              onChangeText={(text) => setUsername(text)}
+              value={username}
+              placeholder="Username"
+              autoCapitalize={"none"}
+              inputContainerStyle={{ borderBottomColor: "#ccc" }}
+              labelStyle={{ color: "#555" }}
+              inputStyle={{ color: "#333" }}
+            />
+          </View>
+        )}
         <View className="mb-4">
           <Input
             label="Email"
@@ -73,24 +110,6 @@ export default function Auth() {
             inputStyle={{ color: "#333" }}
           />
         </View>
-        {/* <View className="mb-4">
-          <Button
-            title="Sign in"
-            disabled={loading}
-            onPress={() => signInWithEmail()}
-            buttonStyle={{ backgroundColor: "#4CAF50" }}
-            containerStyle={{ borderRadius: 8 }}
-          />
-        </View>
-        <View>
-          <Button
-            title="Sign up"
-            disabled={loading}
-            onPress={() => signUpWithEmail()}
-            buttonStyle={{ backgroundColor: "#2196F3" }}
-            containerStyle={{ borderRadius: 8 }}
-          />
-        </View> */}
         <View>
           <Button
             title={!isEnabled ? "Sign up" : "Sign in"}
