@@ -5,19 +5,21 @@ import {
   FlatList,
   TextInput,
   Alert,
-  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, Link } from "expo-router";
 import { fetchComment, fetchComments, submitComment } from "@/lib/api";
 import { Comment } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
+import { usePost } from "@/lib/postCtx";
 
 const CommentScreen: React.FC = () => {
+  const postCtx = usePost();
   const { comm, sub, pub } = useLocalSearchParams();
-  const { user, signOut, loading } = useAuth();
-  const router = useRouter();
+  const { user, loading } = useAuth();
   const [comment, setComment] = useState<Comment | null>(null);
+  const [parentComment, setParentComment] = useState<Comment | null>(null);
   const [replies, setReplies] = useState<Comment[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [newReply, setNewReply] = useState("");
@@ -27,8 +29,12 @@ const CommentScreen: React.FC = () => {
       try {
         const commentData = await fetchComment(comm as string);
         setComment(commentData);
-        const repliesData = await fetchComments(pub as string, comm as string);
-        setReplies(repliesData);
+        if (!!commentData.parent_comment) {
+          const parentData = await fetchComment(commentData.parent_comment);
+          setParentComment(parentData);
+        } else {
+          setParentComment(null);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -44,45 +50,66 @@ const CommentScreen: React.FC = () => {
       Alert.alert("Error", "Reply cannot be empty");
       return;
     }
-
     try {
       await submitComment(user.id, pub as string, newReply, comm as string);
       setNewReply("");
-      const updatedReplies = await fetchComments(pub as string, comm as string);
-      setReplies(updatedReplies);
+      postCtx.setUpdate(true);
     } catch (error) {
       console.error("Error submitting reply:", error);
     }
   };
 
-  const renderReply = ({ item }: { item: Comment }) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/s/${sub}/p/${pub}/c/${item.id}`)}
-    >
-      <View className="p-4 border-b border-gray-300">
-        <Text className="text-gray-800">{item.content}</Text>
-        <Text className="text-gray-500 text-sm">by User {item.user_id}</Text>
-      </View>
-    </TouchableOpacity>
+  const renderComments = (
+    commentList: Comment[],
+    parentId: string | null = null
+  ) => (
+    <FlatList
+      data={commentList.filter(
+        (comment) => comment.parent_comment === parentId
+      )}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View className="p-4 bg-white rounded-lg shadow-md mb-2">
+          <Link href={`s/${sub}/p/${pub}/c/${item.id}`}>
+            <Text className="text-base">{item.content}</Text>
+            <Text className="text-xs text-gray-500 mt-1">
+              {new Date(item.created_at).toLocaleString()}
+            </Text>
+          </Link>
+          {renderComments(commentList, item.id)}
+        </View>
+      )}
+      ListEmptyComponent={
+        <Text className="text-center text-gray-500">No comments yet.</Text>
+      }
+    />
   );
 
-  if (loading) {
-    return <Text>Loading...</Text>;
+  if (loading || isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
-    <View className="flex-1 p-4">
-      {comment && (
-        <View className="mb-4">
-          <Text className="text-xl font-bold">{comment.content}</Text>
-          <Text className="text-gray-500 mt-2">by User {comment.user_id}</Text>
+    <View className="flex p-4 bg-gray-100">
+      {parentComment && (
+        <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
+          <Text className="text-lg font-bold">{parentComment.content}</Text>
+          <Text className="text-xs text-gray-500 mt-2">
+            by User {parentComment.user_id}
+          </Text>
         </View>
       )}
-      <FlatList
-        data={replies}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderReply}
-      />
+      {comment && (
+        <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
+          <Text className="text-2xl font-bold">{comment.content}</Text>
+          <Text className="text-xs text-gray-500 mt-2">
+            by User {comment.user_id}
+          </Text>
+        </View>
+      )}
+      {postCtx.comments
+        ? renderComments(postCtx.comments, comm as string)
+        : null}
       <View className="flex-row mt-4">
         <TextInput
           className="flex-1 border border-gray-300 p-2 rounded"
@@ -93,7 +120,8 @@ const CommentScreen: React.FC = () => {
         <Button
           title="Reply"
           onPress={handleReplySubmit}
-          className="ml-2 bg-blue-500 text-white p-2 rounded"
+          buttonStyle={{ backgroundColor: "#2196F3" }}
+          containerStyle={{ marginLeft: 8, borderRadius: 8 }}
         />
       </View>
     </View>

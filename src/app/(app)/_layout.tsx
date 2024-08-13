@@ -1,9 +1,8 @@
-import { Text } from "react-native";
-import { Redirect, Slot, Tabs } from "expo-router";
-import { View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useAuth } from "../../lib/ctx";
 import { Button } from "@rneui/themed";
+import { Redirect, Tabs } from "expo-router";
+import { Text, View } from "react-native";
+import { useAuth } from "../../lib/ctx";
 
 export default function AppLayout() {
   const { user, session, loading, signOut } = useAuth();
@@ -23,17 +22,7 @@ export default function AppLayout() {
 
   // This layout can be deferred because it's not the root layout.
   return (
-    <View className="border border-black h-full w-full absolute bottom-0">
-      <View className="border border-black absolute z-50 bottom-20 right-6">
-        <Button
-          onPress={() => {
-            // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
-            signOut();
-          }}
-        >
-          Sign Out
-        </Button>
-      </View>
+    <View className="h-full w-full absolute bottom-0">
       <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
         <Tabs.Screen
           name="home"

@@ -1,6 +1,5 @@
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useAuth } from "../../lib/ctx";
-import { ScrollView } from "react-native";
 
 export default function Home() {
   const { user, signOut, loading } = useAuth();

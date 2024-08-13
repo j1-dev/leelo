@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
+  ScrollView,
   Text,
   FlatList,
   ActivityIndicator,
@@ -13,22 +14,15 @@ import { Post, Comment } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment } from "@/lib/api";
-import { useLocalSearchParams, router } from "expo-router";
-
-interface PostScreenProps {
-  route: {
-    params: {
-      postId: string;
-    };
-  };
-}
+import { useLocalSearchParams, Link } from "expo-router";
+import { usePost } from "@/lib/postCtx";
 
 export default function Pub() {
+  const postCtx = usePost();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [isLoading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, setLoading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
 
   const handleCommentSubmit = async () => {
@@ -53,8 +47,7 @@ export default function Pub() {
       try {
         const postData = await fetchPost(pub);
         setPost(postData);
-        const commentsData = await fetchComments(pub);
-        setComments(commentsData);
+        postCtx.setPostId(pub);
       } catch (error) {
         console.error(error);
       } finally {
@@ -76,14 +69,13 @@ export default function Pub() {
         )}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View
-            className="p-4 bg-white rounded-lg shadow-md mb-2"
-            onTouchStart={() => router.push(`s/${sub}/p/${pub}/c/${item.id}`)}
-          >
-            <Text className="text-base">{item.content}</Text>
-            <Text className="text-xs text-gray-500 mt-1">
-              {new Date(item.created_at).toLocaleString()}
-            </Text>
+          <View className="p-4 bg-white rounded-lg shadow-md">
+            <Link key={item.id} href={`s/${sub}/p/${pub}/c/${item.id}`}>
+              <Text className="text-base">{item.content}</Text>
+              <Text className="text-xs text-gray-500 mt-1">
+                {new Date(item.created_at).toLocaleString()}
+              </Text>
+            </Link>
             {renderComments(commentList, item.id)}
           </View>
         )}
@@ -94,10 +86,10 @@ export default function Pub() {
     );
   };
 
-  if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
-    <View className="flex-1 p-4 bg-gray-100">
+    <View className="relative">
       {post && (
         <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
           <Text className="text-2xl font-bold">{post.title}</Text>
@@ -107,9 +99,11 @@ export default function Pub() {
           </Text>
         </View>
       )}
-      {renderComments(comments)}
+      <View className="border border-black h-[70%]">
+        {postCtx.comments ? renderComments(postCtx.comments) : null}
+      </View>
 
-      <View className="mt-4">
+      <View className="absolute -bottom-20 right-0 w-full h-1/6 bg-white z-50">
         <TextInput
           className="p-2 bg-white rounded-lg shadow-md"
           placeholder="Write a comment..."
@@ -120,7 +114,7 @@ export default function Pub() {
           title="Submit Comment"
           onPress={handleCommentSubmit}
           buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ marginTop: 8, borderRadius: 8 }}
+          containerStyle={{ margin: 8, borderRadius: 8 }}
         />
       </View>
     </View>

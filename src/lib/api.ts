@@ -39,18 +39,15 @@ export const fetchComments = async (
   postId: string,
   parentCommentId: string | null = null
 ): Promise<Comment[]> => {
-  const { data, error } = await supabase
-    .from("comments")
-    .select("*")
-    .eq("post_id", postId)
-    // .eq("parent_comment", parentCommentId)
-    .order("created_at", { ascending: true });
+  let query = supabase.from("comments").select("*").eq("post_id", postId);
+  if (!!parentCommentId) query = query.eq("parent_comment", parentCommentId);
+  query = query.order("created_at", { ascending: true });
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching comments:", error);
     return [];
   }
-
   return data as Comment[];
 };
 

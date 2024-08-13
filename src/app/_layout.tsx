@@ -1,12 +1,15 @@
-import "../global.css";
 import { Slot } from "expo-router";
-import AuthProvider from "../lib/ctx";
+import "@/global.css";
+import AuthProvider from "@/lib/ctx";
+import PostProvider from "@/lib/postCtx";
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
   return (
     <AuthProvider>
-      <Slot />
+      <PostProvider>
+        <Slot />
+      </PostProvider>
     </AuthProvider>
   );
 }

@@ -6,6 +6,7 @@ const AuthContext = createContext({
   user: null,
   session: null,
   loading: true,
+  setLoading: null,
   signOut: null,
 });
 
@@ -41,7 +42,9 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, loading, setLoading, signOut }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -1,10 +1,9 @@
-import { supabase } from "@/lib/supabase";
+import { fetchSubs } from "@/lib/api";
+import { useAuth } from "@/lib/ctx";
 import { Subforum } from "@/lib/types";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { useAuth } from "../../lib/ctx";
-import { fetchSubs } from "@/lib/api";
 
 export default function Home() {
   const [subs, setSubs] = useState<Subforum[]>([]);
@@ -14,7 +13,7 @@ export default function Home() {
     fetchSubs().then((data: Subforum[]) => {
       setSubs([...data]);
     });
-  }, []);
+  });
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -25,9 +24,13 @@ export default function Home() {
       <ScrollView className="w-full h-full">
         {subs.map((value: Subforum, index: number) => {
           return (
-            <Link href={`/s/${value.id}`}>
+            <Link
+              key={value.id}
+              href={`/s/${value.id}`}
+              className="w-max h-max"
+            >
               <View key={value.id} className="w-full h-20">
-                <Text>{value.name}</Text>
+                <Text key={value.id}>{value.name}</Text>
               </View>
             </Link>
           );

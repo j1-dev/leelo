@@ -1,42 +1,53 @@
-import { Text, View } from "react-native";
-import { useAuth } from "../../../lib/ctx";
-import { ScrollView } from "react-native";
-import { useEffect, useState } from "react";
+import { fetchPosts } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { Post } from "@/lib/types";
 import { Button } from "@rneui/themed";
-import { useLocalSearchParams, router } from "expo-router";
-import { fetchPosts } from "@/lib/api";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  ScrollView,
+  Text,
+  View,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
+import { useAuth } from "../../../lib/ctx";
 
 export default function Sub() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, setLoading } = useAuth();
   const { sub } = useLocalSearchParams();
-  fetchPosts(sub).then((data: Post[]) => {
-    setPosts([...data]);
-  });
+
+  useEffect(() => {
+    console.log(loading);
+    fetchPosts(sub).then((data: Post[]) => {
+      setPosts([...data]);
+    });
+    console.log(loading);
+  }, [sub]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
     <View className="flex h-screen relative">
-      <ScrollView className="w-full h-full">
-        {posts.map((value: Post, index: number) => {
-          return (
-            <View
-              key={index}
-              className="w-full h-20"
-              onTouchStart={() => router.push(`/s/${sub}/p/${value.id}`)}
-            >
-              <Text>{value.title}</Text>
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Link key={item.id} href={`/s/${sub}/p/${item.id}`}>
+            <View key={item.id} className="w-full h-20">
+              <Text key={item.id}>{item.title}</Text>
             </View>
-          );
-        })}
-      </ScrollView>
-      <View className="border border-black absolute z-50 bottom-36 left">
-        <Button onPress={() => router.push(`/s/${sub}/create`)}>
+          </Link>
+        )}
+      />
+      <View className="absolute z-50 bottom-36 left-6">
+        <Button
+          onPress={() => router.push(`/s/${sub}/create`)}
+          containerStyle={{ borderRadius: 8 }}
+        >
           Create post
         </Button>
       </View>
