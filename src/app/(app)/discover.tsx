@@ -9,7 +9,7 @@ export default function Home() {
   }
 
   return (
-    <View className="flex h-screen relative">
+    <View className="bg-white flex h-screen relative">
       <View className="w-full h-20 shadow-lg absolute border border-black p-3">
         <Text>{user.email}</Text>
       </View>

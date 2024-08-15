@@ -13,8 +13,9 @@ import { fetchComment, fetchComments, submitComment } from "@/lib/api";
 import { Comment } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { usePost } from "@/lib/postCtx";
+import { renderComments } from "@/components/CommentRenderer";
 
-const CommentScreen: React.FC = () => {
+export default function Comm() {
   const postCtx = usePost();
   const { comm, sub, pub } = useLocalSearchParams();
   const { user, loading } = useAuth();
@@ -59,60 +60,47 @@ const CommentScreen: React.FC = () => {
     }
   };
 
-  const renderComments = (
-    commentList: Comment[],
-    parentId: string | null = null
-  ) => (
-    <FlatList
-      data={commentList.filter(
-        (comment) => comment.parent_comment === parentId
-      )}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View className="p-4 bg-white rounded-lg shadow-md mb-2">
-          <Link href={`s/${sub}/p/${pub}/c/${item.id}`}>
-            <Text className="text-base">{item.content}</Text>
-            <Text className="text-xs text-gray-500 mt-1">
-              {new Date(item.created_at).toLocaleString()}
-            </Text>
-          </Link>
-          {renderComments(commentList, item.id)}
-        </View>
-      )}
-      ListEmptyComponent={
-        <Text className="text-center text-gray-500">No comments yet.</Text>
-      }
-    />
-  );
-
   if (loading || isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
-    <View className="flex p-4 bg-gray-100">
+    <View className="bg-white relative h-full">
       {parentComment && (
-        <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
-          <Text className="text-lg font-bold">{parentComment.content}</Text>
-          <Text className="text-xs text-gray-500 mt-2">
-            by User {parentComment.user_id}
-          </Text>
-        </View>
+        <Link href={`s/${sub}/p/${pub}/c/${parentComment.id}`}>
+          <View className="mb-4 p-4 bg-white rounded-lg">
+            <Text className="text-lg font-bold">{parentComment.content}</Text>
+            <Text className="text-xs text-gray-500 mt-2">
+              by User {parentComment.user_id}
+            </Text>
+          </View>
+        </Link>
       )}
       {comment && (
-        <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
-          <Text className="text-2xl font-bold">{comment.content}</Text>
-          <Text className="text-xs text-gray-500 mt-2">
-            by User {comment.user_id}
-          </Text>
-        </View>
+        <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
+          <View className="mb-4 p-4 bg-white rounded-lg">
+            <Text className="text-2xl font-bold">{comment.content}</Text>
+            <Text className="text-xs text-gray-500 mt-2">
+              by User {comment.user_id}
+            </Text>
+          </View>
+        </Link>
       )}
-      {postCtx.comments
-        ? renderComments(postCtx.comments, comm as string)
-        : null}
-      <View className="flex-row mt-4">
+      <View className="h-[70%] border">
+        {postCtx.comments
+          ? renderComments(
+              postCtx.comments,
+              comm as string,
+              sub as string,
+              pub as string,
+              3
+            )
+          : null}
+      </View>
+
+      <View className="absolute bottom-0 w-full bg-white z-50 border">
         <TextInput
-          className="flex-1 border border-gray-300 p-2 rounded"
+          className="p-2 m-3 bg-white rounded-lg border "
           placeholder="Add a reply..."
           value={newReply}
           onChangeText={setNewReply}
@@ -121,11 +109,9 @@ const CommentScreen: React.FC = () => {
           title="Reply"
           onPress={handleReplySubmit}
           buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ marginLeft: 8, borderRadius: 8 }}
+          containerStyle={{ margin: 10, borderRadius: 8 }}
         />
       </View>
     </View>
   );
-};
-
-export default CommentScreen;
+}

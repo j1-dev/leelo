@@ -28,7 +28,9 @@ export const fetchPosts = async (subId) => {
 
 export const submitPost = async (post: Post) => {
   try {
+    console.log(post);
     const { data, error } = await supabase.from("posts").insert([post]);
+    if (error) throw new Error(error.toString());
   } catch (error) {
     console.log("Error submiting post: ", error);
   }

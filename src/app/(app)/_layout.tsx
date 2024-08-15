@@ -1,6 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Button } from "@rneui/themed";
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { Text, View } from "react-native";
 import { useAuth } from "../../lib/ctx";
 
@@ -22,51 +22,53 @@ export default function AppLayout() {
 
   // This layout can be deferred because it's not the root layout.
   return (
-    <View className="h-full w-full absolute bottom-0">
-      <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
-        <Tabs.Screen
+    <View className="bg-white h-full w-full absolute bottom-0">
+      <Stack
+        screenOptions={{
+          headerShadowVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+        }}
+      >
+        <Stack.Screen
           name="home"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome size={28} name="home" color={color} />
-            ),
+            animation: "slide_from_right",
           }}
         />
-        <Tabs.Screen
+        <Stack.Screen
           name="discover"
           options={{
             title: "Discover",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome size={28} name="cog" color={color} />
-            ),
+            animation: "slide_from_right",
           }}
         />
-        <Tabs.Screen
+        <Stack.Screen
           name="s/[sub]"
           options={{
-            tabBarButton: () => null,
+            animation: "slide_from_right",
           }}
         />
-        <Tabs.Screen
+        <Stack.Screen
           name="s/[sub]/create"
           options={{
-            tabBarButton: () => null,
+            animation: "slide_from_right",
           }}
         />
-        <Tabs.Screen
+        <Stack.Screen
           name="s/[sub]/p/[pub]"
           options={{
-            tabBarButton: () => null,
+            animation: "slide_from_right",
+            headerShown: false,
           }}
         />
-        <Tabs.Screen
+        <Stack.Screen
           name="s/[sub]/p/[pub]/c/[comm]"
           options={{
-            tabBarButton: () => null,
+            animation: "slide_from_right",
           }}
         />
-      </Tabs>
+      </Stack>
     </View>
   );
 }

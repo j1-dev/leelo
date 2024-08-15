@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment } from "@/lib/api";
 import { useLocalSearchParams, Link } from "expo-router";
 import { usePost } from "@/lib/postCtx";
+import { renderComments } from "@/components/CommentRenderer";
 
 export default function Pub() {
   const postCtx = usePost();
@@ -35,8 +36,7 @@ export default function Pub() {
       await submitComment(user.id, pub as string, newComment);
       setNewComment("");
       // Fetch the updated comments after submitting a new comment
-      const updatedComments = await fetchComments(pub as string);
-      setComments(updatedComments);
+      postCtx.setUpdate(true);
     } catch (error) {
       Alert.alert("Error", "Failed to submit comment");
     }
@@ -58,40 +58,12 @@ export default function Pub() {
     loadPostAndComments();
   }, [pub]);
 
-  const renderComments = (
-    commentList: Comment[],
-    parentId: string | null = null
-  ) => {
-    return (
-      <FlatList
-        data={commentList.filter(
-          (comment) => comment.parent_comment === parentId
-        )}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View className="p-4 bg-white rounded-lg shadow-md">
-            <Link key={item.id} href={`s/${sub}/p/${pub}/c/${item.id}`}>
-              <Text className="text-base">{item.content}</Text>
-              <Text className="text-xs text-gray-500 mt-1">
-                {new Date(item.created_at).toLocaleString()}
-              </Text>
-            </Link>
-            {renderComments(commentList, item.id)}
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text className="text-center text-gray-500">No comments yet.</Text>
-        }
-      />
-    );
-  };
-
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
-    <View className="relative">
+    <View className="relative h-full bg-white pt-14">
       {post && (
-        <View className="mb-4 p-4 bg-white rounded-lg shadow-md">
+        <View className="mb-4 p-4 bg-white rounded-lg">
           <Text className="text-2xl font-bold">{post.title}</Text>
           <Text className="text-base mt-2">{post.content}</Text>
           <Text className="text-xs text-gray-500 mt-2">
@@ -99,13 +71,21 @@ export default function Pub() {
           </Text>
         </View>
       )}
-      <View className="border border-black h-[70%]">
-        {postCtx.comments ? renderComments(postCtx.comments) : null}
+      <View className="h-[70%] bg-white">
+        {postCtx.comments
+          ? renderComments(
+              postCtx.comments,
+              null,
+              sub as string,
+              pub as string,
+              3
+            )
+          : null}
       </View>
 
-      <View className="absolute -bottom-20 right-0 w-full h-1/6 bg-white z-50">
+      <View className="absolute bottom-0 w-full bg-white z-50">
         <TextInput
-          className="p-2 bg-white rounded-lg shadow-md"
+          className="p-2 bg-white rounded-lg border"
           placeholder="Write a comment..."
           value={newComment}
           onChangeText={setNewComment}

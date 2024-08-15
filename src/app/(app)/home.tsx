@@ -1,3 +1,4 @@
+import { renderSubs } from "@/components/SubRenderer";
 import { fetchSubs } from "@/lib/api";
 import { useAuth } from "@/lib/ctx";
 import { Subforum } from "@/lib/types";
@@ -20,22 +21,6 @@ export default function Home() {
   }
 
   return (
-    <View className="flex h-screen relative">
-      <ScrollView className="w-full h-full">
-        {subs.map((value: Subforum, index: number) => {
-          return (
-            <Link
-              key={value.id}
-              href={`/s/${value.id}`}
-              className="w-max h-max"
-            >
-              <View key={value.id} className="w-full h-20">
-                <Text key={value.id}>{value.name}</Text>
-              </View>
-            </Link>
-          );
-        })}
-      </ScrollView>
-    </View>
+    <View className="bg-white flex h-screen relative">{renderSubs(subs)}</View>
   );
 }
