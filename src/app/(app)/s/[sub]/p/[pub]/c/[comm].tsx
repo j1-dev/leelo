@@ -86,7 +86,7 @@ export default function Comm() {
           </View>
         </Link>
       )}
-      <View className="h-[70%] border">
+      <View>
         {postCtx.comments
           ? renderComments(
               postCtx.comments,
@@ -98,9 +98,9 @@ export default function Comm() {
           : null}
       </View>
 
-      <View className="absolute bottom-0 w-full bg-white z-50 border">
+      <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
         <TextInput
-          className="p-2 m-3 bg-white rounded-lg border "
+          className="p-2 bg-white rounded-lg border border-gray-300 h-14"
           placeholder="Add a reply..."
           value={newReply}
           onChangeText={setNewReply}
@@ -109,7 +109,7 @@ export default function Comm() {
           title="Reply"
           onPress={handleReplySubmit}
           buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ margin: 10, borderRadius: 8 }}
+          containerStyle={{ marginTop: 8, borderRadius: 8 }}
         />
       </View>
     </View>

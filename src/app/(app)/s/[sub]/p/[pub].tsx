@@ -21,7 +21,7 @@ import { renderComments } from "@/components/CommentRenderer";
 export default function Pub() {
   const postCtx = usePost();
   const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Comment[]>(null);
   const [newComment, setNewComment] = useState("");
   const { user, signOut, loading, setLoading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
@@ -35,7 +35,6 @@ export default function Pub() {
     try {
       await submitComment(user.id, pub as string, newComment);
       setNewComment("");
-      // Fetch the updated comments after submitting a new comment
       postCtx.setUpdate(true);
     } catch (error) {
       Alert.alert("Error", "Failed to submit comment");
@@ -45,16 +44,15 @@ export default function Pub() {
   useEffect(() => {
     const loadPostAndComments = async () => {
       try {
+        postCtx.setPostId(pub);
         const postData = await fetchPost(pub);
         setPost(postData);
-        postCtx.setPostId(pub);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-
     loadPostAndComments();
   }, [pub]);
 
@@ -83,9 +81,9 @@ export default function Pub() {
           : null}
       </View>
 
-      <View className="absolute bottom-0 w-full bg-white z-50">
+      <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
         <TextInput
-          className="p-2 bg-white rounded-lg border"
+          className="p-2 bg-white rounded-lg border border-gray-300 h-14"
           placeholder="Write a comment..."
           value={newComment}
           onChangeText={setNewComment}
@@ -94,7 +92,7 @@ export default function Pub() {
           title="Submit Comment"
           onPress={handleCommentSubmit}
           buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ margin: 8, borderRadius: 8 }}
+          containerStyle={{ marginTop: 8, borderRadius: 8 }}
         />
       </View>
     </View>

@@ -10,8 +10,8 @@ interface CommentCardProps {
 
 export default function CommentCard({ sub, pub, item }: CommentCardProps) {
   return (
-    <View className="pl-4 pr-3 pt-2 pb-2 bg-white rounded-bl-2xl border-b-[1px] border-l-[1px] border-gray-300 w-full">
-      <Link href={`s/${sub}/p/${pub}/c/${item.id}`} className="flex-1">
+    <View className="pl-4 pr-3 pt-2 pb-2 bg-white rounded-tl-2xl border-t-[1px] border-l-[1px] border-gray-300 w-full">
+      <Link href={`s/${sub}/p/${pub}/c/${item.id}`}>
         <View>
           <Text className="text-base text-gray-800 mb-1">{item.content}</Text>
           <Text className="text-xs text-gray-500">

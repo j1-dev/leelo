@@ -43,8 +43,5 @@ export const renderComments = (
         )}
       </View>
     )}
-    ListEmptyComponent={
-      <Text className="text-center text-gray-500 mt-1">No comments yet.</Text>
-    }
   />
 );

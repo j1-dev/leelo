@@ -22,7 +22,9 @@ const PostProvider = ({ children }) => {
 
   useEffect(() => {
     if (postId !== "") {
-      fetchComments(postId).then((comms) => setComments(comms));
+      fetchComments(postId).then((comms) => {
+        setComments(comms);
+      });
       setUpdate(false);
     }
   }, [postId, update]);

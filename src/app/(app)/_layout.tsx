@@ -26,7 +26,6 @@ export default function AppLayout() {
       <Stack
         screenOptions={{
           headerShadowVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
         }}
       >
         <Stack.Screen
