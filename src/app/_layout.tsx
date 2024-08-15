@@ -1,4 +1,4 @@
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import "@/global.css";
 import AuthProvider from "@/lib/ctx";
 import PostProvider from "@/lib/postCtx";
@@ -8,7 +8,7 @@ export default function Root() {
   return (
     <AuthProvider>
       <PostProvider>
-        <Slot
+        <Stack
           screenOptions={{ animation: "slide_from_right", headerShown: false }}
         />
       </PostProvider>

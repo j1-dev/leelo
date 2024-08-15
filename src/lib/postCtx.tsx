@@ -21,10 +21,13 @@ const PostProvider = ({ children }) => {
   const { session } = useAuth();
 
   useEffect(() => {
+    setComments(null);
     if (postId !== "") {
-      fetchComments(postId).then((comms) => {
-        setComments(comms);
-      });
+      fetchComments(postId)
+        .then((comms) => {
+          setComments(comms);
+        })
+        .catch((error) => console.error(error));
       setUpdate(false);
     }
   }, [postId, update]);

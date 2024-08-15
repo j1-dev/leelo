@@ -14,6 +14,7 @@ import { Comment } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { usePost } from "@/lib/postCtx";
 import { renderComments } from "@/components/CommentRenderer";
+import { InputAccessoryView, Platform } from "react-native";
 
 export default function Comm() {
   const postCtx = usePost();
@@ -98,20 +99,45 @@ export default function Comm() {
           : null}
       </View>
 
-      <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
-        <TextInput
-          className="p-2 bg-white rounded-lg border border-gray-300 h-14"
-          placeholder="Add a reply..."
-          value={newReply}
-          onChangeText={setNewReply}
-        />
-        <Button
-          title="Reply"
-          onPress={handleReplySubmit}
-          buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ marginTop: 8, borderRadius: 8 }}
-        />
-      </View>
+      {Platform.OS === "ios" ? (
+        <InputAccessoryView className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
+          <View className="w-full h-full bg-white relative">
+            <TextInput
+              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
+              placeholder="Write a comment..."
+              value={newReply}
+              onChangeText={setNewReply}
+            />
+            <View className="top-1 right-0 absolute">
+              <Button
+                title="Send"
+                onPress={handleReplySubmit}
+                buttonStyle={{ backgroundColor: "#2196F3" }}
+                containerStyle={{ borderRadius: 8 }}
+              />
+            </View>
+          </View>
+        </InputAccessoryView>
+      ) : (
+        <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
+          <View className="w-full h-full bg-white relative">
+            <TextInput
+              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
+              placeholder="Write a comment..."
+              value={newReply}
+              onChangeText={setNewReply}
+            />
+            <View className="top-1 right-0 absolute">
+              <Button
+                title="Send"
+                onPress={handleReplySubmit}
+                buttonStyle={{ backgroundColor: "#2196F3" }}
+                containerStyle={{ borderRadius: 8 }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }

@@ -14,9 +14,11 @@ export default function Sub() {
   const { sub } = useLocalSearchParams();
 
   useEffect(() => {
-    fetchPosts(sub).then((data: Post[]) => {
-      setPubs([...data]);
-    });
+    fetchPosts(sub)
+      .then((data: Post[]) => {
+        setPubs([...data]);
+      })
+      .catch((error) => console.error(error));
   }, [sub]);
 
   if (loading) {

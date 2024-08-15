@@ -1,22 +1,15 @@
 // PostScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  TextInput,
-  Alert,
-} from "react-native";
+import { View, Text, ActivityIndicator, TextInput, Alert } from "react-native";
 import { Button } from "@rneui/themed";
 import { Post, Comment } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment } from "@/lib/api";
-import { useLocalSearchParams, Link } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { usePost } from "@/lib/postCtx";
 import { renderComments } from "@/components/CommentRenderer";
+import { InputAccessoryView, Platform } from "react-native";
 
 export default function Pub() {
   const postCtx = usePost();
@@ -56,7 +49,8 @@ export default function Pub() {
     loadPostAndComments();
   }, [pub]);
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (loading || !post)
+    return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
     <View className="relative h-full bg-white pt-14">
@@ -81,20 +75,45 @@ export default function Pub() {
           : null}
       </View>
 
-      <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
-        <TextInput
-          className="p-2 bg-white rounded-lg border border-gray-300 h-14"
-          placeholder="Write a comment..."
-          value={newComment}
-          onChangeText={setNewComment}
-        />
-        <Button
-          title="Submit Comment"
-          onPress={handleCommentSubmit}
-          buttonStyle={{ backgroundColor: "#2196F3" }}
-          containerStyle={{ marginTop: 8, borderRadius: 8 }}
-        />
-      </View>
+      {Platform.OS === "ios" ? (
+        <InputAccessoryView className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
+          <View className="w-full h-full bg-white relative">
+            <TextInput
+              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
+              placeholder="Write a comment..."
+              value={newComment}
+              onChangeText={setNewComment}
+            />
+            <View className="top-1 right-0 absolute">
+              <Button
+                title="Send"
+                onPress={handleCommentSubmit}
+                buttonStyle={{ backgroundColor: "#2196F3" }}
+                containerStyle={{ borderRadius: 8 }}
+              />
+            </View>
+          </View>
+        </InputAccessoryView>
+      ) : (
+        <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
+          <View className="w-full h-full bg-white relative">
+            <TextInput
+              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
+              placeholder="Write a comment..."
+              value={newComment}
+              onChangeText={setNewComment}
+            />
+            <View className="top-1 right-0 absolute">
+              <Button
+                title="Send"
+                onPress={handleCommentSubmit}
+                buttonStyle={{ backgroundColor: "#2196F3" }}
+                containerStyle={{ borderRadius: 8 }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
