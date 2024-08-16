@@ -1,6 +1,16 @@
 import { supabase } from "./supabase";
 import { Subforum, Post, Comment } from "./types";
 
+export const fetchSub = async (subId: string) => {
+  const { data, error } = await supabase
+    .from("subforums")
+    .select("*")
+    .eq("id", subId)
+    .single();
+  if (error) throw error;
+  return data;
+};
+
 export const fetchSubs = async () => {
   return await supabase
     .from("subforums")
@@ -8,7 +18,7 @@ export const fetchSubs = async () => {
     .then((res) => res.data);
 };
 
-export const fetchPost = async (postId) => {
+export const fetchPost = async (postId: string) => {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
@@ -18,7 +28,7 @@ export const fetchPost = async (postId) => {
   return data;
 };
 
-export const fetchPosts = async (subId) => {
+export const fetchPosts = async (subId: string) => {
   return await supabase
     .from("posts")
     .select("*")

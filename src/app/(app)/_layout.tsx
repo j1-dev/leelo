@@ -5,7 +5,7 @@ import { Text, View } from "react-native";
 import { useAuth } from "../../lib/ctx";
 
 export default function AppLayout() {
-  const { user, session, loading, signOut } = useAuth();
+  const { user, session, loading } = useAuth();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (loading) {
@@ -57,15 +57,17 @@ export default function AppLayout() {
         <Stack.Screen
           name="s/[sub]/p/[pub]"
           options={{
-            animation: "slide_from_right",
+            // animation: "slide_from_right",
             headerShown: false,
           }}
         />
         <Stack.Screen
           name="s/[sub]/p/[pub]/c/[comm]"
-          options={{
-            animation: "slide_from_right",
-          }}
+          options={
+            {
+              // animation: "slide_from_right",
+            }
+          }
         />
       </Stack>
     </View>

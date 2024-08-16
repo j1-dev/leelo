@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, Alert, ActivityIndicator } from "react-native";
 import { Button } from "@rneui/themed";
 import { useLocalSearchParams, Link } from "expo-router";
-import { fetchComment, fetchComments, submitComment } from "@/lib/api";
-import { Comment } from "@/lib/types";
+import { fetchComment, fetchSub, submitComment } from "@/lib/api";
+import { Comment, Subforum } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { usePost } from "@/lib/postCtx";
+import { useSub } from "@/lib/subCtx";
 import { renderComments } from "@/components/CommentRenderer";
 import { InputAccessoryView, Platform } from "react-native";
 
 export default function Comm() {
   const postCtx = usePost();
+  const subCtx = useSub();
   const { comm, sub, pub } = useLocalSearchParams();
   const { user, loading } = useAuth();
   const [comment, setComment] = useState<Comment | null>(null);
   const [parentComment, setParentComment] = useState<Comment | null>(null);
-  const [replies, setReplies] = useState<Comment[]>([]);
+  const [subforum, setSubforum] = useState<Subforum | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [newReply, setNewReply] = useState("");
 
@@ -39,12 +34,11 @@ export default function Comm() {
         }
       } catch (error) {
         console.error(error);
-      } finally {
-        setLoading(false);
       }
     };
 
     loadCommentAndReplies();
+    setLoading(false);
   }, [comm, pub]);
 
   const handleReplySubmit = async () => {
@@ -78,23 +72,30 @@ export default function Comm() {
         </Link>
       )}
       {comment && (
-        <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
-          <View className="mb-4 p-4 bg-white rounded-lg">
-            <Text className="text-2xl font-bold">{comment.content}</Text>
-            <Text className="text-xs text-gray-500 mt-2">
-              by User {comment.user_id}
-            </Text>
-          </View>
-        </Link>
+        <View
+          className="mt-4 p-4 w-full bg-white border-b-[1px]"
+          style={{ borderColor: subCtx.accent }}
+        >
+          <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
+            <View>
+              <Text className="text-2xl font-bold">{comment.content}</Text>
+              <Text className="text-xs text-gray-500 mt-2">
+                by User {comment.user_id}
+              </Text>
+            </View>
+          </Link>
+        </View>
       )}
-      <View>
+      <View className="h-screen bg-white pb-60">
         {postCtx.comments
           ? renderComments(
               postCtx.comments,
               comm as string,
               sub as string,
               pub as string,
-              3
+              3,
+              0,
+              subCtx.accent
             )
           : null}
       </View>

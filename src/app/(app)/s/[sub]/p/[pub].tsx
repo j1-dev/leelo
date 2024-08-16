@@ -1,22 +1,22 @@
-// PostScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, TextInput, Alert } from "react-native";
 import { Button } from "@rneui/themed";
-import { Post, Comment } from "@/lib/types";
+import { Post, Comment, Subforum } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/ctx";
-import { fetchPost, fetchComments, submitComment } from "@/lib/api";
+import { fetchPost, fetchComments, submitComment, fetchSub } from "@/lib/api";
 import { useLocalSearchParams } from "expo-router";
 import { usePost } from "@/lib/postCtx";
 import { renderComments } from "@/components/CommentRenderer";
 import { InputAccessoryView, Platform } from "react-native";
+import { useSub } from "@/lib/subCtx";
 
 export default function Pub() {
   const postCtx = usePost();
+  const subCtx = useSub();
   const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>(null);
   const [newComment, setNewComment] = useState("");
-  const { user, signOut, loading, setLoading } = useAuth();
+  const { user, loading, setLoading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
 
   const handleCommentSubmit = async () => {
@@ -38,15 +38,14 @@ export default function Pub() {
     const loadPostAndComments = async () => {
       try {
         postCtx.setPostId(pub);
-        const postData = await fetchPost(pub);
+        const postData = await fetchPost(pub as string);
         setPost(postData);
       } catch (error) {
         console.error(error);
-      } finally {
-        setLoading(false);
       }
     };
     loadPostAndComments();
+    setLoading(false);
   }, [pub]);
 
   if (loading || !post)
@@ -55,7 +54,10 @@ export default function Pub() {
   return (
     <View className="relative h-full bg-white pt-14">
       {post && (
-        <View className="mb-4 p-4 bg-white rounded-lg">
+        <View
+          className={`mt-4 w-full p-4 bg-white border-b-[1px]`}
+          style={{ borderColor: subCtx.accent }}
+        >
           <Text className="text-2xl font-bold">{post.title}</Text>
           <Text className="text-base mt-2">{post.content}</Text>
           <Text className="text-xs text-gray-500 mt-2">
@@ -63,14 +65,16 @@ export default function Pub() {
           </Text>
         </View>
       )}
-      <View className="h-[70%] bg-white">
+      <View className="h-screen bg-white pb-60">
         {postCtx.comments
           ? renderComments(
               postCtx.comments,
               null,
               sub as string,
               pub as string,
-              3
+              3,
+              0,
+              subCtx.accent
             )
           : null}
       </View>

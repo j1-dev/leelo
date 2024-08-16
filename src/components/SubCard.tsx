@@ -1,15 +1,21 @@
 import { Text, View } from "react-native";
 import { Link } from "expo-router";
 import { Subforum } from "@/lib/types";
+import { useSub } from "@/lib/subCtx";
 
 interface SubCardProps {
   subforum: Subforum;
 }
 
 export default function SubCard({ subforum }: SubCardProps) {
+  const sub = useSub();
   return (
     <View className="bg-white rounded-lg p-4">
-      <Link href={`/s/${subforum.id}`} className="w-full flex-1">
+      <Link
+        href={`/s/${subforum.id}`}
+        className="w-full flex-1"
+        onPress={() => sub.setSubId(subforum.id)}
+      >
         <View>
           <Text className="text-xl font-bold text-gray-800">
             {subforum.name}
