@@ -57,17 +57,15 @@ export default function AppLayout() {
         <Stack.Screen
           name="s/[sub]/p/[pub]"
           options={{
-            // animation: "slide_from_right",
+            animation: "slide_from_right",
             headerShown: false,
           }}
         />
         <Stack.Screen
           name="s/[sub]/p/[pub]/c/[comm]"
-          options={
-            {
-              // animation: "slide_from_right",
-            }
-          }
+          options={{
+            animation: "slide_from_right",
+          }}
         />
       </Stack>
     </View>
