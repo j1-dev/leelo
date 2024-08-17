@@ -16,6 +16,9 @@
       ]
     ],
     "name": "leelo",
-    "slug": "leelo"
+    "slug": "leelo",
+    "android": {
+      "softwareKeyboardLayoutMode": "pan"
+    }
   }
 }

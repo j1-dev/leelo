@@ -11,9 +11,13 @@ export default function Home() {
   const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
-    fetchSubs().then((data: Subforum[]) => {
-      setSubs([...data]);
-    });
+    fetchSubs()
+      .then((data: Subforum[]) => {
+        setSubs([...data]);
+      })
+      .catch((e) => {
+        throw e;
+      });
   });
 
   if (loading) {

@@ -9,6 +9,8 @@ import { usePost } from "@/lib/postCtx";
 import { useSub } from "@/lib/subCtx";
 import { renderComments } from "@/components/CommentRenderer";
 import { InputAccessoryView, Platform } from "react-native";
+import { KeyboardAvoidingView } from "react-native";
+import { SafeAreaView } from "react-native";
 
 export default function Comm() {
   const postCtx = usePost();
@@ -86,7 +88,7 @@ export default function Comm() {
           </Link>
         </View>
       )}
-      <View className="h-screen bg-white pb-60">
+      <SafeAreaView className="h-screen flex-1 bg-white pb-28 ">
         {postCtx.comments
           ? renderComments(
               postCtx.comments,
@@ -98,47 +100,31 @@ export default function Comm() {
               subCtx.accent
             )
           : null}
-      </View>
-
-      {Platform.OS === "ios" ? (
-        <InputAccessoryView className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
-          <View className="w-full h-full bg-white relative">
-            <TextInput
-              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
-              placeholder="Write a comment..."
-              value={newReply}
-              onChangeText={setNewReply}
+        <KeyboardAvoidingView
+          className="bottom-0 absolute w-full p-4 mb-8 bg-white rounded-lg"
+          keyboardVerticalOffset={160}
+          behavior={Platform.OS === "ios" ? "position" : undefined}
+        >
+          <TextInput
+            className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-[80%]"
+            placeholder="Write a comment..."
+            value={newReply}
+            onChangeText={setNewReply}
+          />
+          <View
+            className={`absolute ${
+              Platform.OS === "ios" ? "top-[6px] right-0" : "right-3 top-5"
+            }`}
+          >
+            <Button
+              title="Send"
+              onPress={handleReplySubmit}
+              buttonStyle={{ backgroundColor: "#2196F3" }}
+              containerStyle={{ borderRadius: 8 }}
             />
-            <View className="top-1 right-0 absolute">
-              <Button
-                title="Send"
-                onPress={handleReplySubmit}
-                buttonStyle={{ backgroundColor: "#2196F3" }}
-                containerStyle={{ borderRadius: 8 }}
-              />
-            </View>
           </View>
-        </InputAccessoryView>
-      ) : (
-        <View className="absolute bottom-0 w-full bg-white z-50 p-3 border border-gray-300 shadow-md">
-          <View className="w-full h-full bg-white relative">
-            <TextInput
-              className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-5/6 left-0"
-              placeholder="Write a comment..."
-              value={newReply}
-              onChangeText={setNewReply}
-            />
-            <View className="top-1 right-0 absolute">
-              <Button
-                title="Send"
-                onPress={handleReplySubmit}
-                buttonStyle={{ backgroundColor: "#2196F3" }}
-                containerStyle={{ borderRadius: 8 }}
-              />
-            </View>
-          </View>
-        </View>
-      )}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </View>
   );
 }

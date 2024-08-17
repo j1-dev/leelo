@@ -2,6 +2,7 @@ import { Text, View } from "react-native";
 import { Link, router } from "expo-router";
 import { Comment } from "@/lib/types";
 import { getShadesOfAccent } from "@/lib/aux";
+import { TouchableOpacity } from "react-native";
 
 interface CommentCardProps {
   sub: string;
@@ -33,14 +34,16 @@ export default function CommentCard({
       w-full`}
       style={{ borderColor: borderColor(accent, depth) }}
     >
-      <Link href={`s/${sub}/p/${pub}/c/${item.id}`}>
+      <TouchableOpacity
+        onPress={() => router.push(`s/${sub}/p/${pub}/c/${item.id}`)}
+      >
         <View>
           <Text className="text-base text-gray-800 mb-1">{item.content}</Text>
           <Text className="text-xs text-gray-500">
             {new Date(item.created_at).toLocaleString()}
           </Text>
         </View>
-      </Link>
+      </TouchableOpacity>
     </View>
   );
 }
