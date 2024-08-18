@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, TextInput, Alert } from "react-native";
-import { Button } from "@rneui/themed";
-import { Post, Comment, Subforum } from "@/lib/types";
-import { supabase } from "@/lib/supabase";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
+import {} from "@rneui/themed";
+import { Post } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment, fetchSub } from "@/lib/api";
 import { useLocalSearchParams } from "expo-router";
 import { usePost } from "@/lib/postCtx";
 import { renderComments } from "@/components/CommentRenderer";
-import { Platform } from "react-native";
 import { useSub } from "@/lib/subCtx";
-import { KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native";
+import CommentBar from "@/components/CommentBar";
 
 export default function Pub() {
   const postCtx = usePost();
@@ -67,7 +65,7 @@ export default function Pub() {
           </Text>
         </View>
       )}
-      <SafeAreaView className="h-screen flex-1 bg-white pb-20">
+      <SafeAreaView className="h-screen flex-1 bg-white">
         {postCtx.comments
           ? renderComments(
               postCtx.comments,
@@ -79,30 +77,11 @@ export default function Pub() {
               subCtx.accent
             )
           : null}
-        <KeyboardAvoidingView
-          className="bottom-0 absolute w-full p-4 mb-8 bg-white rounded-lg"
-          keyboardVerticalOffset={160}
-          behavior={Platform.OS === "ios" ? "position" : undefined}
-        >
-          <TextInput
-            className="p-2 bg-white rounded-lg border border-gray-300 h-14 w-[80%]"
-            placeholder="Write a comment..."
-            value={newComment}
-            onChangeText={setNewComment}
-          />
-          <View
-            className={`absolute ${
-              Platform.OS === "ios" ? "top-[6px] right-0" : "right-3 top-5"
-            }`}
-          >
-            <Button
-              title="Send"
-              onPress={handleCommentSubmit}
-              buttonStyle={{ backgroundColor: "#2196F3" }}
-              containerStyle={{ borderRadius: 8 }}
-            />
-          </View>
-        </KeyboardAvoidingView>
+        <CommentBar
+          value={newComment}
+          onChangeText={setNewComment}
+          onSubmit={handleCommentSubmit}
+        />
       </SafeAreaView>
     </View>
   );

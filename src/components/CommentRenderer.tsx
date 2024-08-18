@@ -23,17 +23,22 @@ export const renderComments = (
   currentDepth: number = 0, // Keep track of current depth
   accent: string
 ) => {
+  const isLastComment = (item: Comment, commentList: Comment[]): boolean => {
+    return item === commentList[commentList.length - 1];
+  };
+
+  const filteredList = commentList.filter(
+    (comment) => comment.parent_comment === parentId
+  );
   return (
     <FlatList
-      data={commentList.filter(
-        (comment) => comment.parent_comment === parentId
-      )}
+      data={filteredList}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <View
-          className={`pl-4 pt-4 bg-white ${
-            currentDepth !== 0 ? "border-l-[1px]" : ""
-          } rounded-bl-2xl`}
+          className={`${currentDepth !== 0 ? "border-l-[1px]" : " "} ${
+            isLastComment(item, filteredList) ? "rounded-bl-2xl" : " "
+          } pl-4 pt-4 bg-white`}
           style={{ borderColor: borderColor(accent, currentDepth) }}
         >
           <CommentCard
@@ -42,6 +47,11 @@ export const renderComments = (
             item={item}
             depth={currentDepth}
             accent={accent}
+            isLastThreadComment={
+              currentDepth === maxDepth ||
+              commentList.filter((c) => c.parent_comment === item.id).length ===
+                0
+            }
           />
           {currentDepth < maxDepth ? (
             renderComments(
@@ -54,14 +64,15 @@ export const renderComments = (
               accent
             )
           ) : (
-            <TouchableOpacity className="ml-4 mt-2">
-              <Link
-                href={`s/${sub}/p/${pub}/c/${parentId}`}
-                className="text-blue-500 underline"
-              >
-                <Text>Show more comments</Text>
-              </Link>
-            </TouchableOpacity>
+            <></>
+            // <TouchableOpacity className="ml-4 mt-2">
+            //   <Link
+            //     href={`s/${sub}/p/${pub}/c/${parentId}`}
+            //     className="text-blue-500 underline"
+            //   >
+            //     <Text>Show more comments</Text>
+            //   </Link>
+            // </TouchableOpacity>
           )}
         </View>
       )}

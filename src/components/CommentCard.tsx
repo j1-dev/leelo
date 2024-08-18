@@ -10,6 +10,7 @@ interface CommentCardProps {
   depth: number;
   item: Comment;
   accent: string;
+  isLastThreadComment: boolean;
 }
 
 const borderColor = (accent: string, depth: number): string => {
@@ -27,10 +28,13 @@ export default function CommentCard({
   depth,
   item,
   accent,
+  isLastThreadComment,
 }: CommentCardProps) {
   return (
     <View
-      className={`pl-4 pr-3 pt-2 pb-2 bg-white rounded-tl-2xl border-t-[1px] border-l-[1px]
+      className={`pl-4 pr-3 pt-2 pb-2 bg-white rounded-tl-2xl ${
+        isLastThreadComment ? "rounded-bl-2xl" : ""
+      }  border-t-[1px] border-l-[1px]
       w-full`}
       style={{ borderColor: borderColor(accent, depth) }}
     >
