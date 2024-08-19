@@ -64,15 +64,14 @@ export const renderComments = (
               accent
             )
           ) : (
-            <></>
-            // <TouchableOpacity className="ml-4 mt-2">
-            //   <Link
-            //     href={`s/${sub}/p/${pub}/c/${parentId}`}
-            //     className="text-blue-500 underline"
-            //   >
-            //     <Text>Show more comments</Text>
-            //   </Link>
-            // </TouchableOpacity>
+            <TouchableOpacity className="ml-4 mt-2">
+              <Link
+                href={`s/${sub}/p/${pub}/c/${parentId}`}
+                className="text-blue-500 underline"
+              >
+                <Text>Show more comments</Text>
+              </Link>
+            </TouchableOpacity>
           )}
         </View>
       )}

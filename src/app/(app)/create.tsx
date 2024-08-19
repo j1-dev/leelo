@@ -1,0 +1,64 @@
+import { View, TextInput, Button, Text, Alert } from "react-native";
+import { useState } from "react";
+import { Subforum } from "@/lib/types";
+import { useAuth } from "@/lib/ctx";
+import { router } from "expo-router";
+import { submitSub } from "@/lib/api";
+import ColorPicker from "react-native-wheel-color-picker";
+
+export default function CreateSub() {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [accent, setAccent] = useState("");
+  const { user, signOut, loading } = useAuth();
+
+  const handleSubmit = async () => {
+    const sub: Subforum = {
+      name,
+      description,
+      created_at: new Date().toISOString(),
+      accent,
+    };
+    try {
+      await submitSub(sub);
+      Alert.alert("Success", "Your post has been submitted!");
+      router.push(`/home`); // Redirect to the desired page after submission
+    } catch (error) {
+      console.error("Error submitting post:", error.message);
+      Alert.alert("Error", "There was an issue submitting your post.");
+    }
+  };
+
+  return (
+    <View className="p-4">
+      <Text className="text-lg font-bold mb-2">Create a New Subforum</Text>
+      <TextInput
+        className="border p-2 mb-4 rounded"
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        className="border p-2 mb-4 rounded h-40"
+        placeholder="Content"
+        value={description}
+        onChangeText={setDescription}
+        multiline
+      />
+      <View>
+        <ColorPicker
+          color={accent}
+          swatchesOnly={false}
+          onColorChange={setAccent}
+          thumbSize={40}
+          sliderSize={40}
+          noSnap={true}
+          row={false}
+        />
+      </View>
+      <View>
+        <Button title="Submit" onPress={handleSubmit} />
+      </View>
+    </View>
+  );
+}

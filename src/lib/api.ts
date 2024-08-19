@@ -38,13 +38,22 @@ export const fetchPosts = async (subId: string) => {
 
 export const submitPost = async (post: Post) => {
   try {
-    console.log(post);
     const { data, error } = await supabase.from("posts").insert([post]);
     if (error) throw new Error(error.toString());
   } catch (error) {
     console.log("Error submiting post: ", error);
   }
   fetchPosts(post.subforum_id);
+};
+
+export const submitSub = async (sub: Subforum) => {
+  try {
+    const { data, error } = await supabase.from("subforums").insert([sub]);
+    if (error) throw new Error(error.toString());
+  } catch (error) {
+    console.log("Error creating subforum: ", error);
+  }
+  fetchPosts(sub.id);
 };
 
 export const fetchComments = async (

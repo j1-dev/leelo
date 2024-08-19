@@ -102,6 +102,7 @@ export default function Comm() {
           value={newReply}
           onChangeText={setNewReply}
           onSubmit={handleReplySubmit}
+          commentId={comm as string}
         />
       </SafeAreaView>
     </View>

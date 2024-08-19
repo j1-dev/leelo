@@ -1,8 +1,7 @@
 import { fetchPosts } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
 import { Post } from "@/lib/types";
 import { Button } from "@rneui/themed";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { useAuth } from "@/lib/ctx";
@@ -14,7 +13,7 @@ export default function Sub() {
   const { sub } = useLocalSearchParams();
 
   useEffect(() => {
-    fetchPosts(sub)
+    fetchPosts(sub as string)
       .then((data: Post[]) => {
         setPubs([...data]);
       })

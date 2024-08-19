@@ -7,6 +7,8 @@ import {
   Platform,
 } from "react-native";
 import { Button } from "@rneui/themed";
+import { usePost } from "@/lib/postCtx";
+import { Comment } from "@/lib/types";
 
 interface CommentInputProps {
   value: string;
@@ -14,6 +16,7 @@ interface CommentInputProps {
   onSubmit: () => void;
   placeholder?: string;
   buttonText?: string;
+  commentId?: string;
 }
 
 export default function CommentBar({
@@ -22,11 +25,24 @@ export default function CommentBar({
   onSubmit,
   placeholder = "Write a comment...",
   buttonText = "Send",
+  commentId,
 }: CommentInputProps) {
+  const postCtx = usePost();
+  const hasParentComment = (): boolean => {
+    if (!!commentId) {
+      const comments = postCtx.comments as Comment[];
+      const currentComment = comments.filter(
+        (c: Comment) => c.id === commentId
+      );
+      return currentComment[0]?.parent_comment !== null;
+    } else {
+      return false;
+    }
+  };
   return (
     <KeyboardAvoidingView
       className="bottom-0 absolute w-full p-4 bg-white rounded-lg h-28"
-      keyboardVerticalOffset={160}
+      keyboardVerticalOffset={hasParentComment() ? 240 : 140}
       behavior={Platform.OS === "ios" ? "position" : undefined}
     >
       <TextInput
