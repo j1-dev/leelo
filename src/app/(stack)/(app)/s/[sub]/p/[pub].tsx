@@ -52,10 +52,10 @@ export default function Pub() {
     return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
-    <View className="relative h-full bg-white pt-14">
+    <View className="relative h-full bg-white">
       {post && (
         <View
-          className={`mt-4 w-full p-4 bg-white border-b-[1px]`}
+          className={`w-full p-4 bg-white border-b-[1px]`}
           style={{ borderColor: subCtx.accent }}
         >
           <Text className="text-2xl font-bold">{post.title}</Text>

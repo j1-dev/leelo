@@ -3,7 +3,7 @@ import { FlatList, Text, View, TouchableOpacity } from "react-native";
 import CommentCard from "./CommentCard"; // Adjust the import path based on your project structure
 import { Comment } from "@/lib/types";
 import { Link } from "expo-router";
-import { getShadesOfAccent } from "@/lib/aux";
+import { getShadesOfAccent } from "@/lib/colors";
 
 const borderColor = (accent: string, depth: number): string => {
   const { lightShade, darkShade } = getShadesOfAccent(accent);

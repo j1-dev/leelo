@@ -25,3 +25,11 @@ export interface Comment {
   score: number;
   parent_comment?: string;
 }
+
+export interface User {
+  id?: string;
+  username: string;
+  email: string;
+  profile_pic: string;
+  created_at: string;
+}

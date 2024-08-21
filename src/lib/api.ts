@@ -1,7 +1,17 @@
 import { supabase } from "./supabase";
-import { Subforum, Post, Comment } from "./types";
+import { Subforum, Post, Comment, User } from "./types";
 
-export const fetchSub = async (subId: string) => {
+export const fetchUser = async (userId: string): Promise<User> => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const fetchSub = async (subId: string): Promise<Subforum> => {
   const { data, error } = await supabase
     .from("subforums")
     .select("*")

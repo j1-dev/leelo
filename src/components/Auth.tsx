@@ -1,10 +1,12 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, View, Text } from "react-native";
-import { supabase } from "../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { Button, Input, Switch } from "@rneui/themed";
+import { decode } from "base64-arraybuffer";
 
 export default function Auth() {
+  const [imgData, setImgData] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState(""); // Add username state
@@ -56,9 +58,9 @@ export default function Auth() {
       } else {
         Alert.alert("Please check your inbox for email verification!");
       }
-    }
 
-    setLoading(false);
+      setLoading(false);
+    }
   };
 
   const clickButton = () => {
@@ -69,7 +71,7 @@ export default function Auth() {
     <View className="flex h-screen">
       <View className="w-11/12 max-w-md m-auto">
         {!isEnabled && (
-          <View className="mb-4">
+          <View className="mb-4 relative">
             <Input
               label="Username"
               leftIcon={{ type: "font-awesome", name: "user" }}

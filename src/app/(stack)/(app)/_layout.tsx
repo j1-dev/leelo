@@ -1,10 +1,19 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Button } from "@rneui/themed";
-import { Redirect, Stack } from "expo-router";
-import { Text, View } from "react-native";
-import { useAuth } from "../../lib/ctx";
+import { useAuth } from "@/lib/ctx";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import {
+  Redirect,
+  Stack,
+  useNavigation,
+  useRouter,
+  useSegments,
+} from "expo-router";
+import { Button, Text, View } from "react-native";
 
 export default function AppLayout() {
+  const router = useRouter();
+  const segment = useSegments();
+  const showDrawerButton = segment[segment.length - 1] === "home";
+  const nav = useNavigation<DrawerNavigationProp<{}>>();
   const { user, session, loading } = useAuth();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
@@ -20,12 +29,25 @@ export default function AppLayout() {
     return <Redirect href="/" />;
   }
 
-  // This layout can be deferred because it's not the root layout.
   return (
     <View className="bg-white h-full w-full absolute bottom-0">
       <Stack
         screenOptions={{
+          headerBackButtonMenuEnabled: true,
           headerShadowVisible: false,
+          headerLeft: ({ label }) => {
+            if (showDrawerButton) {
+              return (
+                <Button onPress={() => nav.openDrawer()} title={"icon menu"} />
+              );
+            }
+            if (router.canGoBack()) {
+              return (
+                <Button onPress={() => router.back()} title={label ?? "back"} />
+              );
+            }
+            return null; // No button if there's nothing to go back to
+          },
         }}
       >
         <Stack.Screen
@@ -58,7 +80,6 @@ export default function AppLayout() {
           name="s/[sub]/p/[pub]"
           options={{
             animation: "slide_from_right",
-            headerShown: false,
           }}
         />
         <Stack.Screen
