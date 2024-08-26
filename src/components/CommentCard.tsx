@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { Comment } from "@/lib/types";
 import { getShadesOfAccent } from "@/lib/colors";
 import { TouchableOpacity } from "react-native";
