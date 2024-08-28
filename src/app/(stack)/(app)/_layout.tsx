@@ -8,6 +8,8 @@ import {
   useSegments,
 } from "expo-router";
 import { Button, Text, View } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function AppLayout() {
   const router = useRouter();
@@ -38,16 +40,29 @@ export default function AppLayout() {
           headerLeft: ({ label }) => {
             if (showDrawerButton) {
               return (
-                <Button onPress={() => nav.openDrawer()} title={"icon menu"} />
+                <Feather
+                  name="menu"
+                  size={24}
+                  color="black"
+                  onPress={() => nav.openDrawer()}
+                />
+                // <Button onPress={() => nav.openDrawer()} title={"icon menu"} />
               );
             }
             if (router.canGoBack()) {
               return (
-                <Button onPress={() => router.back()} title={label ?? "back"} />
+                <MaterialIcons
+                  name="arrow-back-ios"
+                  size={24}
+                  color="black"
+                  onPress={() => router.back()}
+                />
+                // <Button onPress={() => router.back()} title={label ?? "back"} />
               );
             }
             return null; // No button if there's nothing to go back to
           },
+          headerTitleAlign: "center",
         }}
       >
         <Stack.Screen
