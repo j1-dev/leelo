@@ -3,7 +3,7 @@ import { fetchSubs } from "@/lib/api";
 import { useAuth } from "@/lib/ctx";
 import { Subforum } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, ActivityIndicator } from "react-native";
 import { Button } from "@rneui/themed";
 import { router } from "expo-router";
 
@@ -22,7 +22,7 @@ export default function Home() {
   });
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
 
   return (

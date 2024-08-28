@@ -56,7 +56,7 @@ export default function Comm() {
   };
 
   if (loading || isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
 
   return (

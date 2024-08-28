@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 import { Subforum, Post, Comment, User } from "./types";
 
-export const fetchUser = async (userId: string): Promise<User> => {
+export const fetchUser = async (userId: string): Promise<User | null> => {
   const { data, error } = await supabase
     .from("users")
     .select("*")
@@ -11,7 +11,7 @@ export const fetchUser = async (userId: string): Promise<User> => {
   return data;
 };
 
-export const fetchSub = async (subId: string): Promise<Subforum> => {
+export const fetchSub = async (subId: string): Promise<Subforum | null> => {
   const { data, error } = await supabase
     .from("subforums")
     .select("*")
@@ -21,14 +21,14 @@ export const fetchSub = async (subId: string): Promise<Subforum> => {
   return data;
 };
 
-export const fetchSubs = async () => {
+export const fetchSubs = async (): Promise<Subforum[]> => {
   return await supabase
     .from("subforums")
     .select("*")
     .then((res) => res.data);
 };
 
-export const fetchPost = async (postId: string) => {
+export const fetchPost = async (postId: string): Promise<Post | null> => {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
@@ -38,7 +38,7 @@ export const fetchPost = async (postId: string) => {
   return data;
 };
 
-export const fetchPosts = async (subId: string) => {
+export const fetchPosts = async (subId: string): Promise<Post[] | null> => {
   return await supabase
     .from("posts")
     .select("*")

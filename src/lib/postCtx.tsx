@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fetchComments, fetchPost } from "./api";
+import { fetchComments, fetchPost, fetchUser } from "./api";
 import { useAuth } from "./ctx";
 
 const PostContext = createContext({
@@ -20,17 +20,30 @@ const PostProvider = ({ children }) => {
   const [title, setTitle] = useState<string>("");
   const [comments, setComments] = useState([]);
   const [score, setScore] = useState<number>(0);
-  const { session } = useAuth();
 
   useEffect(() => {
     setComments(null);
+    const getComments = async (id: string) => {
+      try {
+        const comments = await fetchComments(postId);
+        setComments(comments);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const getPost = async (id: string) => {
+      try {
+        const post = await fetchPost(id);
+        setTitle(post.title);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     if (postId !== "") {
-      fetchComments(postId)
-        .then((comms) => {
-          setComments(comms);
-        })
-        .catch((error) => console.error(error));
-      fetchPost(postId).then((p) => setTitle(p.title));
+      getComments(postId);
+      getPost(postId);
       setUpdate(false);
     }
   }, [postId, update]);

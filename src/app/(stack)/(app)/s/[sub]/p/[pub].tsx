@@ -49,7 +49,7 @@ export default function Pub() {
   }, [pub]);
 
   if (loading || !post)
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
 
   return (
     <View className="relative h-full bg-white">
