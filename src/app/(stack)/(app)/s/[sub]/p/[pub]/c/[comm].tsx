@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Alert, ActivityIndicator } from "react-native";
-import { useLocalSearchParams, Link } from "expo-router";
+import { useLocalSearchParams, Link, Stack } from "expo-router";
 import { fetchComment, submitComment } from "@/lib/api";
 import { Comment, Subforum } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
@@ -61,6 +61,11 @@ export default function Comm() {
 
   return (
     <View className="bg-white relative h-full">
+      <Stack.Screen
+        options={{
+          headerTitle: postCtx.title,
+        }}
+      />
       {parentComment && (
         <Link href={`s/${sub}/p/${pub}/c/${parentComment.id}`}>
           <View className="mb-4 p-4 bg-white rounded-lg">

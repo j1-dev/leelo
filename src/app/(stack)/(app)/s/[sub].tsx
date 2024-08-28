@@ -1,15 +1,16 @@
 import { fetchPosts } from "@/lib/api";
 import { Post } from "@/lib/types";
 import { Button } from "@rneui/themed";
-import { router, useLocalSearchParams } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { useAuth } from "@/lib/ctx";
 import { renderPubs } from "@/components/PubRenderer"; // Adjust the import path based on your project structure
+import { useSub } from "@/lib/subCtx";
 
 export default function Sub() {
   const [pubs, setPubs] = useState<Post[]>([]);
-  const { user, signOut, loading, setLoading } = useAuth();
+  const { name } = useSub();
   const { sub } = useLocalSearchParams();
 
   useEffect(() => {
@@ -20,12 +21,13 @@ export default function Sub() {
       .catch((error) => console.error(error));
   }, [sub]);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   return (
     <View className="bg-white flex h-screen relative">
+      <Stack.Screen
+        options={{
+          headerTitle: name,
+        }}
+      />
       {renderPubs(pubs, sub as string)}
       <View className="absolute z-50 bottom-36 left-6">
         <Button

@@ -4,7 +4,7 @@ import {} from "@rneui/themed";
 import { Post } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment, fetchSub } from "@/lib/api";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { usePost } from "@/lib/postCtx";
 import { renderComments } from "@/components/CommentRenderer";
 import { useSub } from "@/lib/subCtx";
@@ -53,6 +53,11 @@ export default function Pub() {
 
   return (
     <View className="relative h-full bg-white">
+      <Stack.Screen
+        options={{
+          headerTitle: postCtx.title,
+        }}
+      />
       {post && (
         <View
           className={`w-full p-4 bg-white border-b-[1px]`}
