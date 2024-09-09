@@ -30,6 +30,7 @@ export const renderComments = (
   const filteredList = commentList.filter(
     (comment) => comment.parent_comment === parentId
   );
+
   return (
     <FlatList
       data={filteredList}

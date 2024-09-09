@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fetchComments, fetchPost, fetchUser } from "./api";
-import { useAuth } from "./ctx";
+import { fetchComments, fetchPost } from "./api";
 
 const PostContext = createContext({
   setPostId: null,
@@ -8,6 +7,7 @@ const PostContext = createContext({
   comments: null,
   score: null,
   setUpdate: null,
+  updateComment: null, // New function to update a comment
 });
 
 export const usePost = () => {
@@ -20,6 +20,31 @@ const PostProvider = ({ children }) => {
   const [title, setTitle] = useState<string>("");
   const [comments, setComments] = useState([]);
   const [score, setScore] = useState<number>(0);
+
+  // Helper function to update a specific comment
+  const updateComment = (commentId: string, changes: Partial<Comment>) => {
+    setComments((prevComments) => {
+      const updateNestedComment = (comments) => {
+        return comments.map((comment) => {
+          if (comment.id === commentId) {
+            return { ...comment, ...changes };
+          }
+
+          // Handle nested comments if they exist
+          if (comment.replies) {
+            return {
+              ...comment,
+              replies: updateNestedComment(comment.replies),
+            };
+          }
+
+          return comment;
+        });
+      };
+
+      return updateNestedComment(prevComments);
+    });
+  };
 
   useEffect(() => {
     setComments(null);
@@ -50,7 +75,7 @@ const PostProvider = ({ children }) => {
 
   return (
     <PostContext.Provider
-      value={{ setPostId, title, comments, score, setUpdate }}
+      value={{ setPostId, title, comments, score, setUpdate, updateComment }} // Add updateComment to context
     >
       {children}
     </PostContext.Provider>

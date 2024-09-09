@@ -9,7 +9,7 @@ export default function Auth() {
   const [imgData, setImgData] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState(""); // Add username state
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
 

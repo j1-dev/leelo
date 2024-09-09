@@ -31,10 +31,10 @@ export default function CommentBar({
   const hasParentComment = (): boolean => {
     if (!!commentId) {
       const comments = postCtx.comments as Comment[];
-      const currentComment = comments.filter(
+      const currentComment = comments?.filter(
         (c: Comment) => c.id === commentId
       );
-      return currentComment[0]?.parent_comment !== null;
+      return currentComment?.[0]?.parent_comment !== null;
     } else {
       return false;
     }

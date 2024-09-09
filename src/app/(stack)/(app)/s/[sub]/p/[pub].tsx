@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Alert } from "react-native";
-import {} from "@rneui/themed";
 import { Post } from "@/lib/types";
 import { useAuth } from "@/lib/ctx";
 import { fetchPost, fetchComments, submitComment, fetchSub } from "@/lib/api";
