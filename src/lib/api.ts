@@ -1,14 +1,33 @@
 import { supabase } from "./supabase";
 import { Subforum, Post, Comment, User } from "./types";
 
-export const fetchUser = async (userId: string): Promise<User | null> => {
+export const fetchUserName = async (userId: string): Promise<string> => {
   const { data, error } = await supabase
     .from("users")
-    .select("*")
+    .select("username")
     .eq("id", userId)
     .single();
   if (error) throw error;
-  return data;
+  return data.username as string;
+};
+
+export const fetchUserQuery = async (
+  userId: string,
+  query: string
+): Promise<Partial<User>> => {
+  const { data, error } = await supabase
+    .from("users")
+    .select(query)
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data as Partial<User>;
+};
+
+export const fetchUser = async (
+  userId: string
+): Promise<User | Partial<User>> => {
+  return await fetchUserQuery(userId, "*");
 };
 
 export const fetchSub = async (subId: string): Promise<Subforum | null> => {

@@ -24,25 +24,13 @@ const PostProvider = ({ children }) => {
   // Helper function to update a specific comment
   const updateComment = (commentId: string, changes: Partial<Comment>) => {
     setComments((prevComments) => {
-      const updateNestedComment = (comments) => {
-        return comments.map((comment) => {
-          if (comment.id === commentId) {
-            return { ...comment, ...changes };
-          }
+      return prevComments.map((comment) => {
+        if (comment.id === commentId) {
+          return { ...comment, ...changes };
+        }
 
-          // Handle nested comments if they exist
-          if (comment.replies) {
-            return {
-              ...comment,
-              replies: updateNestedComment(comment.replies),
-            };
-          }
-
-          return comment;
-        });
-      };
-
-      return updateNestedComment(prevComments);
+        return comment;
+      });
     });
   };
 

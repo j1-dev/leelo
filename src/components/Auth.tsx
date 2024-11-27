@@ -6,7 +6,6 @@ import { Button, Input, Switch } from "@rneui/themed";
 import { decode } from "base64-arraybuffer";
 
 export default function Auth() {
-  const [imgData, setImgData] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");

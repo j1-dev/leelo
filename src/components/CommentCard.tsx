@@ -4,7 +4,7 @@ import { Comment } from "@/lib/types";
 import { getShadesOfAccent } from "@/lib/colors";
 import { TouchableOpacity } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { fetchCommentVote, voteComment } from "@/lib/api";
+import { fetchCommentVote, fetchUserName, voteComment } from "@/lib/api";
 import { usePost } from "@/lib/postCtx";
 import { useState, useEffect } from "react";
 
@@ -35,6 +35,7 @@ export default function CommentCard({
   // Local state to track score and user's vote
   const [localScore, setLocalScore] = useState<number>(item.score);
   const [currentVote, setCurrentVote] = useState<number | null>(null);
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     const getVote = () => {
@@ -42,7 +43,14 @@ export default function CommentCard({
         setCurrentVote(res?.vote || null)
       );
     };
+
+    const getUserName = () => {
+      fetchUserName(item.user_id).then((res) => {
+        setUserName(res);
+      });
+    };
     getVote();
+    getUserName();
   }, []);
 
   const handleVote = async (vote: number) => {
@@ -92,6 +100,9 @@ export default function CommentCard({
         }}
       >
         <View className="relative">
+          <Text className="text-sm text-gray-500 underline mb-1">
+            {userName}
+          </Text>
           <Text className="text-base text-gray-800 mb-1 w-[80%]">
             {item.content}
           </Text>

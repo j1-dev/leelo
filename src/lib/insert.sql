@@ -1,18 +1,18 @@
 -- Insert users and return their UUIDs
-INSERT INTO users (id, username, email, password_hash) VALUES
-(gen_random_uuid(), 'alice', 'alice@example.com', 'hash1'),
-(gen_random_uuid(), 'bob', 'bob@example.com', 'hash2'),
-(gen_random_uuid(), 'carol', 'carol@example.com', 'hash3'),
-(gen_random_uuid(), 'dave', 'dave@example.com', 'hash4'),
-(gen_random_uuid(), 'eve', 'eve@example.com', 'hash5');
+INSERT INTO users (id, username, email) VALUES
+(gen_random_uuid(), 'alice', 'alice@example.com'),
+(gen_random_uuid(), 'bob', 'bob@example.com'),
+(gen_random_uuid(), 'carol', 'carol@example.com'),
+(gen_random_uuid(), 'dave', 'dave@example.com'),
+(gen_random_uuid(), 'eve', 'eve@example.com');
 
 -- Insert subforums and return their UUIDs
-INSERT INTO subforums (id, name, description) VALUES
-(gen_random_uuid(), 'General Discussion', 'A place for general chat and topics.'),
-(gen_random_uuid(), 'Tech Talk', 'Discuss the latest in technology and gadgets.'),
-(gen_random_uuid(), 'Books & Literature', 'Share and discuss your favorite books.'),
-(gen_random_uuid(), 'Gaming', 'Talk about video games and the gaming industry.'),
-(gen_random_uuid(), 'Movies & TV Shows', 'Discuss the latest movies and TV series.');
+INSERT INTO subforums (id, name, description, accent) VALUES
+(gen_random_uuid(), 'General Discussion', 'A place for general chat and topics.', '#0000FF'),
+(gen_random_uuid(), 'Tech Talk', 'Discuss the latest in technology and gadgets.', '#0000FF'),
+(gen_random_uuid(), 'Books & Literature', 'Share and discuss your favorite books.', '#0000FF'),
+(gen_random_uuid(), 'Gaming', 'Talk about video games and the gaming industry.', '#0000FF'),
+(gen_random_uuid(), 'Movies & TV Shows', 'Discuss the latest movies and TV series.', '#0000FF');
 
 -- Insert user_subforum_follows using subqueries to fetch user_id and subforum_id
 INSERT INTO user_subforum_follows (user_id, subforum_id) VALUES

@@ -78,7 +78,7 @@ export default function Pub() {
               pub as string,
               3,
               0,
-              subCtx.accent
+              subCtx.accent ? subCtx.accent : "00FF00"
             )
           : null}
         <CommentBar

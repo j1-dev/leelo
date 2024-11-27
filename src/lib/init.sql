@@ -3,7 +3,6 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -12,7 +11,8 @@ CREATE TABLE subforums (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    accent TEXT
 );
 
 -- Create user_subforum_follows table
@@ -47,7 +47,7 @@ CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES posts(id),
     user_id UUID NOT NULL REFERENCES users(id),
-    parent_comment_id UUID REFERENCES comments(id),
+    parent_comment UUID REFERENCES comments(id),
     content TEXT NOT NULL,
     score INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
