@@ -13,7 +13,7 @@ export const fetchUserName = async (userId: string): Promise<string> => {
 
 export const fetchUserQuery = async (
   userId: string,
-  query: string
+  query: string,
 ): Promise<Partial<User>> => {
   const { data, error } = await supabase
     .from("users")
@@ -25,7 +25,7 @@ export const fetchUserQuery = async (
 };
 
 export const fetchUser = async (
-  userId: string
+  userId: string,
 ): Promise<User | Partial<User>> => {
   return await fetchUserQuery(userId, "*");
 };
@@ -42,6 +42,15 @@ export const fetchSub = async (subId: string): Promise<Subforum | null> => {
 
 export const fetchSubs = async (): Promise<Subforum[]> => {
   const { data, error } = await supabase.from("subforums").select("*");
+  if (error) throw error;
+  return data;
+};
+
+export const fetchFollowedSubs = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("user_subforum_follows")
+    .select("subforum_id")
+    .eq("user_id", userId);
   if (error) throw error;
   return data;
 };
@@ -77,9 +86,25 @@ export const submitSub = async (sub: Subforum) => {
   fetchPosts(sub.id);
 };
 
+export const followSub = async (userId: String, subId: String) => {
+  const { error } = await supabase
+    .from("user_subforum_follows")
+    .insert({ user_id: userId, subforum_id: subId });
+  if (error) throw error;
+};
+
+export const unfollowSub = async (userId: String, subId: String) => {
+  const { error } = await supabase
+    .from("user_subforum_follows")
+    .delete()
+    .eq("user_id", userId)
+    .eq("subforum_id", subId);
+  if (error) throw error;
+};
+
 export const fetchComments = async (
   postId: string,
-  parentCommentId: string | null = null
+  parentCommentId: string | null = null,
 ): Promise<Comment[]> => {
   let query = supabase.from("comments").select("*").eq("post_id", postId);
   if (!!parentCommentId) query = query.eq("parent_comment", parentCommentId);
@@ -91,7 +116,7 @@ export const fetchComments = async (
 };
 
 export const fetchComment = async (
-  commentId: string
+  commentId: string,
 ): Promise<Comment | null> => {
   const { data, error } = await supabase
     .from("comments")
@@ -126,7 +151,7 @@ export const submitComment = async (
   userId: string,
   postId: string,
   content: string,
-  parentCommentId: string | null = null
+  parentCommentId: string | null = null,
 ): Promise<void> => {
   if (!userId) {
     throw new Error("User not authenticated");
@@ -149,7 +174,7 @@ export const submitComment = async (
 export const voteComment = async (
   userId: string,
   commentId: string,
-  vote: number
+  vote: number,
 ) => {
   // Step 1: Check if the user has already voted on the comment
   const { data: existingVote, error: voteFetchError } = await supabase
@@ -173,7 +198,7 @@ export const voteComment = async (
 
   if (commentFetchError || !commentData) {
     throw new Error(
-      `Error fetching comment score: ${commentFetchError?.message}`
+      `Error fetching comment score: ${commentFetchError?.message}`,
     );
   }
 
@@ -231,7 +256,7 @@ export const voteComment = async (
 
   if (updateScoreError) {
     throw new Error(
-      `Error updating comment score: ${updateScoreError.message}`
+      `Error updating comment score: ${updateScoreError.message}`,
     );
   }
 

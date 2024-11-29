@@ -1,27 +1,30 @@
-import { ScrollView, Text, View } from "react-native";
+import { renderSubs } from "@/components/SubRenderer";
+import { fetchSubs } from "@/lib/api";
 import { useAuth } from "@/lib/ctx";
+import { Subforum } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { Button } from "@rneui/themed";
 
 export default function Home() {
+  const [subs, setSubs] = useState<Subforum[]>([]);
   const { user, signOut, loading } = useAuth();
 
+  useEffect(() => {
+    fetchSubs()
+      .then((data: Subforum[]) => {
+        setSubs([...data]);
+      })
+      .catch((e) => {
+        throw e;
+      });
+  }, []);
+
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
 
   return (
-    <View className="bg-white flex h-screen relative">
-      <View className="w-full h-20 shadow-lg absolute border border-black p-3">
-        <Text>{user.email}</Text>
-      </View>
-      <ScrollView className="w-full h-full">
-        {[...Array(500).keys()].map((value, index) => {
-          return (
-            <View key={index} className="w-full h-20 shadow-lg ">
-              <Text>Ejemplo {index}</Text>
-            </View>
-          );
-        })}
-      </ScrollView>
-    </View>
+    <View className="bg-white flex h-screen relative">{renderSubs(subs)}</View>
   );
 }
