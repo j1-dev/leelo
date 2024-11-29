@@ -8,7 +8,7 @@ export default function Root() {
       drawerContent={(props) => <DrawerUserContent props={props} />}
     >
       <Drawer.Screen
-        name="(app)"
+        name="(stack)"
         options={{
           drawerLabel: "Home",
           title: "overview",
