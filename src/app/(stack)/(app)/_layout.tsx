@@ -10,11 +10,15 @@ import {
 import { Button, Text, View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import HomeTabBar from "@/components/HomeTabBar";
 
 export default function AppLayout() {
   const router = useRouter();
-  const segment = useSegments();
-  const showDrawerButton = segment[segment.length - 1] === "home";
+  const segments = useSegments();
+  const showDrawerButton = segments[segments.length - 1] === "home";
+  const showTabBar = ["home", "discover", "create", "profile"].includes(
+    segments[segments.length - 1]
+  );
   const nav = useNavigation<DrawerNavigationProp<{}>>();
   const { user, session, loading } = useAuth();
 
@@ -104,6 +108,7 @@ export default function AppLayout() {
           }}
         />
       </Stack>
+      <HomeTabBar show={showTabBar} />
     </View>
   );
 }
