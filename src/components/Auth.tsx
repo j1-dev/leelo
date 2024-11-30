@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, View, Text } from "react-native";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/utils/supabase";
 import { Button, Input, Switch } from "@rneui/themed";
 import { decode } from "base64-arraybuffer";
 

@@ -1,10 +1,10 @@
 import React from "react";
 import { FlatList, View, Text } from "react-native";
-import { Subforum } from "@/lib/types";
+import { Subforum } from "@/lib/utils/types";
 import SubCard from "./SubCard"; // Adjust the import path based on your project structure
-import { useAuth } from "@/lib/ctx";
+import { useAuth } from "@/lib/context/Auth";
 import { useEffect, useState } from "react";
-import { fetchFollowedSubs } from "@/lib/api";
+import { fetchFollowedSubs } from "@/lib/utils/api";
 
 export const renderSubs = (subList: Subforum[]) => {
   const { user } = useAuth();
@@ -13,7 +13,7 @@ export const renderSubs = (subList: Subforum[]) => {
   useEffect(() => {
     fetchFollowedSubs(user.id)
       .then((data) => {
-        setFollows(data.map((item) => item.subforum_id));
+        setFollows(data.map((item) => item.sub_id));
       })
       .catch((e) => {
         throw e;

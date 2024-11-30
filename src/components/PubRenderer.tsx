@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList, View, Text } from "react-native";
-import { Post } from "@/lib/types";
+import { Publication } from "@/lib/utils/types";
 import PubCard from "./PubCard"; // Adjust the import path based on your project structure
 
-export const renderPubs = (pubList: Post[], sub: string) => (
+export const renderPubs = (pubList: Publication[], sub: string) => (
   <FlatList
     data={pubList}
     keyExtractor={(item) => item.id}

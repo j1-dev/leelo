@@ -1,9 +1,9 @@
 import { View, TextInput, Button, Text, Alert } from "react-native";
 import { useState } from "react";
-import { Subforum } from "@/lib/types";
-import { useAuth } from "@/lib/ctx";
+import { Subforum } from "@/lib/utils/types";
+import { useAuth } from "@/lib/context/Auth";
 import { router } from "expo-router";
-import { submitSub } from "@/lib/api";
+import { submitSub } from "@/lib/utils/api";
 import ColorPicker from "react-native-wheel-color-picker";
 
 export default function CreateSub() {
@@ -21,11 +21,11 @@ export default function CreateSub() {
     };
     try {
       await submitSub(sub);
-      Alert.alert("Success", "Your post has been submitted!");
+      Alert.alert("Success", "Your subforum has been created!");
       router.push(`/home`); // Redirect to the desired page after submission
     } catch (error) {
-      console.error("Error submitting post:", error.message);
-      Alert.alert("Error", "There was an issue submitting your post.");
+      console.error("Error submitting subforum:", error.message);
+      Alert.alert("Error", "There was an issue submitting your sub.");
     }
   };
 

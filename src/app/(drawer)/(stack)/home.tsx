@@ -1,7 +1,7 @@
 import { renderSubs } from "@/components/SubRenderer";
-import { fetchFollowedSubs, fetchSub } from "@/lib/api";
-import { useAuth } from "@/lib/ctx";
-import { Subforum } from "@/lib/types";
+import { fetchFollowedSubs, fetchSub } from "@/lib/utils/api";
+import { useAuth } from "@/lib/context/Auth";
+import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { Button } from "@rneui/themed";
@@ -14,7 +14,7 @@ export default function Home() {
     fetchFollowedSubs(user.id)
       .then((data) => {
         data.map((item) => {
-          fetchSub(item.subforum_id).then((data) => {
+          fetchSub(item.sub_id).then((data) => {
             setSubs((curr) => [...curr, data]);
           });
         });

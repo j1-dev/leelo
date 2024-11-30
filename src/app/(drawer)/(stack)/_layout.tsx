@@ -1,4 +1,4 @@
-import { useAuth } from "@/lib/ctx";
+import { useAuth } from "@/lib/context/Auth";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import {
   Redirect,
@@ -17,7 +17,7 @@ export default function AppLayout() {
   const segments = useSegments();
   const showDrawerButton = segments[segments.length - 1] === "home";
   const showTabBar = ["home", "discover", "create", "profile"].includes(
-    segments[segments.length - 1]
+    segments[segments.length - 1],
   );
   const nav = useNavigation<DrawerNavigationProp<{}>>();
   const { user, session, loading } = useAuth();

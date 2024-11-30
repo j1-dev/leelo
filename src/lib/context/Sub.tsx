@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fetchComments, fetchSub } from "./api";
-import { useAuth } from "./ctx";
+import { fetchComments, fetchSub } from "@/lib/utils/api";
+import { useAuth } from "@/lib/context/Auth";
 
 const SubContext = createContext({
   setSubId: null,

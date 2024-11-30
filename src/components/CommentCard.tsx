@@ -1,11 +1,11 @@
 import { Text, View, Image } from "react-native";
 import { router } from "expo-router";
-import { Comment } from "@/lib/types";
-import { getShadesOfAccent } from "@/lib/colors";
+import { Comment } from "@/lib/utils/types";
+import { getShadesOfAccent } from "@/lib/utils/colors";
 import { TouchableOpacity } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { fetchCommentVote, fetchUserName, voteComment } from "@/lib/api";
-import { usePost } from "@/lib/postCtx";
+import { fetchCommentVote, fetchUserName, voteComment } from "@/lib/utils/api";
+import { usePub } from "@/lib/context/Pub";
 import { useState, useEffect } from "react";
 
 interface CommentCardProps {
@@ -30,7 +30,7 @@ export default function CommentCard({
   accent,
   isLastThreadComment,
 }: CommentCardProps) {
-  const { updateComment } = usePost();
+  const { updateComment } = usePub();
 
   // Local state to track score and user's vote
   const [localScore, setLocalScore] = useState<number>(item.score);
@@ -40,7 +40,7 @@ export default function CommentCard({
   useEffect(() => {
     const getVote = () => {
       fetchCommentVote(item.id, item.user_id).then((res) =>
-        setCurrentVote(res?.vote || null)
+        setCurrentVote(res?.vote || null),
       );
     };
 
@@ -77,8 +77,8 @@ export default function CommentCard({
 
     // Call API to update vote in the backend
     try {
-      await voteComment(item.user_id, item.id, vote);
       updateComment(item.id, { score: newScore });
+      await voteComment(item.user_id, item.id, vote);
     } catch (error) {
       // If there's an error, revert optimistic UI change
       console.error("Error voting on comment:", error);

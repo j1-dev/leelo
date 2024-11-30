@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Alert } from "react-native";
-import { Post } from "@/lib/types";
-import { useAuth } from "@/lib/ctx";
-import { fetchPost, fetchComments, submitComment, fetchSub } from "@/lib/api";
+import { Publication } from "@/lib/utils/types";
+import { useAuth } from "@/lib/context/Auth";
+import {
+  fetchPub,
+  fetchComments,
+  submitComment,
+  fetchSub,
+} from "@/lib/utils/api";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { usePost } from "@/lib/postCtx";
+import { usePub } from "@/lib/context/Pub";
 import { renderComments } from "@/components/CommentRenderer";
-import { useSub } from "@/lib/subCtx";
+import { useSub } from "@/lib/context/Sub";
 import { SafeAreaView } from "react-native";
 import CommentBar from "@/components/CommentBar";
 
 export default function Pub() {
-  const postCtx = usePost();
+  const pubCtx = usePub();
   const subCtx = useSub();
-  const [post, setPost] = useState<Post | null>(null);
+  const [publication, setPublication] = useState<Publication | null>(null);
   const [newComment, setNewComment] = useState("");
   const { user, loading, setLoading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
@@ -27,58 +32,58 @@ export default function Pub() {
     try {
       await submitComment(user.id, pub as string, newComment);
       setNewComment("");
-      postCtx.setUpdate(true);
+      pubCtx.setUpdate(true);
     } catch (error) {
       Alert.alert("Error", "Failed to submit comment");
     }
   };
 
   useEffect(() => {
-    const loadPostAndComments = async () => {
+    const loadPubAndComments = async () => {
       try {
-        postCtx.setPostId(pub);
-        const postData = await fetchPost(pub as string);
-        setPost(postData);
+        pubCtx.setPubId(pub);
+        const pubData = await fetchPub(pub as string);
+        setPublication(pubData);
       } catch (error) {
         console.error(error);
       }
     };
-    loadPostAndComments();
+    loadPubAndComments();
     setLoading(false);
   }, [pub]);
 
-  if (loading || !post)
+  if (loading || !publication)
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
 
   return (
     <View className="relative h-full bg-white">
       <Stack.Screen
         options={{
-          headerTitle: postCtx.title,
+          headerTitle: pubCtx.title,
         }}
       />
-      {post && (
+      {publication && (
         <View
           className={`w-full p-4 bg-white border-b-[1px]`}
           style={{ borderColor: subCtx.accent }}
         >
-          <Text className="text-2xl font-bold">{post.title}</Text>
-          <Text className="text-base mt-2">{post.content}</Text>
+          <Text className="text-2xl font-bold">{publication.title}</Text>
+          <Text className="text-base mt-2">{publication.content}</Text>
           <Text className="text-xs text-gray-500 mt-2">
-            {new Date(post.created_at).toLocaleString()}
+            {new Date(publication.created_at).toLocaleString()}
           </Text>
         </View>
       )}
       <SafeAreaView className="h-screen flex-1 bg-white">
-        {postCtx.comments
+        {pubCtx.comments
           ? renderComments(
-              postCtx.comments,
+              pubCtx.comments,
               null,
               sub as string,
               pub as string,
               3,
               0,
-              subCtx.accent ? subCtx.accent : "00FF00"
+              subCtx.accent ? subCtx.accent : "00FF00",
             )
           : null}
         <CommentBar

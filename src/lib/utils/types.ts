@@ -6,9 +6,9 @@ export interface Subforum {
   accent: string;
 }
 
-export interface Post {
+export interface Publication {
   id?: string;
-  subforum_id: string;
+  sub_id: string;
   user_id: string;
   title: string;
   content: string;
@@ -18,7 +18,7 @@ export interface Post {
 
 export interface Comment {
   id?: string;
-  post_id: string;
+  pub_id: string;
   user_id: string;
   content: string;
   created_at: string;

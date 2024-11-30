@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fetchComments, fetchPost } from "./api";
+import { fetchComments, fetchPub } from "@/lib/utils/api";
 
-const PostContext = createContext({
-  setPostId: null,
+const PubContext = createContext({
+  setPubId: null,
   title: "",
   comments: null,
   score: null,
@@ -10,13 +10,13 @@ const PostContext = createContext({
   updateComment: null, // New function to update a comment
 });
 
-export const usePost = () => {
-  return useContext(PostContext);
+export const usePub = () => {
+  return useContext(PubContext);
 };
 
-const PostProvider = ({ children }) => {
+const PubProvider = ({ children }) => {
   const [update, setUpdate] = useState<boolean>(true);
-  const [postId, setPostId] = useState<string>("");
+  const [PubId, setPubId] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [comments, setComments] = useState([]);
   const [score, setScore] = useState<number>(0);
@@ -38,36 +38,36 @@ const PostProvider = ({ children }) => {
     setComments(null);
     const getComments = async (id: string) => {
       try {
-        const comments = await fetchComments(postId);
+        const comments = await fetchComments(PubId);
         setComments(comments);
       } catch (error) {
         console.error(error);
       }
     };
 
-    const getPost = async (id: string) => {
+    const getPub = async (id: string) => {
       try {
-        const post = await fetchPost(id);
-        setTitle(post.title);
+        const Pub = await fetchPub(id);
+        setTitle(Pub.title);
       } catch (error) {
         console.error(error);
       }
     };
 
-    if (postId !== "") {
-      getComments(postId);
-      getPost(postId);
+    if (PubId !== "") {
+      getComments(PubId);
+      getPub(PubId);
       setUpdate(false);
     }
-  }, [postId, update]);
+  }, [PubId, update]);
 
   return (
-    <PostContext.Provider
-      value={{ setPostId, title, comments, score, setUpdate, updateComment }} // Add updateComment to context
+    <PubContext.Provider
+      value={{ setPubId, title, comments, score, setUpdate, updateComment }} // Add updateComment to context
     >
       {children}
-    </PostContext.Provider>
+    </PubContext.Provider>
   );
 };
 
-export default PostProvider;
+export default PubProvider;

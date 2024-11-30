@@ -1,6 +1,6 @@
 import { Session, User } from "@supabase/supabase-js";
 import { createContext, useState, useEffect, useContext } from "react";
-import { supabase } from "./supabase";
+import { supabase } from "@/lib/utils/supabase";
 
 const AuthContext = createContext({
   user: null,
@@ -25,7 +25,7 @@ const AuthProvider = ({ children }) => {
         setSession(session);
         setUser(session?.user || null);
         setLoading(false);
-      }
+      },
     );
     return () => {
       listener?.subscription.unsubscribe();

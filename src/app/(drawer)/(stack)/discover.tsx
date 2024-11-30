@@ -1,10 +1,9 @@
 import { renderSubs } from "@/components/SubRenderer";
-import { fetchSubs } from "@/lib/api";
-import { useAuth } from "@/lib/ctx";
-import { Subforum } from "@/lib/types";
+import { fetchSubs } from "@/lib/utils/api";
+import { useAuth } from "@/lib/context/Auth";
+import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { Button } from "@rneui/themed";
 
 export default function Home() {
   const [subs, setSubs] = useState<Subforum[]>([]);

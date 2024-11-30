@@ -1,10 +1,10 @@
 import { View, TextInput, Button, Text, Alert, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Post } from "@/lib/types";
-import { useAuth } from "@/lib/ctx";
+import { supabase } from "@/lib/utils/supabase";
+import { Publication } from "@/lib/utils/types";
+import { useAuth } from "@/lib/context/Auth";
 import { useLocalSearchParams, router } from "expo-router";
-import { submitPost } from "@/lib/api";
+import { submitPub } from "@/lib/utils/api";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -13,7 +13,7 @@ export default function CreatePost() {
   const { user, signOut, loading } = useAuth();
 
   const handleSubmit = async () => {
-    const post: Post = {
+    const pub: Publication = {
       subforum_id: sub as string,
       user_id: user.id,
       title,
@@ -22,18 +22,18 @@ export default function CreatePost() {
       created_at: new Date().toISOString(),
     };
     try {
-      await submitPost(post);
-      Alert.alert("Success", "Your post has been submitted!");
+      await submitPub(pub);
+      Alert.alert("Success", "Your publication has been submitted!");
       router.push(`s/${sub}/`); // Redirect to the desired page after submission
     } catch (error) {
-      console.error("Error submitting post:", error.message);
-      Alert.alert("Error", "There was an issue submitting your post.");
+      console.error("Error submitting publication:", error.message);
+      Alert.alert("Error", "There was an issue submitting your publication.");
     }
   };
 
   return (
     <View className="p-4">
-      <Text className="text-lg font-bold mb-2">Create a New Post</Text>
+      <Text className="text-lg font-bold mb-2">Create a New Publication</Text>
       <TextInput
         className="border p-2 mb-4 rounded"
         placeholder="Title"

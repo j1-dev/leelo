@@ -1,5 +1,5 @@
-import { supabase } from "./supabase";
-import { Subforum, Post, Comment, User } from "./types";
+import { supabase } from "@/lib/utils/supabase";
+import { Subforum, Publication, Comment, User } from "@/lib/utils/types";
 
 export const fetchUserName = async (userId: string): Promise<string> => {
   const { data, error } = await supabase
@@ -48,65 +48,67 @@ export const fetchSubs = async (): Promise<Subforum[]> => {
 
 export const fetchFollowedSubs = async (userId: string) => {
   const { data, error } = await supabase
-    .from("user_subforum_follows")
-    .select("subforum_id")
+    .from("user_follows_subforum")
+    .select("sub_id")
     .eq("user_id", userId);
   if (error) throw error;
   return data;
 };
 
-export const fetchPost = async (postId: string): Promise<Post | null> => {
+export const fetchPub = async (pubId: string): Promise<Publication | null> => {
   const { data, error } = await supabase
-    .from("posts")
+    .from("publications")
     .select("*")
-    .eq("id", postId)
+    .eq("id", pubId)
     .single();
   if (error) throw error;
   return data;
 };
 
-export const fetchPosts = async (subId: string): Promise<Post[] | null> => {
+export const fetchPubs = async (
+  subId: string,
+): Promise<Publication[] | null> => {
   const { data, error } = await supabase
-    .from("posts")
+    .from("publications")
     .select("*")
-    .eq("subforum_id", subId);
+    .eq("sub_id", subId);
   if (error) throw error;
   return data;
 };
 
-export const submitPost = async (post: Post) => {
-  const { error } = await supabase.from("posts").insert([post]);
+export const submitPub = async (pub: Publication) => {
+  const { error } = await supabase.from("publications").insert([pub]);
   if (error) throw error;
-  fetchPosts(post.subforum_id);
+  fetchPubs(pub.sub_id);
 };
 
 export const submitSub = async (sub: Subforum) => {
   const { error } = await supabase.from("subforums").insert([sub]);
   if (error) throw error;
-  fetchPosts(sub.id);
+  fetchPubs(sub.id);
 };
 
 export const followSub = async (userId: String, subId: String) => {
   const { error } = await supabase
-    .from("user_subforum_follows")
-    .insert({ user_id: userId, subforum_id: subId });
+    .from("user_follows_subforum")
+    .insert({ user_id: userId, sub_id: subId });
   if (error) throw error;
 };
 
 export const unfollowSub = async (userId: String, subId: String) => {
   const { error } = await supabase
-    .from("user_subforum_follows")
+    .from("user_follows_subforum")
     .delete()
     .eq("user_id", userId)
-    .eq("subforum_id", subId);
+    .eq("sub_id", subId);
   if (error) throw error;
 };
 
 export const fetchComments = async (
-  postId: string,
+  pubId: string,
   parentCommentId: string | null = null,
 ): Promise<Comment[]> => {
-  let query = supabase.from("comments").select("*").eq("post_id", postId);
+  let query = supabase.from("comments").select("*").eq("pub_id", pubId);
   if (!!parentCommentId) query = query.eq("parent_comment", parentCommentId);
   query = query.order("score", { ascending: false });
 
@@ -149,7 +151,7 @@ export const fetchCommentVote = async (commentId: string, userId: string) => {
 
 export const submitComment = async (
   userId: string,
-  postId: string,
+  pubId: string,
   content: string,
   parentCommentId: string | null = null,
 ): Promise<void> => {
@@ -159,7 +161,7 @@ export const submitComment = async (
 
   const { error } = await supabase.from("comments").insert([
     {
-      post_id: postId,
+      pub_id: pubId,
       content: content,
       user_id: userId,
       parent_comment: parentCommentId,
@@ -176,89 +178,71 @@ export const voteComment = async (
   commentId: string,
   vote: number,
 ) => {
-  // Step 1: Check if the user has already voted on the comment
-  const { data: existingVote, error: voteFetchError } = await supabase
-    .from("comment_votes")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("comment_id", commentId)
-    .single();
+  const supabaseError = (action: string, error: any) => {
+    throw new Error(`Error ${action}: ${error?.message}`);
+  };
 
-  if (voteFetchError && voteFetchError.code !== "PGRST116") {
-    // code PGRST116 means no rows found
-    throw new Error(`Error fetching vote: ${voteFetchError.message}`);
-  }
+  // Fetch existing vote and comment score
+  const [
+    { data: existingVote, error: voteError },
+    { data: commentData, error: commentError },
+  ] = await Promise.all([
+    supabase
+      .from("comment_votes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("comment_id", commentId)
+      .single(),
+    supabase.from("comments").select("score").eq("id", commentId).single(),
+  ]);
 
-  // Step 2: Fetch the current score of the comment
-  const { data: commentData, error: commentFetchError } = await supabase
-    .from("comments")
-    .select("score")
-    .eq("id", commentId)
-    .single();
-
-  if (commentFetchError || !commentData) {
-    throw new Error(
-      `Error fetching comment score: ${commentFetchError?.message}`,
-    );
-  }
+  if (voteError && voteError.code !== "PGRST116")
+    supabaseError("fetching vote", voteError);
+  if (commentError || !commentData)
+    supabaseError("fetching comment score", commentError);
 
   let newScore = commentData.score;
 
   if (existingVote) {
-    if (existingVote.vote === vote) {
-      // Step 3: Remove the existing vote and subtract its value from the comment score
-      const { error: deleteVoteError } = await supabase
+    const { vote: existingVoteValue } = existingVote;
+
+    if (existingVoteValue === vote) {
+      // Remove vote
+      const { error: deleteError } = await supabase
         .from("comment_votes")
         .delete()
         .eq("user_id", userId)
         .eq("comment_id", commentId);
+      if (deleteError) supabaseError("deleting vote", deleteError);
 
-      if (deleteVoteError) {
-        throw new Error(`Error deleting vote: ${deleteVoteError.message}`);
-      }
-
-      // Update the comment score
       newScore -= vote;
     } else {
-      // Step 4: Update the existing vote and adjust the comment score by the difference (vote * 2)
-      const { error: updateVoteError } = await supabase
+      // Update vote
+      const { error: updateError } = await supabase
         .from("comment_votes")
         .update({ vote })
         .eq("user_id", userId)
         .eq("comment_id", commentId);
+      if (updateError) supabaseError("updating vote", updateError);
 
-      if (updateVoteError) {
-        throw new Error(`Error updating vote: ${updateVoteError.message}`);
-      }
-
-      // Adjust the score by adding vote * 2 (reversing previous vote and adding the new one)
-      newScore += vote * 2;
+      newScore += vote * 2; // Reverse previous vote and add new vote
     }
   } else {
-    // Step 5: Insert a new vote and add the vote value to the comment score
-    const { error: insertVoteError } = await supabase
+    // Insert new vote
+    const { error: insertError } = await supabase
       .from("comment_votes")
       .insert([{ user_id: userId, comment_id: commentId, vote }]);
+    if (insertError) supabaseError("inserting vote", insertError);
 
-    if (insertVoteError) {
-      throw new Error(`Error inserting vote: ${insertVoteError.message}`);
-    }
-
-    // Update the comment score
     newScore += vote;
   }
 
-  // Step 6: Update the comment score in the comments table
-  const { error: updateScoreError } = await supabase
+  // Update comment score
+  const { error: scoreError } = await supabase
     .from("comments")
     .update({ score: newScore })
     .eq("id", commentId);
-
-  if (updateScoreError) {
-    throw new Error(
-      `Error updating comment score: ${updateScoreError.message}`,
-    );
-  }
+  if (scoreError) supabaseError("updating comment score", scoreError);
 
   return { success: true, newScore };
 };

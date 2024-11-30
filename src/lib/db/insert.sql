@@ -15,7 +15,7 @@ INSERT INTO subforums (id, name, description, accent) VALUES
 (gen_random_uuid(), 'Movies & TV Shows', 'Discuss the latest movies and TV series.', '#0000FF');
 
 -- Insert user_subforum_follows using subqueries to fetch user_id and subforum_id
-INSERT INTO user_subforum_follows (user_id, subforum_id) VALUES
+INSERT INTO user_follows_subforum (user_id, sub_id) VALUES
 ((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM subforums WHERE name = 'General Discussion')),
 ((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM subforums WHERE name = 'General Discussion')),
 ((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM subforums WHERE name = 'Tech Talk')),
@@ -28,7 +28,7 @@ INSERT INTO user_subforum_follows (user_id, subforum_id) VALUES
 ((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM subforums WHERE name = 'Books & Literature'));
 
 -- Insert moderators using subqueries to fetch user_id and subforum_id
-INSERT INTO moderators (user_id, subforum_id) VALUES
+INSERT INTO moderators (user_id, sub_id) VALUES
 ((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM subforums WHERE name = 'General Discussion')),
 ((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM subforums WHERE name = 'Tech Talk')),
 ((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM subforums WHERE name = 'Books & Literature')),
@@ -36,7 +36,7 @@ INSERT INTO moderators (user_id, subforum_id) VALUES
 ((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM subforums WHERE name = 'Movies & TV Shows'));
 
 -- Insert posts using subqueries to fetch subforum_id and user_id
-INSERT INTO posts (id, subforum_id, user_id, title, content) VALUES
+INSERT INTO publications (id, sub_id, user_id, title, content) VALUES
 (gen_random_uuid(), (SELECT id FROM subforums WHERE name = 'General Discussion'), (SELECT id FROM users WHERE username = 'alice'), 'Welcome to General Discussion', 'Let''s keep this space friendly and engaging!'),
 (gen_random_uuid(), (SELECT id FROM subforums WHERE name = 'Tech Talk'), (SELECT id FROM users WHERE username = 'bob'), 'Latest in Tech', 'Have you guys seen the new VR headset from XCorp?'),
 (gen_random_uuid(), (SELECT id FROM subforums WHERE name = 'Books & Literature'), (SELECT id FROM users WHERE username = 'carol'), 'Favorite Books', 'What are your favorite books this year?'),
@@ -44,30 +44,30 @@ INSERT INTO posts (id, subforum_id, user_id, title, content) VALUES
 (gen_random_uuid(), (SELECT id FROM subforums WHERE name = 'Movies & TV Shows'), (SELECT id FROM users WHERE username = 'eve'), 'Summer Movie Recommendations', 'What movies are you looking forward to this summer?');
 
 -- Insert comments using subqueries to fetch post_id and user_id
-INSERT INTO comments (id, post_id, user_id, content) VALUES
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Welcome to General Discussion'), (SELECT id FROM users WHERE username = 'bob'), 'Thanks for creating this space, Alice!'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Latest in Tech'), (SELECT id FROM users WHERE username = 'carol'), 'Yes, it looks amazing! I''m thinking of getting one.'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Favorite Books'), (SELECT id FROM users WHERE username = 'dave'), 'I loved "The Invisible Life of Addie LaRue"!'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Best Games of 2024'), (SELECT id FROM users WHERE username = 'eve'), 'The new RPG from QGames is a must-play!'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Summer Movie Recommendations'), (SELECT id FROM users WHERE username = 'alice'), 'I can''t wait to see the new Marvel movie!'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Welcome to General Discussion'), (SELECT id FROM users WHERE username = 'carol'), 'Looking forward to engaging discussions!'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Latest in Tech'), (SELECT id FROM users WHERE username = 'dave'), 'I read that the specs are top-notch.'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Favorite Books'), (SELECT id FROM users WHERE username = 'eve'), 'I''m currently reading "The Midnight Library" and it''s fantastic.'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Best Games of 2024'), (SELECT id FROM users WHERE username = 'alice'), 'Agreed! The gameplay looks revolutionary.'),
-(gen_random_uuid(), (SELECT id FROM posts WHERE title = 'Summer Movie Recommendations'), (SELECT id FROM users WHERE username = 'bob'), 'Marvel movies are always a blast.');
+INSERT INTO comments (id, pub_id, user_id, content) VALUES
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Welcome to General Discussion'), (SELECT id FROM users WHERE username = 'bob'), 'Thanks for creating this space, Alice!'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Latest in Tech'), (SELECT id FROM users WHERE username = 'carol'), 'Yes, it looks amazing! I''m thinking of getting one.'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Favorite Books'), (SELECT id FROM users WHERE username = 'dave'), 'I loved "The Invisible Life of Addie LaRue"!'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Best Games of 2024'), (SELECT id FROM users WHERE username = 'eve'), 'The new RPG from QGames is a must-play!'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Summer Movie Recommendations'), (SELECT id FROM users WHERE username = 'alice'), 'I can''t wait to see the new Marvel movie!'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Welcome to General Discussion'), (SELECT id FROM users WHERE username = 'carol'), 'Looking forward to engaging discussions!'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Latest in Tech'), (SELECT id FROM users WHERE username = 'dave'), 'I read that the specs are top-notch.'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Favorite Books'), (SELECT id FROM users WHERE username = 'eve'), 'I''m currently reading "The Midnight Library" and it''s fantastic.'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Best Games of 2024'), (SELECT id FROM users WHERE username = 'alice'), 'Agreed! The gameplay looks revolutionary.'),
+(gen_random_uuid(), (SELECT id FROM publications WHERE title = 'Summer Movie Recommendations'), (SELECT id FROM users WHERE username = 'bob'), 'Marvel movies are always a blast.');
 
 -- Insert post_votes using subqueries to fetch user_id and post_id
-INSERT INTO post_votes (user_id, post_id, vote) VALUES
-((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM posts WHERE title = 'Welcome to General Discussion'), 1),
-((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM posts WHERE title = 'Latest in Tech'), 1),
-((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM posts WHERE title = 'Favorite Books'), 1),
-((SELECT id FROM users WHERE username = 'dave'), (SELECT id FROM posts WHERE title = 'Best Games of 2024'), 1),
-((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM posts WHERE title = 'Summer Movie Recommendations'), 1),
-((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM posts WHERE title = 'Latest in Tech'), 1),
-((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM posts WHERE title = 'Favorite Books'), 1),
-((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM posts WHERE title = 'Best Games of 2024'), 1),
-((SELECT id FROM users WHERE username = 'dave'), (SELECT id FROM posts WHERE title = 'Summer Movie Recommendations'), 1),
-((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM posts WHERE title = 'Welcome to General Discussion'), 1);
+INSERT INTO publication_votes (user_id, pub_id, vote) VALUES
+((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM publications WHERE title = 'Welcome to General Discussion'), 1),
+((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM publications WHERE title = 'Latest in Tech'), 1),
+((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM publications WHERE title = 'Favorite Books'), 1),
+((SELECT id FROM users WHERE username = 'dave'), (SELECT id FROM publications WHERE title = 'Best Games of 2024'), 1),
+((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM publications WHERE title = 'Summer Movie Recommendations'), 1),
+((SELECT id FROM users WHERE username = 'alice'), (SELECT id FROM publications WHERE title = 'Latest in Tech'), 1),
+((SELECT id FROM users WHERE username = 'bob'), (SELECT id FROM publications WHERE title = 'Favorite Books'), 1),
+((SELECT id FROM users WHERE username = 'carol'), (SELECT id FROM publications WHERE title = 'Best Games of 2024'), 1),
+((SELECT id FROM users WHERE username = 'dave'), (SELECT id FROM publications WHERE title = 'Summer Movie Recommendations'), 1),
+((SELECT id FROM users WHERE username = 'eve'), (SELECT id FROM publications WHERE title = 'Welcome to General Discussion'), 1);
 
 -- Insert comment_votes using subqueries to fetch user_id and comment_id
 INSERT INTO comment_votes (user_id, comment_id, vote) VALUES

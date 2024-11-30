@@ -16,9 +16,9 @@ CREATE TABLE subforums (
 );
 
 -- Create user_subforum_follows table
-CREATE TABLE user_subforum_follows (
+CREATE TABLE user_follows_subforum (
     user_id UUID NOT NULL REFERENCES users(id),
-    subforum_id UUID NOT NULL REFERENCES subforums(id),
+    sub_id UUID NOT NULL REFERENCES subforums(id),
     followed_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE (user_id, subforum_id)
 );
@@ -26,15 +26,15 @@ CREATE TABLE user_subforum_follows (
 -- Create moderators table
 CREATE TABLE moderators (
     user_id UUID NOT NULL REFERENCES users(id),
-    subforum_id UUID NOT NULL REFERENCES subforums(id),
+    sub_id UUID NOT NULL REFERENCES subforums(id),
     assigned_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE (user_id, subforum_id)
 );
 
 -- Create posts table
-CREATE TABLE posts (
+CREATE TABLE publications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    subforum_id UUID NOT NULL REFERENCES subforums(id),
+    sub_id UUID NOT NULL REFERENCES subforums(id),
     user_id UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
     content TEXT,
@@ -45,7 +45,7 @@ CREATE TABLE posts (
 -- Create comments table
 CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    post_id UUID NOT NULL REFERENCES posts(id),
+    pub_id UUID NOT NULL REFERENCES publications(id),
     user_id UUID NOT NULL REFERENCES users(id),
     parent_comment UUID REFERENCES comments(id),
     content TEXT NOT NULL,
@@ -54,12 +54,12 @@ CREATE TABLE comments (
 );
 
 -- Create post_votes table
-CREATE TABLE post_votes (
+CREATE TABLE pub_votes (
     user_id UUID NOT NULL REFERENCES users(id),
-    post_id UUID NOT NULL REFERENCES posts(id),
+    pub_id UUID NOT NULL REFERENCES publications(id),
     vote INTEGER NOT NULL CHECK (vote IN (1, -1)),
     voted_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE (user_id, post_id)
+    UNIQUE (user_id, pub_id)
 );
 
 -- Create comment_votes table

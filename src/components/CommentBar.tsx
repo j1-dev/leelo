@@ -7,8 +7,8 @@ import {
   Platform,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import { usePost } from "@/lib/postCtx";
-import { Comment } from "@/lib/types";
+import { usePub } from "@/lib/context/Pub";
+import { Comment } from "@/lib/utils/types";
 
 interface CommentInputProps {
   value: string;
@@ -27,12 +27,12 @@ export default function CommentBar({
   buttonText = "Send",
   commentId,
 }: CommentInputProps) {
-  const postCtx = usePost();
+  const pubCtx = usePub();
   const hasParentComment = (): boolean => {
     if (!!commentId) {
-      const comments = postCtx.comments as Comment[];
+      const comments = pubCtx.comments as Comment[];
       const currentComment = comments?.filter(
-        (c: Comment) => c.id === commentId
+        (c: Comment) => c.id === commentId,
       );
       return currentComment?.[0]?.parent_comment !== null;
     } else {

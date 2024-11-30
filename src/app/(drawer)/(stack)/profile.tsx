@@ -10,9 +10,9 @@ import {
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { supabase } from "@/lib/supabase"; // Adjust the path as necessary
-import { User } from "@/lib/types"; // Adjust the path as necessary
-import { useAuth } from "@/lib/ctx";
+import { supabase } from "@/lib/utils/supabase"; // Adjust the path as necessary
+import { User } from "@/lib/utils/types"; // Adjust the path as necessary
+import { useAuth } from "@/lib/context/Auth";
 import { decode } from "base64-arraybuffer";
 
 export default function Profile() {

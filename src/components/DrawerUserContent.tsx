@@ -8,9 +8,9 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";
-import { User } from "@/lib/types";
-import { useAuth } from "@/lib/ctx";
-import { fetchUser } from "@/lib/api";
+import { User } from "@/lib/utils/types";
+import { useAuth } from "@/lib/context/Auth";
+import { fetchUser } from "@/lib/utils/api";
 
 export const DrawerUserContent = (props) => {
   const pathname = usePathname();

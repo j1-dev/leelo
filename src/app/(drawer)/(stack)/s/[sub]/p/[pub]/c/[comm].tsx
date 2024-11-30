@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Alert, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, Link, Stack } from "expo-router";
-import { fetchComment, submitComment } from "@/lib/api";
-import { Comment, Subforum } from "@/lib/types";
-import { useAuth } from "@/lib/ctx";
-import { usePost } from "@/lib/postCtx";
-import { useSub } from "@/lib/subCtx";
+import { fetchComment, submitComment } from "@/lib/utils/api";
+import { Comment, Subforum } from "@/lib/utils/types";
+import { useAuth } from "@/lib/context/Auth";
+import { usePub } from "@/lib/context/Pub";
+import { useSub } from "@/lib/context/Sub";
 import { renderComments } from "@/components/CommentRenderer";
 import { SafeAreaView } from "react-native";
 import CommentBar from "@/components/CommentBar";
 
 export default function Comm() {
-  const postCtx = usePost();
+  const pubCtx = usePub();
   const subCtx = useSub();
   const { comm, sub, pub } = useLocalSearchParams();
   const { user, loading } = useAuth();
@@ -49,7 +49,7 @@ export default function Comm() {
     try {
       await submitComment(user.id, pub as string, newReply, comm as string);
       setNewReply("");
-      postCtx.setUpdate(true);
+      pubCtx.setUpdate(true);
     } catch (error) {
       console.error("Error submitting reply:", error);
     }
@@ -63,7 +63,7 @@ export default function Comm() {
     <View className="bg-white relative h-full">
       <Stack.Screen
         options={{
-          headerTitle: postCtx.title,
+          headerTitle: pubCtx.title,
         }}
       />
       {parentComment && (
@@ -92,15 +92,15 @@ export default function Comm() {
         </View>
       )}
       <SafeAreaView className="h-screen flex-1 bg-white">
-        {postCtx.comments
+        {pubCtx.comments
           ? renderComments(
-              postCtx.comments,
+              pubCtx.comments,
               comm as string,
               sub as string,
               pub as string,
               3,
               0,
-              subCtx.accent
+              subCtx.accent,
             )
           : null}
         <CommentBar

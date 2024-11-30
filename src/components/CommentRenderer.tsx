@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Text, View, TouchableOpacity } from "react-native";
 import CommentCard from "./CommentCard"; // Adjust the import path based on your project structure
-import { Comment } from "@/lib/types";
+import { Comment } from "@/lib/utils/types";
 import { Link } from "expo-router";
-import { getShadesOfAccent } from "@/lib/colors";
+import { getShadesOfAccent } from "@/lib/utils/colors";
 
 const borderColor = (accent: string, depth: number): string => {
   const { lightShade, darkShade } = getShadesOfAccent(accent);
@@ -21,17 +21,15 @@ export const renderComments = (
   pub: string,
   maxDepth: number, // Parameter to limit depth
   currentDepth: number = 0, // Keep track of current depth
-  accent: string
+  accent: string,
 ) => {
   const isLastComment = (item: Comment, commentList: Comment[]): boolean => {
     return item === commentList[commentList.length - 1];
   };
 
   const filteredList = commentList.filter(
-    (comment) => comment.parent_comment === parentId
+    (comment) => comment.parent_comment === parentId,
   );
-
-  console.log(filteredList);
 
   return (
     <FlatList
@@ -64,7 +62,7 @@ export const renderComments = (
               pub,
               maxDepth,
               currentDepth + 1,
-              accent
+              accent,
             )
           ) : (
             <TouchableOpacity className="ml-4 mt-2">

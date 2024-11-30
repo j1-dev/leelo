@@ -1,22 +1,22 @@
 import { Stack } from "expo-router";
 import "@/global.css";
-import AuthProvider from "@/lib/ctx";
-import PostProvider from "@/lib/postCtx";
-import SubProvider from "@/lib/subCtx";
+import AuthProvider from "@/lib/context/Auth";
+import PubProvider from "@/lib/context/Pub";
+import SubProvider from "@/lib/context/Sub";
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
   return (
     <AuthProvider>
       <SubProvider>
-        <PostProvider>
+        <PubProvider>
           <Stack
             screenOptions={{
               animation: "slide_from_right",
               headerShown: false,
             }}
           />
-        </PostProvider>
+        </PubProvider>
       </SubProvider>
     </AuthProvider>
   );

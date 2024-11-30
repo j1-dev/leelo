@@ -1,8 +1,8 @@
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { supabase } from "./supabase";
+import { supabase } from "@/lib/utils/supabase";
 import { decode } from "base64-arraybuffer";
-import { User } from "./types";
+import { User } from "@/lib/utils/types";
 
 const onSelectImage = async (userId: string) => {
   const options: ImagePicker.ImagePickerOptions = {
