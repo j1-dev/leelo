@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Alert, View, Text } from "react-native";
 import { supabase } from "@/lib/utils/supabase";
 import { Button, Input, Switch } from "@rneui/themed";
-import { decode } from "base64-arraybuffer";
 
 export default function Auth() {
   const [email, setEmail] = useState("");

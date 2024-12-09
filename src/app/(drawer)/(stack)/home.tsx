@@ -4,11 +4,10 @@ import { useAuth } from "@/lib/context/Auth";
 import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { Button } from "@rneui/themed";
 
 export default function Home() {
   const [subs, setSubs] = useState<Subforum[]>([]);
-  const { user, signOut, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     fetchFollowedSubs(user.id)

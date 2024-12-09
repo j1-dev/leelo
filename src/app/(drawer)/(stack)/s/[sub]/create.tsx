@@ -1,6 +1,5 @@
 import { View, TextInput, Button, Text, Alert, ScrollView } from "react-native";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/utils/supabase";
+import { useState } from "react";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { useLocalSearchParams, router } from "expo-router";
@@ -14,7 +13,7 @@ export default function CreatePost() {
 
   const handleSubmit = async () => {
     const pub: Publication = {
-      subforum_id: sub as string,
+      sub_id: sub as string,
       user_id: user.id,
       title,
       content,

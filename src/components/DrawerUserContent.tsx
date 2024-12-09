@@ -20,7 +20,7 @@ export const DrawerUserContent = (props) => {
 
   useEffect(() => {
     const getUser = async () => {
-      fetchUser(user.id).then((res) => {
+      fetchUser(user.id).then((res: any) => {
         setUserdata(res);
       });
     };

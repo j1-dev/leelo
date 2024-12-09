@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Button } from "@rneui/themed";
 import { usePub } from "@/lib/context/Pub";
 import { Comment } from "@/lib/utils/types";
