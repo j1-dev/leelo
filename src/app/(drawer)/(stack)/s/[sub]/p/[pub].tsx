@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ActivityIndicator, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
+} from "react-native";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { fetchPub, submitComment, fetchSub } from "@/lib/utils/api";
@@ -57,6 +64,8 @@ export default function Pub() {
   if (loading || !publication)
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
 
+  console.log(publication.img_url);
+
   return (
     <View className="relative h-full bg-white">
       <Stack.Screen
@@ -66,24 +75,24 @@ export default function Pub() {
       />
       {publication && (
         <View
-          className={`w-full p-4 bg-white border-b-[1px]`}
+          className={`w-full h-60 p-4 bg-white border-b-[1px]`}
           style={{ borderColor: subCtx.accent }}
           ref={commentRef}
           onLayout={handlePublicationLayout}
         >
-          <Text className="text-2xl font-bold">{publication.title}</Text>
-          <Text className="text-base mt-2">{publication.content}</Text>
-          <Text className="text-xs text-gray-500 mt-2">
-            {new Date(publication.created_at).toLocaleString()}
-          </Text>
-          {publication.img_url ? (
-            <Image
-              style={{ width: 200, height: 200, resizeMode: "cover" }}
-              src={publication.img_url}
-            />
-          ) : (
-            <ActivityIndicator size={200} color="#0000ff" className="mt-5" />
-          )}
+          <ScrollView>
+            <Text className="text-2xl font-bold">{publication.title}</Text>
+            <Text className="text-base mt-2">{publication.content}</Text>
+            <Text className="text-xs text-gray-500 mt-2">
+              {new Date(publication.created_at).toLocaleString()}
+            </Text>
+            {!!publication.img_url && (
+              <Image
+                style={{ width: 200, height: 200, resizeMode: "cover" }}
+                src={publication.img_url}
+              />
+            )}
+          </ScrollView>
         </View>
       )}
       <SafeAreaView className="h-screen flex-1 bg-white">

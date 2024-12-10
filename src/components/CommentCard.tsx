@@ -1,8 +1,7 @@
-import { Text, View, Image } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { Comment } from "@/lib/utils/types";
 import { getShadesOfAccent } from "@/lib/utils/colors";
-import { TouchableOpacity } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { fetchCommentVote, fetchUserName, voteComment } from "@/lib/utils/api";
 import { usePub } from "@/lib/context/Pub";

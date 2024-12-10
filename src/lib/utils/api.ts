@@ -149,6 +149,22 @@ export const fetchCommentVote = async (commentId: string, userId: string) => {
   return data;
 };
 
+export const fetchPublicationVote = async (pubId: string, userId: string) => {
+  const { data, error } = await supabase
+    .from("publication_votes")
+    .select("vote")
+    .eq("user_id", userId)
+    .eq("pub_id", pubId)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    // code PGRST116 means no rows found
+    throw new Error(`Error fetching vote: ${error.message}`);
+  }
+
+  return data;
+};
+
 export const submitComment = async (
   userId: string,
   pubId: string,
@@ -242,6 +258,79 @@ export const voteComment = async (
     .from("comments")
     .update({ score: newScore })
     .eq("id", commentId);
+  if (scoreError) supabaseError("updating comment score", scoreError);
+
+  return { success: true, newScore };
+};
+
+export const votePublication = async (
+  userId: string,
+  pubId: string,
+  vote: number,
+) => {
+  const supabaseError = (action: string, error: any) => {
+    throw new Error(`Error ${action}: ${error?.message}`);
+  };
+
+  // Fetch existing vote and comment score
+  const [
+    { data: existingVote, error: voteError },
+    { data: pubData, error: pubError },
+  ] = await Promise.all([
+    supabase
+      .from("publication_votes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("pub_id", pubId)
+      .single(),
+    supabase.from("publications").select("score").eq("id", pubId).single(),
+  ]);
+
+  if (voteError && voteError.code !== "PGRST116")
+    supabaseError("fetching vote", voteError);
+  if (pubError || !pubData) supabaseError("fetching comment score", pubError);
+
+  let newScore = pubData.score;
+
+  if (existingVote) {
+    const { vote: existingVoteValue } = existingVote;
+
+    if (existingVoteValue === vote) {
+      // Remove vote
+      const { error: deleteError } = await supabase
+        .from("publication_votes")
+        .delete()
+        .eq("user_id", userId)
+        .eq("pub_id", pubId);
+      if (deleteError) supabaseError("deleting vote", deleteError);
+
+      newScore -= vote;
+    } else {
+      // Update vote
+      const { error: updateError } = await supabase
+        .from("publication_votes")
+        .update({ vote })
+        .eq("user_id", userId)
+        .eq("pub_id", pubId);
+      if (updateError) supabaseError("updating vote", updateError);
+
+      newScore += vote * 2; // Reverse previous vote and add new vote
+    }
+  } else {
+    // Insert new vote
+    const { error: insertError } = await supabase
+      .from("publication_votes")
+      .insert([{ user_id: userId, pub_id: pubId, vote }]);
+    if (insertError) supabaseError("inserting vote", insertError);
+
+    newScore += vote;
+  }
+
+  // Update comment score
+  const { error: scoreError } = await supabase
+    .from("publications")
+    .update({ score: newScore })
+    .eq("id", pubId);
   if (scoreError) supabaseError("updating comment score", scoreError);
 
   return { success: true, newScore };
