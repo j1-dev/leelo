@@ -11,6 +11,7 @@ interface CommentInputProps {
   placeholder?: string;
   buttonText?: string;
   commentId?: string;
+  pubHeight?: number;
 }
 
 export default function CommentBar({
@@ -20,6 +21,7 @@ export default function CommentBar({
   placeholder = "Write a comment...",
   buttonText = "Send",
   commentId,
+  pubHeight,
 }: CommentInputProps) {
   const pubCtx = usePub();
   const hasParentComment = (): boolean => {
@@ -36,7 +38,7 @@ export default function CommentBar({
   return (
     <KeyboardAvoidingView
       className="bottom-0 absolute w-full p-4 bg-white rounded-lg h-28"
-      keyboardVerticalOffset={hasParentComment() ? 240 : 140}
+      keyboardVerticalOffset={pubHeight + 60}
       behavior={Platform.OS === "ios" ? "position" : undefined}
     >
       <TextInput

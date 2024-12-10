@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Alert } from "react-native";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
-import {
-  fetchPub,
-  fetchComments,
-  submitComment,
-  fetchSub,
-} from "@/lib/utils/api";
+import { fetchPub, submitComment, fetchSub } from "@/lib/utils/api";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { usePub } from "@/lib/context/Pub";
 import { renderComments } from "@/components/CommentRenderer";
@@ -22,6 +17,8 @@ export default function Pub() {
   const [newComment, setNewComment] = useState("");
   const { user, loading, setLoading } = useAuth();
   const { sub, pub } = useLocalSearchParams();
+  const [publicationHeight, setPublicationHeight] = useState(0);
+  const commentRef = useRef();
 
   const handleCommentSubmit = async () => {
     if (newComment.trim().length === 0) {
@@ -52,6 +49,11 @@ export default function Pub() {
     setLoading(false);
   }, [pub]);
 
+  const handlePublicationLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setPublicationHeight(height);
+  };
+
   if (loading || !publication)
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
 
@@ -66,6 +68,8 @@ export default function Pub() {
         <View
           className={`w-full p-4 bg-white border-b-[1px]`}
           style={{ borderColor: subCtx.accent }}
+          ref={commentRef}
+          onLayout={handlePublicationLayout}
         >
           <Text className="text-2xl font-bold">{publication.title}</Text>
           <Text className="text-base mt-2">{publication.content}</Text>
@@ -90,6 +94,7 @@ export default function Pub() {
           value={newComment}
           onChangeText={setNewComment}
           onSubmit={handleCommentSubmit}
+          pubHeight={publicationHeight}
         />
       </SafeAreaView>
     </View>

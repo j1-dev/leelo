@@ -1,5 +1,11 @@
 {
   "expo": {
+    "entryPoint": "./src/app/_layout.tsx",
+    "extra": {
+      "router": {
+        "initialRoute": "/home"
+      }
+    },
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "orientation": "default",

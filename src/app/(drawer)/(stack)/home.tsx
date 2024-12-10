@@ -4,10 +4,12 @@ import { useAuth } from "@/lib/context/Auth";
 import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function Home() {
   const [subs, setSubs] = useState<Subforum[]>([]);
   const { user, loading } = useAuth();
+  const { replace } = useRouter();
 
   useEffect(() => {
     fetchFollowedSubs(user.id)

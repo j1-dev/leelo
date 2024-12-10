@@ -126,6 +126,24 @@ export const DrawerUserContent = (props) => {
           router.push("/settings");
         }}
       />
+
+      <DrawerItem
+        icon={({ color, size }) => (
+          <Ionicons name="log-out" size={size} color="#f00" />
+        )}
+        label={"Settings"}
+        labelStyle={{
+          marginLeft: -20,
+          fontSize: 18,
+          color: pathname == "/settings" ? "#fff" : "#000",
+        }}
+        style={{
+          backgroundColor: pathname == "/settings" ? "#333" : "#fff",
+        }}
+        onPress={() => {
+          router.push("/settings");
+        }}
+      />
     </DrawerContentScrollView>
   );
 };

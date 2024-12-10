@@ -20,9 +20,18 @@ export default function Auth() {
       email: email,
       password: password,
     });
-    if (error) Alert.alert(error.message);
+
     setLoading(false);
+
+    if (error) {
+      Alert.alert(error.message);
+      return;
+    }
+
     router.push("/home");
+    setTimeout(() => {
+      router.replace("/home");
+    }, 0);
   };
 
   const signUpWithEmail = async () => {

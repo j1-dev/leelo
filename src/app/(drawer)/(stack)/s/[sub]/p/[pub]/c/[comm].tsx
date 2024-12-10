@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Alert, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, Link, Stack } from "expo-router";
 import { fetchComment, submitComment } from "@/lib/utils/api";
@@ -15,11 +15,13 @@ export default function Comm() {
   const subCtx = useSub();
   const { comm, sub, pub } = useLocalSearchParams();
   const { user, loading } = useAuth();
+  const [commentHeight, setCommentHeight] = useState();
   const [comment, setComment] = useState<Comment | null>(null);
   const [parentComment, setParentComment] = useState<Comment | null>(null);
   const [subforum, setSubforum] = useState<Subforum | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [newReply, setNewReply] = useState("");
+  const commentRef = useRef();
 
   useEffect(() => {
     const loadCommentAndReplies = async () => {
@@ -55,6 +57,11 @@ export default function Comm() {
     }
   };
 
+  const handleCommentLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setCommentHeight(height);
+  };
+
   if (loading || isLoading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
@@ -66,31 +73,33 @@ export default function Comm() {
           headerTitle: pubCtx.title,
         }}
       />
-      {parentComment && (
-        <Link href={`s/${sub}/p/${pub}/c/${parentComment.id}`}>
-          <View className="mb-4 p-4 bg-white rounded-lg">
-            <Text className="text-lg font-bold">{parentComment.content}</Text>
-            <Text className="text-xs text-gray-500 mt-2">
-              by User {parentComment.user_id}
-            </Text>
-          </View>
-        </Link>
-      )}
-      {comment && (
-        <View
-          className="mt-4 p-4 w-full bg-white border-b-[1px]"
-          style={{ borderColor: subCtx.accent }}
-        >
-          <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
-            <View>
-              <Text className="text-2xl font-bold">{comment.content}</Text>
+      <View ref={commentRef} onLayout={handleCommentLayout}>
+        {parentComment && (
+          <Link href={`s/${sub}/p/${pub}/c/${parentComment.id}`}>
+            <View className="mb-4 p-4 bg-white rounded-lg">
+              <Text className="text-lg font-bold">{parentComment.content}</Text>
               <Text className="text-xs text-gray-500 mt-2">
-                by User {comment.user_id}
+                by User {parentComment.user_id}
               </Text>
             </View>
           </Link>
-        </View>
-      )}
+        )}
+        {comment && (
+          <View
+            className="mt-4 p-4 w-full bg-white border-b-[1px]"
+            style={{ borderColor: subCtx.accent }}
+          >
+            <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
+              <View>
+                <Text className="text-2xl font-bold">{comment.content}</Text>
+                <Text className="text-xs text-gray-500 mt-2">
+                  by User {comment.user_id}
+                </Text>
+              </View>
+            </Link>
+          </View>
+        )}
+      </View>
       <SafeAreaView className="h-screen flex-1 bg-white">
         {pubCtx.comments
           ? renderComments(
@@ -108,6 +117,7 @@ export default function Comm() {
           onChangeText={setNewReply}
           onSubmit={handleReplySubmit}
           commentId={comm as string}
+          pubHeight={commentHeight}
         />
       </SafeAreaView>
     </View>

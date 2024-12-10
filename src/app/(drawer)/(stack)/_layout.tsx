@@ -4,6 +4,7 @@ import {
   Redirect,
   Stack,
   useNavigation,
+  usePathname,
   useRouter,
   useSegments,
 } from "expo-router";
@@ -79,9 +80,23 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
+          name="create"
+          options={{
+            title: "Create",
+            animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
           name="discover"
           options={{
             title: "Discover",
+            animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
+          name="profile"
+          options={{
+            title: "Profile",
             animation: "slide_from_right",
           }}
         />

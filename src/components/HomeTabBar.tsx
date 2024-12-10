@@ -1,11 +1,12 @@
-import { useRouter, useSegments } from "expo-router";
+import { usePathname, useRouter, useSegments } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import { Text, TouchableOpacity, Animated } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 export default function HomeTabBar({ show }: { show: boolean }) {
   const router = useRouter();
   const segments = useSegments();
+  const path = usePathname();
 
   const activeTab = `/${segments[segments.length - 1]}`; // Get the current route
 
@@ -34,6 +35,7 @@ export default function HomeTabBar({ show }: { show: boolean }) {
       duration: 300, // Same duration for both directions
       useNativeDriver: true, // Use native driver for better performance
     }).start();
+    console.log(path);
   }, [show]);
 
   return (
@@ -62,7 +64,7 @@ export default function HomeTabBar({ show }: { show: boolean }) {
           onPress={() => router.push(tab.route)}
         >
           <Feather
-            name={tab.icon}
+            name={(tab.icon as "home") || "search" || "plus-square" || "user"}
             size={24}
             color={activeTab === tab.route ? "#007AFF" : "#8E8E93"}
           />

@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation, useRouter } from "expo-router";
 
