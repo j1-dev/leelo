@@ -1,4 +1,11 @@
-import { View, TextInput, Button, Text, Alert, ScrollView } from "react-native";
+import {
+  View,
+  TextInput,
+  Text,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useState } from "react";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
@@ -20,33 +27,54 @@ export default function CreatePost() {
       score: 0,
       created_at: new Date().toISOString(),
     };
-    try {
-      await submitPub(pub);
-      Alert.alert("Success", "Your publication has been submitted!");
-      router.push(`s/${sub}/`); // Redirect to the desired page after submission
-    } catch (error) {
-      console.error("Error submitting publication:", error.message);
-      Alert.alert("Error", "There was an issue submitting your publication.");
+    if (title !== "" && content !== "") {
+      try {
+        await submitPub(pub);
+        Alert.alert("Success", "Your publication has been submitted!");
+        router.push(`s/${sub}/`); // Redirect to the desired page after submission
+      } catch (error) {
+        console.error("Error submitting publication:", error.message);
+        Alert.alert("Error", "There was an issue submitting your publication.");
+      }
     }
   };
 
   return (
-    <View className="p-4">
-      <Text className="text-lg font-bold mb-2">Create a New Publication</Text>
-      <TextInput
-        className="border p-2 mb-4 rounded"
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        className="border p-2 mb-4 rounded h-40"
-        placeholder="Content"
-        value={content}
-        onChangeText={setContent}
-        multiline
-      />
-      <Button title="Submit" onPress={handleSubmit} />
+    <View className="flex-1 bg-white h-full pb-20">
+      <View className="flex-1 px-2">
+        <Text className="text-xl font-bold mb-2">Create a New Publication</Text>
+        <View className="border border-gray-500 rounded-xl mb-2">
+          <TextInput
+            className="text-xl ml-3"
+            placeholder="Title"
+            value={title}
+            onChangeText={setTitle}
+          />
+        </View>
+        <View className="border border-gray-500 rounded-xl mb-2">
+          <TextInput
+            className="h-40 text-xl ml-3"
+            placeholder="Content"
+            value={content}
+            onChangeText={setContent}
+            multiline
+          />
+        </View>
+      </View>
+      <View className="mt-auto mx-3">
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
+        >
+          <Text className="text-xl font-bold text-white">Upload Image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
+        >
+          <Text className="text-xl font-bold text-white">Submit</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

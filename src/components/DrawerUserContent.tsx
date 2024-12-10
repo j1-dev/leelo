@@ -16,7 +16,7 @@ export const DrawerUserContent = (props) => {
   const pathname = usePathname();
 
   const [userdata, setUserdata] = useState<User | null>(null);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const getUser = async () => {
@@ -24,126 +24,131 @@ export const DrawerUserContent = (props) => {
         setUserdata(res);
       });
     };
-
     getUser();
   }, [pathname]);
 
   return (
-    <DrawerContentScrollView {...props}>
-      <View className="flex-row px-2.5 py-5 border-b border-gray-300 mb-2.5">
-        <Image
-          source={{ uri: userdata?.profile_pic }}
-          width={80}
-          height={80}
-          className="rounded-full"
-        />
-        <View className="mt-6 ml-2.5">
-          <Text className="text-lg font-bold">{userdata?.username}</Text>
-          <Text className="text-lg italic underline">{userdata?.email}</Text>
+    <View className="flex-1 pb-4">
+      <DrawerContentScrollView {...props} className="flex-1">
+        <View className="flex-row px-2.5 py-5 border-b border-gray-300 mb-2.5">
+          <Image
+            source={{ uri: userdata?.profile_pic }}
+            width={80}
+            height={80}
+            className="rounded-full"
+          />
+          <View className="mt-6 ml-2.5">
+            <Text className="text-lg font-bold">{userdata?.username}</Text>
+            <Text className="text-lg italic underline">{userdata?.email}</Text>
+          </View>
         </View>
-      </View>
-      <DrawerItem
-        icon={({ color, size }) => (
-          <Feather
-            name="list"
-            size={size}
-            color={pathname == "/feed" ? "#fff" : "#000"}
-          />
-        )}
-        label={"Feed"}
-        labelStyle={{
-          marginLeft: -20,
-          fontSize: 18,
-          color: pathname == "/feed" ? "#fff" : "#000",
-        }}
-        style={{
-          backgroundColor: pathname == "/discover" ? "#333" : "#fff",
-        }}
-        onPress={() => {
-          router.push("/discover");
-        }}
-      />
-      <DrawerItem
-        icon={({ color, size }) => (
-          <AntDesign
-            name="user"
-            size={size}
-            color={pathname == "/profile" ? "#fff" : "#000"}
-          />
-        )}
-        label={"Profile"}
-        labelStyle={{
-          marginLeft: -20,
-          fontSize: 18,
-          color: pathname == "/profile" ? "#fff" : "#000",
-        }}
-        style={{
-          backgroundColor: pathname == "/profile" ? "#333" : "#fff",
-        }}
-        onPress={() => {
-          router.push("/profile");
-        }}
-      />
-      <DrawerItem
-        icon={({ color, size }) => (
-          <MaterialIcons
-            name="favorite-outline"
-            size={size}
-            color={pathname == "/favourites" ? "#fff" : "#000"}
-          />
-        )}
-        label={"Favourites"}
-        labelStyle={{
-          marginLeft: -20,
-          fontSize: 18,
-          color: pathname == "/favourites" ? "#fff" : "#000",
-        }}
-        style={{
-          backgroundColor: pathname == "/favourites" ? "#333" : "#fff",
-        }}
-        onPress={() => {
-          router.push("/favourites");
-        }}
-      />
-      <DrawerItem
-        icon={({ color, size }) => (
-          <Ionicons
-            name="settings-outline"
-            size={size}
-            color={pathname == "/settings" ? "#fff" : "#000"}
-          />
-        )}
-        label={"Settings"}
-        labelStyle={{
-          marginLeft: -20,
-          fontSize: 18,
-          color: pathname == "/settings" ? "#fff" : "#000",
-        }}
-        style={{
-          backgroundColor: pathname == "/settings" ? "#333" : "#fff",
-        }}
-        onPress={() => {
-          router.push("/settings");
-        }}
-      />
+        <DrawerItem
+          icon={({ color, size }) => (
+            <Feather
+              name="home"
+              size={size}
+              color={pathname === "/home" ? "#fff" : "#000"}
+            />
+          )}
+          label={"Home"}
+          labelStyle={{
+            marginLeft: -20,
+            fontSize: 18,
+            color: pathname === "/home" ? "#fff" : "#000",
+          }}
+          style={{
+            backgroundColor: pathname === "/home" ? "#333" : "#fff",
+          }}
+          onPress={() => {
+            router.push("/discover");
+          }}
+        />
 
+        <DrawerItem
+          icon={({ color, size }) => (
+            <AntDesign
+              name="user"
+              size={size}
+              color={pathname === "/profile" ? "#fff" : "#000"}
+            />
+          )}
+          label={"Profile"}
+          labelStyle={{
+            marginLeft: -20,
+            fontSize: 18,
+            color: pathname === "/profile" ? "#fff" : "#000",
+          }}
+          style={{
+            backgroundColor: pathname === "/profile" ? "#333" : "#fff",
+          }}
+          onPress={() => {
+            router.push("/profile");
+          }}
+        />
+
+        <DrawerItem
+          icon={({ color, size }) => (
+            <MaterialIcons
+              name="favorite-outline"
+              size={size}
+              color={pathname === "/favourites" ? "#fff" : "#000"}
+            />
+          )}
+          label={"Favourites"}
+          labelStyle={{
+            marginLeft: -20,
+            fontSize: 18,
+            color: pathname === "/favourites" ? "#fff" : "#000",
+          }}
+          style={{
+            backgroundColor: pathname === "/favourites" ? "#333" : "#fff",
+          }}
+          onPress={() => {
+            router.push("/favourites");
+          }}
+        />
+
+        <DrawerItem
+          icon={({ color, size }) => (
+            <Ionicons
+              name="settings-outline"
+              size={size}
+              color={pathname === "/settings" ? "#fff" : "#000"}
+            />
+          )}
+          label={"Settings"}
+          labelStyle={{
+            marginLeft: -20,
+            fontSize: 18,
+            color: pathname === "/settings" ? "#fff" : "#000",
+          }}
+          style={{
+            backgroundColor: pathname === "/settings" ? "#333" : "#fff",
+          }}
+          onPress={() => {
+            router.push("/settings");
+          }}
+        />
+        <View className="h-0 border-b-[1px] border-gray-300" />
+      </DrawerContentScrollView>
       <DrawerItem
         icon={({ color, size }) => (
-          <Ionicons name="log-out" size={size} color="#f00" />
+          <Ionicons name="log-out" size={size} color="#fff" />
         )}
-        label={"Settings"}
+        label={"Log-Out"}
         labelStyle={{
           marginLeft: -20,
           fontSize: 18,
-          color: pathname == "/settings" ? "#fff" : "#000",
+          color: "#fff",
         }}
         style={{
-          backgroundColor: pathname == "/settings" ? "#333" : "#fff",
+          backgroundColor: "#c11",
+          marginTop: "auto",
         }}
         onPress={() => {
-          router.push("/settings");
+          signOut();
         }}
       />
-    </DrawerContentScrollView>
+    </View>
   );
 };

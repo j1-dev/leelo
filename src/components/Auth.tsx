@@ -127,7 +127,7 @@ export default function Auth() {
             buttonStyle={
               !isEnabled
                 ? { backgroundColor: "#2196F3" }
-                : { backgroundColor: "#4CAF50" }
+                : { backgroundColor: "#22C55E" }
             }
             containerStyle={{ borderRadius: 8 }}
           />
