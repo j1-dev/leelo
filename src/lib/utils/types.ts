@@ -14,7 +14,7 @@ export interface Publication {
   content: string;
   score: number;
   created_at: string;
-  img_id?: string;
+  img_url?: string;
 }
 
 export interface Comment {

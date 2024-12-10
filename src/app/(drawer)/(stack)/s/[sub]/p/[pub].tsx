@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ActivityIndicator, Alert } from "react-native";
+import { View, Text, ActivityIndicator, Alert, Image } from "react-native";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { fetchPub, submitComment, fetchSub } from "@/lib/utils/api";
@@ -76,6 +76,14 @@ export default function Pub() {
           <Text className="text-xs text-gray-500 mt-2">
             {new Date(publication.created_at).toLocaleString()}
           </Text>
+          {publication.img_url ? (
+            <Image
+              style={{ width: 200, height: 200, resizeMode: "cover" }}
+              src={publication.img_url}
+            />
+          ) : (
+            <ActivityIndicator size={200} color="#0000ff" className="mt-5" />
+          )}
         </View>
       )}
       <SafeAreaView className="h-screen flex-1 bg-white">

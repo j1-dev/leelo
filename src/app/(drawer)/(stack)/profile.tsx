@@ -17,7 +17,6 @@ import { decode } from "base64-arraybuffer";
 
 export default function Profile() {
   const { user } = useAuth();
-  const [userData, setUserData] = useState<User | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [profilePic, setProfilePic] = useState("");

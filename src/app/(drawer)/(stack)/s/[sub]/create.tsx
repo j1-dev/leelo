@@ -3,20 +3,48 @@ import {
   TextInput,
   Text,
   Alert,
-  ScrollView,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { useState } from "react";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { useLocalSearchParams, router } from "expo-router";
 import { submitPub } from "@/lib/utils/api";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { supabase } from "@/lib/utils/supabase"; // Import Supabase client
+import { decode } from "base64-arraybuffer";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [imageUri, setImageUri] = useState<string | null>(null); // State for the selected image URI
   const { sub } = useLocalSearchParams();
   const { user, signOut, loading } = useAuth();
+
+  const handleImagePick = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission denied",
+        "You need to grant permission to access the gallery.",
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const img = result.assets[0];
+      setImageUri(img.uri); // Set the image URI to display
+    }
+  };
 
   const handleSubmit = async () => {
     const pub: Publication = {
@@ -27,6 +55,42 @@ export default function CreatePost() {
       score: 0,
       created_at: new Date().toISOString(),
     };
+
+    if (imageUri) {
+      try {
+        const publicationId = pub.created_at;
+        const fileName = `image.jpg`;
+        const fileUri = imageUri;
+        const base64 = await FileSystem.readAsStringAsync(fileUri, {
+          encoding: "base64",
+        });
+        const filePath = `${publicationId}/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from("publication_images")
+          .upload(filePath, decode(base64), {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: "image/jpeg",
+          });
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Get the public URL of the uploaded image
+        const { data: urlData, error: urlError } = await supabase.storage
+          .from("publication_images")
+          .createSignedUrl(data.path, 60 * 60 * 24 * 7);
+        pub.img_url = urlData.signedUrl; // Add image URL to publication data
+      } catch (uploadError) {
+        console.error("Error uploading image:", uploadError.message);
+        Alert.alert("Error", "There was an issue uploading the image.");
+        return;
+      }
+    }
+
+    // Proceed with submission if title and content are not empty
     if (title !== "" && content !== "") {
       try {
         await submitPub(pub);
@@ -36,11 +100,13 @@ export default function CreatePost() {
         console.error("Error submitting publication:", error.message);
         Alert.alert("Error", "There was an issue submitting your publication.");
       }
+    } else {
+      Alert.alert("Error", "Title and Content are required!");
     }
   };
 
   return (
-    <View className="flex-1 bg-white h-full pb-20">
+    <View className="flex-1 bg-white h-full pb-4">
       <View className="flex-1 px-2">
         <Text className="text-xl font-bold mb-2">Create a New Publication</Text>
         <View className="border border-gray-500 rounded-xl mb-2">
@@ -60,14 +126,25 @@ export default function CreatePost() {
             multiline
           />
         </View>
-      </View>
-      <View className="mt-auto mx-3">
+
+        {imageUri && (
+          <View className="mb-4">
+            <Image
+              source={{ uri: imageUri }}
+              style={{ width: 100, height: 100, borderRadius: 8 }}
+            />
+          </View>
+        )}
+
         <TouchableOpacity
-          onPress={handleSubmit}
+          onPress={handleImagePick}
           className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
         >
           <Text className="text-xl font-bold text-white">Upload Image</Text>
         </TouchableOpacity>
+      </View>
+
+      <View className="mt-auto mx-3">
         <TouchableOpacity
           onPress={handleSubmit}
           className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"

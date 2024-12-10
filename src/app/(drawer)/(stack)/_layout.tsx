@@ -19,9 +19,10 @@ export default function AppLayout() {
   const router = useRouter();
   const segments = useSegments();
   const showDrawerButton = segments[segments.length - 1] === "home";
-  const showTabBar = ["home", "discover", "create", "profile"].includes(
-    segments[segments.length - 1],
-  );
+  const showTabBar =
+    ["home", "discover", "create", "profile"].includes(
+      segments[segments.length - 1],
+    ) && segments.length <= 3; // Ejemplo: pathname -> /home segments -> [(drawer),(stack),home]
   const nav = useNavigation<DrawerNavigationProp<{}>>();
   const { user, session, loading } = useAuth();
 
