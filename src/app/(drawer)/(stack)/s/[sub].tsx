@@ -33,7 +33,7 @@ export default function Sub() {
           headerTitle: subCtx.name,
         }}
       />
-      {renderPubs(subCtx.pubs, sub as string)}
+      {renderPubs(subCtx.pubs, subCtx.accent)}
       <View className="absolute z-50 bottom-36 left-6">
         <Button
           onPress={() => router.push(`/s/${sub}/create`)}

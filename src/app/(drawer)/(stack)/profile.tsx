@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,17 @@ import { supabase } from "@/lib/utils/supabase"; // Adjust the path as necessary
 import { User } from "@/lib/utils/types"; // Adjust the path as necessary
 import { useAuth } from "@/lib/context/Auth";
 import { decode } from "base64-arraybuffer";
+import { fetchUser } from "@/lib/utils/api";
 
 export default function Profile() {
   const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [profilePic, setProfilePic] = useState("");
+
+  useEffect(() => {
+    fetchUser(user.id).then((res) => setProfilePic(res.profile_pic));
+  }, []);
 
   // Handle profile picture change
   const handleChangeProfilePic = async () => {

@@ -106,6 +106,50 @@ export const fetchPubs = async (
   return data;
 };
 
+export const fetchFollowedPubs = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("user_follows_subforum")
+      .select("sub_id")
+      .eq("user_id", userId);
+
+    if (error)
+      throw new Error(`Error fetching followed subforums: ${error.message}`);
+    if (!data || data.length === 0) return []; // No followed subforums
+
+    const subforumIds = data.map((follow) => follow.sub_id);
+
+    const { data: publications, error: pubsError } = await supabase
+      .from("publications")
+      .select(
+        `
+        *,
+        subforums(accent)
+      `,
+      )
+      .in("sub_id", subforumIds);
+
+    if (pubsError)
+      throw new Error(`Error fetching publications: ${pubsError.message}`);
+    return publications.map((pub) => ({
+      pub: {
+        id: pub.id,
+        sub_id: pub.sub_id,
+        user_id: pub.user_id,
+        title: pub.title,
+        content: pub.content,
+        score: pub.score,
+        created_at: pub.created_at,
+        img_url: pub.img_url,
+      },
+      accent: pub.subforums.accent,
+    }));
+  } catch (error) {
+    console.error("Error fetching followed publications:", error);
+    throw error;
+  }
+};
+
 export const submitPub = async (pub: Publication) => {
   const { error } = await supabase.from("publications").insert([pub]);
   if (error) throw error;

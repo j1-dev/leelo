@@ -3,13 +3,13 @@ import { FlatList, View, Text } from "react-native";
 import { Publication } from "@/lib/utils/types";
 import PubCard from "./PubCard"; // Adjust the import path based on your project structure
 
-export const renderPubs = (pubList: Publication[], sub: string) => (
+export const renderPubs = (pubList: Publication[], accent: string) => (
   <FlatList
     data={pubList}
     keyExtractor={(item) => item.id}
     renderItem={({ item }) => (
       <View className="p-1">
-        <PubCard pub={item} sub={sub} />
+        <PubCard pub={item} sub={item.sub_id} accent={accent} />
       </View>
     )}
     ListEmptyComponent={

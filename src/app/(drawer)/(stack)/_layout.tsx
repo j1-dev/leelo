@@ -8,12 +8,13 @@ import {
   useRouter,
   useSegments,
 } from "expo-router";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import HomeTabBar from "@/components/HomeTabBar";
 import HeaderLeftButton from "@/components/HeaderLeftButton";
 import { Platform } from "react-native";
+import { WHITE_LOGO_URL } from "@/components/Auth";
 
 export default function AppLayout() {
   const router = useRouter();
@@ -68,6 +69,19 @@ export default function AppLayout() {
                 );
               }
             } else return null;
+          },
+          headerRight: () => {
+            return (
+              <TouchableOpacity onPress={() => router.push("/home")}>
+                <Image
+                  className="max-w-md mx-auto w-[42px] h-[42px] rounded-[25px] mt-1 mr-1 z-50"
+                  src={WHITE_LOGO_URL}
+                  style={{
+                    resizeMode: "cover",
+                  }}
+                />
+              </TouchableOpacity>
+            );
           },
           headerBackVisible: false,
           headerTitleAlign: "center",

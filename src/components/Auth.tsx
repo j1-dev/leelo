@@ -1,8 +1,15 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, View, Text } from "react-native";
+import { Alert, View, Text, Image } from "react-native";
 import { supabase } from "@/lib/utils/supabase";
 import { Button, Input, Switch } from "@rneui/themed";
+
+export const BLACK_LOGO_URL =
+  "https://syhqbeqnshfljqbkoubc.supabase.co/storage/v1/object/sign/extras/logos/black%20Consulting%20Company%20Logo.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJleHRyYXMvbG9nb3MvYmxhY2sgQ29uc3VsdGluZyBDb21wYW55IExvZ28ucG5nIiwiaWF0IjoxNzMzOTM4ODA5LCJleHAiOjQ4ODc1Mzg4MDl9.ZRMJ1Du7vrNxbD_yDL46AxqTZGJLFBP1WeXiH3_NQeY&t=2024-12-11T17%3A40%3A09.589Z";
+export const BLUE_LOGO_URL =
+  "https://syhqbeqnshfljqbkoubc.supabase.co/storage/v1/object/sign/extras/logos/Blue%20Consulting%20Company%20Logo(1).png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJleHRyYXMvbG9nb3MvQmx1ZSBDb25zdWx0aW5nIENvbXBhbnkgTG9nbygxKS5wbmciLCJpYXQiOjE3MzM5Mzg4MzAsImV4cCI6NDg4NzUzODgzMH0._9p95e2rXw0_DYJaCAr3qAX3PZdO3Fm4xsN_UOhN8QY&t=2024-12-11T17%3A40%3A30.427Z";
+export const WHITE_LOGO_URL =
+  "https://syhqbeqnshfljqbkoubc.supabase.co/storage/v1/object/sign/extras/logos/white%20Consulting%20Company%20Logo.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJleHRyYXMvbG9nb3Mvd2hpdGUgQ29uc3VsdGluZyBDb21wYW55IExvZ28ucG5nIiwiaWF0IjoxNzMzOTM4ODgxLCJleHAiOjQ4ODc1Mzg4ODF9.wBywyYdGCe8m6CYHguaZvSdZDPTAOJLECNcXsjO9fSY&t=2024-12-11T17%3A41%3A21.593Z";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -76,7 +83,14 @@ export default function Auth() {
 
   return (
     <View className="flex h-screen">
-      <View className="w-11/12 max-w-md m-auto">
+      <View className="w-full px-4 m-auto h-screen">
+        <Image
+          className="max-w-md mx-auto w-[250px] h-[250px] rounded-[25px] mb-5 mt-16"
+          src={WHITE_LOGO_URL}
+          style={{
+            resizeMode: "cover",
+          }}
+        />
         {!isEnabled && (
           <View className="mb-4 relative">
             <Input

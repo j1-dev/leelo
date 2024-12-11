@@ -14,12 +14,13 @@ import { useSub } from "@/lib/context/Sub";
 interface PubCardProps {
   pub: Publication;
   sub: string;
+  accent: string;
 }
 
-export default function PubCard({ pub, sub }: PubCardProps) {
+export default function PubCard({ pub, sub, accent }: PubCardProps) {
   const router = useRouter();
   const pubCtx = usePub();
-  const { accent, updatePublication, setUpdate } = useSub();
+  const { updatePublication, setUpdate } = useSub();
   const [localScore, setLocalScore] = useState(pub.score);
   const [currentVote, setCurrentVote] = useState<number | null>(null);
 
