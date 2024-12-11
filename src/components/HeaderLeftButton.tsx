@@ -15,7 +15,7 @@ export default function HeaderLeftButton({ show }: HeaderLeftButtonProps) {
     <View className="top-14 left-4 z-50">
       <Feather
         name={show ? "menu" : "arrow-left"}
-        size={24}
+        size={32}
         color="black"
         onPress={() => {
           show ? nav.openDrawer() : router.back();

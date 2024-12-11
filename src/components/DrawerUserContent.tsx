@@ -28,16 +28,16 @@ export const DrawerUserContent = (props) => {
   }, [pathname]);
 
   return (
-    <View className="flex-1 pb-4">
-      <DrawerContentScrollView {...props} className="flex-1">
-        <View className="flex-row px-2.5 py-5 border-b border-gray-300 mb-2.5">
+    <View className="flex-1">
+      <DrawerContentScrollView {...props}>
+        <View className="flex-row px-2 py-5 border-b border-gray-300 mb-2">
           <Image
             source={{ uri: userdata?.profile_pic }}
             width={80}
             height={80}
             className="rounded-full"
           />
-          <View className="mt-6 ml-2.5">
+          <View className="mt-6 ml-2">
             <Text className="text-lg font-bold">{userdata?.username}</Text>
             <Text className="text-lg italic underline">{userdata?.email}</Text>
           </View>
@@ -52,12 +52,13 @@ export const DrawerUserContent = (props) => {
           )}
           label={"Home"}
           labelStyle={{
-            marginLeft: -20,
             fontSize: 18,
             color: pathname === "/home" ? "#fff" : "#000",
           }}
           style={{
             backgroundColor: pathname === "/home" ? "#333" : "#fff",
+            borderRadius: 3,
+            marginBottom: 5,
           }}
           onPress={() => {
             router.push("/discover");
@@ -74,12 +75,13 @@ export const DrawerUserContent = (props) => {
           )}
           label={"Profile"}
           labelStyle={{
-            marginLeft: -20,
             fontSize: 18,
             color: pathname === "/profile" ? "#fff" : "#000",
           }}
           style={{
             backgroundColor: pathname === "/profile" ? "#333" : "#fff",
+            borderRadius: 3,
+            marginBottom: 5,
           }}
           onPress={() => {
             router.push("/profile");
@@ -96,12 +98,12 @@ export const DrawerUserContent = (props) => {
           )}
           label={"Favourites"}
           labelStyle={{
-            marginLeft: -20,
             fontSize: 18,
             color: pathname === "/favourites" ? "#fff" : "#000",
           }}
           style={{
             backgroundColor: pathname === "/favourites" ? "#333" : "#fff",
+            borderRadius: 3,
           }}
           onPress={() => {
             router.push("/favourites");
@@ -118,12 +120,13 @@ export const DrawerUserContent = (props) => {
           )}
           label={"Settings"}
           labelStyle={{
-            marginLeft: -20,
             fontSize: 18,
             color: pathname === "/settings" ? "#fff" : "#000",
           }}
           style={{
             backgroundColor: pathname === "/settings" ? "#333" : "#fff",
+            borderRadius: 3,
+            marginBottom: 5,
           }}
           onPress={() => {
             router.push("/settings");
@@ -137,13 +140,15 @@ export const DrawerUserContent = (props) => {
         )}
         label={"Log-Out"}
         labelStyle={{
-          marginLeft: -20,
           fontSize: 18,
           color: "#fff",
         }}
         style={{
           backgroundColor: "#c11",
           marginTop: "auto",
+          borderRadius: 3,
+          marginInline: 5,
+          marginBlock: 20,
         }}
         onPress={() => {
           signOut();
