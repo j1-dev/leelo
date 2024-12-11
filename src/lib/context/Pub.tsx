@@ -2,9 +2,12 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { fetchComments, fetchPub } from "@/lib/utils/api";
 
 const PubContext = createContext({
+  pubId: "",
+  userId: "",
   setPubId: null,
   title: "",
-  comments: null,
+  comments: [],
+  setComments: null,
   score: null,
   setUpdate: null,
   updateComment: null, // New function to update a comment
@@ -16,7 +19,8 @@ export const usePub = () => {
 
 const PubProvider = ({ children }) => {
   const [update, setUpdate] = useState<boolean>(true);
-  const [PubId, setPubId] = useState<string>("");
+  const [pubId, setPubId] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [comments, setComments] = useState([]);
   const [score, setScore] = useState<number>(0);
@@ -38,7 +42,7 @@ const PubProvider = ({ children }) => {
     setComments(null);
     const getComments = async (id: string) => {
       try {
-        const comments = await fetchComments(PubId);
+        const comments = await fetchComments(pubId);
         setComments(comments);
       } catch (error) {
         console.error(error);
@@ -47,23 +51,35 @@ const PubProvider = ({ children }) => {
 
     const getPub = async (id: string) => {
       try {
-        const Pub = await fetchPub(id);
-        setTitle(Pub.title);
+        const pub = await fetchPub(id);
+        setTitle(pub.title);
+        setScore(pub.score);
+        setUserId(pub.user_id);
       } catch (error) {
         console.error(error);
       }
     };
 
-    if (PubId !== "") {
-      getComments(PubId);
-      getPub(PubId);
+    if (pubId !== "") {
+      getComments(pubId);
+      getPub(pubId);
       setUpdate(false);
     }
-  }, [PubId, update]);
+  }, [pubId, update]);
 
   return (
     <PubContext.Provider
-      value={{ setPubId, title, comments, score, setUpdate, updateComment }} // Add updateComment to context
+      value={{
+        pubId,
+        userId,
+        setPubId,
+        title,
+        comments,
+        setComments,
+        score,
+        setUpdate,
+        updateComment,
+      }} // Add updateComment to context
     >
       {children}
     </PubContext.Provider>

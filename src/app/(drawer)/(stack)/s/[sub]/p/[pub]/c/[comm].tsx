@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Alert, ActivityIndicator } from "react-native";
-import { useLocalSearchParams, Link, Stack } from "expo-router";
-import { fetchComment, submitComment } from "@/lib/utils/api";
+import { useLocalSearchParams, Link, Stack, useRouter } from "expo-router";
+import { deleteComment, fetchComment, submitComment } from "@/lib/utils/api";
 import { Comment, Subforum } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { usePub } from "@/lib/context/Pub";
@@ -9,16 +9,17 @@ import { useSub } from "@/lib/context/Sub";
 import { renderComments } from "@/components/CommentRenderer";
 import { SafeAreaView } from "react-native";
 import CommentBar from "@/components/CommentBar";
+import { Button } from "@rneui/themed";
 
 export default function Comm() {
   const pubCtx = usePub();
   const subCtx = useSub();
+  const router = useRouter();
   const { comm, sub, pub } = useLocalSearchParams();
   const { user, loading } = useAuth();
   const [commentHeight, setCommentHeight] = useState();
   const [comment, setComment] = useState<Comment | null>(null);
   const [parentComment, setParentComment] = useState<Comment | null>(null);
-  const [subforum, setSubforum] = useState<Subforum | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [newReply, setNewReply] = useState("");
   const commentRef = useRef();
@@ -62,6 +63,14 @@ export default function Comm() {
     setCommentHeight(height);
   };
 
+  const handleDeleteComment = (commentId: string) => {
+    deleteComment(commentId);
+    pubCtx.setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id === commentId),
+    );
+    router.back();
+  };
+
   if (loading || isLoading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
@@ -95,6 +104,14 @@ export default function Comm() {
                 <Text className="text-xs text-gray-500 mt-2">
                   by User {comment.user_id}
                 </Text>
+                {user.id === comment.user_id ? (
+                  <Button
+                    onPress={() => handleDeleteComment(comment.id as string)}
+                    containerStyle={{ borderRadius: 8 }}
+                  >
+                    Delete comment
+                  </Button>
+                ) : null}
               </View>
             </Link>
           </View>

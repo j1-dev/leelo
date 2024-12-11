@@ -14,10 +14,11 @@ export default function CreateSub() {
 
   const handleSubmit = async () => {
     const sub: Subforum = {
-      name,
-      description,
+      name: name,
+      description: description,
       created_at: new Date().toISOString(),
-      accent,
+      accent: accent,
+      created_by: user.id,
     };
     try {
       await submitSub(sub);

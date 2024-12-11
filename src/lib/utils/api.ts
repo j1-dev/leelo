@@ -46,6 +46,22 @@ export const fetchSubs = async (): Promise<Subforum[]> => {
   return data;
 };
 
+export const followSub = async (userId: String, subId: String) => {
+  const { error } = await supabase
+    .from("user_follows_subforum")
+    .insert({ user_id: userId, sub_id: subId });
+  if (error) throw error;
+};
+
+export const unfollowSub = async (userId: String, subId: String) => {
+  const { error } = await supabase
+    .from("user_follows_subforum")
+    .delete()
+    .eq("user_id", userId)
+    .eq("sub_id", subId);
+  if (error) throw error;
+};
+
 export const fetchFollowedSubs = async (userId: string) => {
   const { data, error } = await supabase
     .from("user_follows_subforum")
@@ -53,6 +69,20 @@ export const fetchFollowedSubs = async (userId: string) => {
     .eq("user_id", userId);
   if (error) throw error;
   return data;
+};
+
+export const deleteSub = async (subId: string): Promise<void> => {
+  const { error } = await supabase.from("subforums").delete().eq("id", subId);
+
+  if (error) {
+    throw new Error(`Error deleting subforum: ${error.message}`);
+  }
+};
+
+export const submitSub = async (sub: Subforum) => {
+  const { error } = await supabase.from("subforums").insert([sub]);
+  if (error) throw error;
+  fetchPubs(sub.id);
 };
 
 export const fetchPub = async (pubId: string): Promise<Publication | null> => {
@@ -82,26 +112,48 @@ export const submitPub = async (pub: Publication) => {
   fetchPubs(pub.sub_id);
 };
 
-export const submitSub = async (sub: Subforum) => {
-  const { error } = await supabase.from("subforums").insert([sub]);
-  if (error) throw error;
-  fetchPubs(sub.id);
-};
-
-export const followSub = async (userId: String, subId: String) => {
-  const { error } = await supabase
-    .from("user_follows_subforum")
-    .insert({ user_id: userId, sub_id: subId });
-  if (error) throw error;
-};
-
-export const unfollowSub = async (userId: String, subId: String) => {
-  const { error } = await supabase
-    .from("user_follows_subforum")
+export const deletePub = async (pubId: string): Promise<void> => {
+  // First, delete comments associated with the publication
+  const { error: commentsError } = await supabase
+    .from("comments")
     .delete()
-    .eq("user_id", userId)
-    .eq("sub_id", subId);
-  if (error) throw error;
+    .eq("pub_id", pubId);
+
+  if (commentsError) {
+    throw new Error(`Error deleting comments: ${commentsError.message}`);
+  }
+
+  // Then, delete the publication itself
+  const { error } = await supabase
+    .from("publications")
+    .delete()
+    .eq("id", pubId);
+
+  if (error) {
+    throw new Error(`Error deleting publication: ${error.message}`);
+  }
+};
+
+export const calculateScore = async (publicationId) => {
+  try {
+    // Query the votes table for the specific publication ID and calculate the score
+    const { data, error } = await supabase
+      .from("votes") // Your table name
+      .select("vote", { count: "exact" }) // Select the 'vote' column and enable counting
+      .eq("publication_id", publicationId); // Filter for the publication ID
+
+    if (error) {
+      throw error;
+    }
+
+    // Calculate the score by summing the votes
+    const score = data.reduce((total, vote) => total + vote.vote, 0);
+
+    return score;
+  } catch (error) {
+    console.error("Error calculating score:", error.message);
+    return null;
+  }
 };
 
 export const fetchComments = async (
@@ -186,6 +238,30 @@ export const submitComment = async (
 
   if (error) {
     throw error;
+  }
+};
+
+export const deleteComment = async (commentId: string): Promise<void> => {
+  // First, delete any child comments (if any)
+  const { error: childCommentsError } = await supabase
+    .from("comments")
+    .delete()
+    .eq("parent_comment", commentId);
+
+  if (childCommentsError) {
+    throw new Error(
+      `Error deleting child comments: ${childCommentsError.message}`,
+    );
+  }
+
+  // Then, delete the comment itself
+  const { error } = await supabase
+    .from("comments")
+    .delete()
+    .eq("id", commentId);
+
+  if (error) {
+    throw new Error(`Error deleting comment: ${error.message}`);
   }
 };
 

@@ -4,6 +4,7 @@ export interface Subforum {
   description: string;
   created_at: string;
   accent: string;
+  created_by: string;
 }
 
 export interface Publication {

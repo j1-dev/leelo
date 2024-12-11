@@ -1,9 +1,13 @@
 import { Text, View, TouchableOpacity } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { Publication } from "@/lib/utils/types";
 import { usePub } from "@/lib/context/Pub";
-import { useState, useEffect } from "react";
-import { votePublication, fetchPublicationVote } from "@/lib/utils/api";
+import { useState, useEffect, useCallback } from "react";
+import {
+  votePublication,
+  fetchPublicationVote,
+  fetchPub,
+} from "@/lib/utils/api";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useSub } from "@/lib/context/Sub";
 
@@ -15,19 +19,25 @@ interface PubCardProps {
 export default function PubCard({ pub, sub }: PubCardProps) {
   const router = useRouter();
   const pubCtx = usePub();
-  const { accent } = useSub();
+  const { accent, updatePublication, setUpdate } = useSub();
   const [localScore, setLocalScore] = useState(pub.score);
   const [currentVote, setCurrentVote] = useState<number | null>(null);
 
-  useEffect(() => {
-    const getVote = () => {
-      fetchPublicationVote(pub.id, pub.user_id).then((res) =>
-        setCurrentVote(res?.vote || null),
-      );
-    };
-
-    getVote();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const getScore = async () => {
+        const pubData = await fetchPub(pub.id);
+        setLocalScore(pubData.score);
+      };
+      const getVote = () => {
+        fetchPublicationVote(pub.id, pub.user_id).then((res) =>
+          setCurrentVote(res?.vote || null),
+        );
+      };
+      getScore();
+      getVote();
+    }, []),
+  );
 
   const handleVote = async (vote: number) => {
     // Optimistic update: Adjust score based on user's vote
@@ -53,7 +63,8 @@ export default function PubCard({ pub, sub }: PubCardProps) {
 
     // Call API to update vote in the backend
     try {
-      // updatePublication(pub.id, { score: newScore });
+      setUpdate(true);
+      updatePublication(pub.id, { score: newScore });
       await votePublication(pub.user_id, pub.id, vote);
     } catch (error) {
       // If there's an error, revert optimistic UI change

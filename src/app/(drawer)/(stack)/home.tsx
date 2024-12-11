@@ -9,7 +9,6 @@ import { useRouter } from "expo-router";
 export default function Home() {
   const [subs, setSubs] = useState<Subforum[]>([]);
   const { user, loading } = useAuth();
-  const { replace } = useRouter();
 
   useEffect(() => {
     fetchFollowedSubs(user.id)

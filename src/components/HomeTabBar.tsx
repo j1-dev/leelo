@@ -35,7 +35,6 @@ export default function HomeTabBar({ show }: { show: boolean }) {
       duration: 300, // Same duration for both directions
       useNativeDriver: true, // Use native driver for better performance
     }).start();
-    console.log(path);
   }, [show]);
 
   return (

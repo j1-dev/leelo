@@ -15,12 +15,14 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { supabase } from "@/lib/utils/supabase"; // Import Supabase client
 import { decode } from "base64-arraybuffer";
+import { useSub } from "@/lib/context/Sub";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null); // State for the selected image URI
   const { sub } = useLocalSearchParams();
+  const subCtx = useSub();
   const { user, signOut, loading } = useAuth();
 
   const handleImagePick = async () => {
@@ -94,6 +96,7 @@ export default function CreatePost() {
     if (title !== "" && content !== "") {
       try {
         await submitPub(pub);
+        subCtx.setUpdate(true);
         Alert.alert("Success", "Your publication has been submitted!");
         router.push(`s/${sub}/`); // Redirect to the desired page after submission
       } catch (error) {
