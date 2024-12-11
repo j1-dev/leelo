@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import { Comment, Publication } from "@/lib/utils/types";
+import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import {
   fetchPub,
@@ -18,18 +18,14 @@ import {
   votePublication,
   fetchPublicationVote,
 } from "@/lib/utils/api";
-import {
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { usePub } from "@/lib/context/Pub";
 import { renderComments } from "@/components/CommentRenderer";
 import { useSub } from "@/lib/context/Sub";
 import { SafeAreaView } from "react-native";
 import CommentBar from "@/components/CommentBar";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function Pub() {
   const pubCtx = usePub();
@@ -140,12 +136,12 @@ export default function Pub() {
       />
       {publication && (
         <View
-          className={`w-full h-60 p-4 bg-white border-b-[1px]`}
+          className={`w-full p-4 bg-white border-b-[1px]`}
           style={{ borderColor: subCtx.accent }}
           ref={commentRef}
           onLayout={handlePublicationLayout}
         >
-          <ScrollView>
+          <ScrollView className="border relative border-white">
             <Text className="text-2xl font-bold">{publication.title}</Text>
             <Text className="text-base mt-2">{publication.content}</Text>
             <Text className="text-xs text-gray-500 mt-2">
@@ -158,14 +154,14 @@ export default function Pub() {
               />
             )}
             {user.id === publication.user_id ? (
-              <Button
+              <TouchableOpacity
+                className="absolute right-[31px] top-10"
                 onPress={() => handleDeletePub(publication.id)}
-                containerStyle={{ borderRadius: 8 }}
               >
-                Delete publication
-              </Button>
+                <Feather name="trash-2" size={26} color={"#c11"} />
+              </TouchableOpacity>
             ) : null}
-            <View className="absolute right-4 top-5">
+            <View className="absolute right-4 top-0">
               <View className="flex-row">
                 {/* Upvote Button */}
                 <TouchableOpacity onPress={() => handleVote(1)}>

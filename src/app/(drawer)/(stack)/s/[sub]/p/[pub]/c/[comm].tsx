@@ -15,7 +15,7 @@ import { useSub } from "@/lib/context/Sub";
 import { renderComments } from "@/components/CommentRenderer";
 import { SafeAreaView } from "react-native";
 import CommentBar from "@/components/CommentBar";
-import { Button } from "@rneui/themed";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function Comm() {
   const pubCtx = usePub();
@@ -71,7 +71,6 @@ export default function Comm() {
 
   const handleDeleteComment = (commentId: string) => {
     deleteComment(commentId);
-    console.log("cunt");
     pubCtx.setComments((prevComments) =>
       prevComments.filter((comment) => comment.id !== commentId),
     );
@@ -108,18 +107,18 @@ export default function Comm() {
             <TouchableOpacity
               onPress={() => router.push(`s/${sub}/p/${pub}/c/${comment.id}`)}
             >
-              <View>
+              <View className="border relative border-white">
                 <Text className="text-2xl font-bold">{comment.content}</Text>
                 <Text className="text-xs text-gray-500 mt-2">
                   by User {comment.user_id}
                 </Text>
                 {user.id === comment.user_id ? (
-                  <Button
-                    onPress={() => handleDeleteComment(comment.id as string)}
-                    containerStyle={{ borderRadius: 8, zIndex: 9999 }}
+                  <TouchableOpacity
+                    className="absolute right-[31px] top-3"
+                    onPress={() => handleDeleteComment(comment.id)}
                   >
-                    Delete comment
-                  </Button>
+                    <Feather name="trash-2" size={26} color={"#c11"} />
+                  </TouchableOpacity>
                 ) : null}
               </View>
             </TouchableOpacity>

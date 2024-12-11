@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/context/Auth";
 import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import PubCard from "@/components/PubCard";
 
 export default function Home() {
@@ -16,20 +16,12 @@ export default function Home() {
   const [pubs, setPubs] = useState(null);
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    fetchFollowedPubs(user.id).then((res) => setPubs(res));
-    fetchFollowedSubs(user.id)
-      .then((data) => {
-        data.map((item) => {
-          fetchSub(item.sub_id).then((data) => {
-            setSubs((curr) => [...curr, data]);
-          });
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
-  }, []);
+  useFocusEffect(() => {
+    fetchFollowedPubs(user.id).then((res) => {
+      console.log(res);
+      setPubs(res);
+    });
+  });
 
   if (loading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
@@ -40,7 +32,7 @@ export default function Home() {
     <View className="bg-white flex h-screen relative">
       {pubs?.map((item) => {
         return (
-          <View className="p-1" key={Math.random()}>
+          <View className="py-1" key={Math.random()}>
             <PubCard
               pub={item.pub}
               sub={item.pub.sub_id}

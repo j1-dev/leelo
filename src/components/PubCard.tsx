@@ -20,6 +20,7 @@ interface PubCardProps {
 export default function PubCard({ pub, sub, accent }: PubCardProps) {
   const router = useRouter();
   const pubCtx = usePub();
+  const subCtx = useSub();
   const { updatePublication, setUpdate } = useSub();
   const [localScore, setLocalScore] = useState(pub.score);
   const [currentVote, setCurrentVote] = useState<number | null>(null);
@@ -79,6 +80,7 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
     <TouchableOpacity
       onPress={() => {
         pubCtx.setPubId(pub.id);
+        subCtx.setSubId(sub);
         router.push(`/s/${sub}/p/${pub.id}`);
       }}
       className={`bg-white mx-3 border p-3 relative rounded-xl`}
