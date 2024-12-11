@@ -1,5 +1,4 @@
-import { deleteSub, fetchPubs } from "@/lib/utils/api";
-import { Publication } from "@/lib/utils/types";
+import { deleteSub } from "@/lib/utils/api";
 import { Button } from "@rneui/themed";
 import { Stack, router, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";

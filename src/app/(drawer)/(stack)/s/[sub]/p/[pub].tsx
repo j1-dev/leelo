@@ -44,27 +44,6 @@ export default function Pub() {
   const commentRef = useRef();
   const router = useRouter();
 
-  const handleCommentSubmit = async () => {
-    if (newComment.trim().length === 0) {
-      Alert.alert("Error", "Comment cannot be empty");
-      return;
-    }
-
-    try {
-      await submitComment(user.id, pub as string, newComment);
-      setNewComment("");
-      pubCtx.setUpdate(true);
-    } catch (error) {
-      Alert.alert("Error", "Failed to submit comment");
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      pubCtx.setUpdate(true);
-    }, []),
-  );
-
   useEffect(() => {
     const loadPubAndComments = async () => {
       try {
@@ -124,6 +103,21 @@ export default function Pub() {
       console.error("Error voting on comment:", error);
       setLocalScore(publication.score); // Revert to original score
       setCurrentVote(null); // Revert vote state
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (newComment.trim().length === 0) {
+      Alert.alert("Error", "Comment cannot be empty");
+      return;
+    }
+
+    try {
+      await submitComment(user.id, pub as string, newComment);
+      setNewComment("");
+      pubCtx.setUpdate(true);
+    } catch (error) {
+      Alert.alert("Error", "Failed to submit comment");
     }
   };
 

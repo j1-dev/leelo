@@ -40,7 +40,8 @@ CREATE TABLE publications (
     title VARCHAR(255) NOT NULL,
     content TEXT,
     score INTEGER DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT NOW ()
+    created_at TIMESTAMPTZ DEFAULT NOW (),
+    img_url TEXT,
 );
 
 -- Create comments table with cascading deletes

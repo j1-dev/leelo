@@ -10,7 +10,7 @@ export default function CreateSub() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [accent, setAccent] = useState("");
-  const { user, signOut, loading } = useAuth();
+  const { user } = useAuth();
 
   const handleSubmit = async () => {
     const sub: Subforum = {
