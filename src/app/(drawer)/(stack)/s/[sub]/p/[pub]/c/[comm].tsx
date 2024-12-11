@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useLocalSearchParams, Link, Stack, useRouter } from "expo-router";
 import { deleteComment, fetchComment, submitComment } from "@/lib/utils/api";
 import { Comment, Subforum } from "@/lib/utils/types";
@@ -65,8 +71,9 @@ export default function Comm() {
 
   const handleDeleteComment = (commentId: string) => {
     deleteComment(commentId);
+    console.log("cunt");
     pubCtx.setComments((prevComments) =>
-      prevComments.filter((comment) => comment.id === commentId),
+      prevComments.filter((comment) => comment.id !== commentId),
     );
     router.back();
   };
@@ -98,7 +105,9 @@ export default function Comm() {
             className="mt-4 p-4 w-full bg-white border-b-[1px]"
             style={{ borderColor: subCtx.accent }}
           >
-            <Link href={`s/${sub}/p/${pub}/c/${comment.id}`}>
+            <TouchableOpacity
+              onPress={() => router.push(`s/${sub}/p/${pub}/c/${comment.id}`)}
+            >
               <View>
                 <Text className="text-2xl font-bold">{comment.content}</Text>
                 <Text className="text-xs text-gray-500 mt-2">
@@ -107,13 +116,13 @@ export default function Comm() {
                 {user.id === comment.user_id ? (
                   <Button
                     onPress={() => handleDeleteComment(comment.id as string)}
-                    containerStyle={{ borderRadius: 8 }}
+                    containerStyle={{ borderRadius: 8, zIndex: 9999 }}
                   >
                     Delete comment
                   </Button>
                 ) : null}
               </View>
-            </Link>
+            </TouchableOpacity>
           </View>
         )}
       </View>
