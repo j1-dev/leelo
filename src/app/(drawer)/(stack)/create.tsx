@@ -1,4 +1,11 @@
-import { View, TextInput, Button, Text, Alert } from "react-native";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useState } from "react";
 import { Subforum } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
@@ -31,34 +38,41 @@ export default function CreateSub() {
   };
 
   return (
-    <View className="p-4">
-      <Text className="text-lg font-bold mb-2">Create a New Subforum</Text>
-      <TextInput
-        className="border p-2 mb-4 rounded"
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        className="border p-2 mb-4 rounded h-40"
-        placeholder="Content"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
-      <View>
-        <ColorPicker
-          color={accent}
-          swatchesOnly={false}
-          onColorChange={setAccent}
-          thumbSize={40}
-          sliderSize={40}
-          noSnap={true}
-          row={false}
+    <View className="flex-1 bg-white h-full pb-4">
+      <View className="flex-1 px-2">
+        <Text className="text-3xl font-bold mb-2">Create a New Subforum</Text>
+        <TextInput
+          className="border p-2 mb-4 rounded"
+          placeholder="Name"
+          value={name}
+          onChangeText={setName}
         />
+        <TextInput
+          className="border p-2 mb-4 rounded h-40"
+          placeholder="Content"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+        <View>
+          <ColorPicker
+            color={accent}
+            swatchesOnly={false}
+            onColorChange={setAccent}
+            thumbSize={40}
+            sliderSize={40}
+            noSnap={true}
+            row={false}
+          />
+        </View>
       </View>
-      <View>
-        <Button title="Submit" onPress={handleSubmit} />
+      <View className="mt-auto mx-3 mb-16">
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
+        >
+          <Text className="text-xl font-bold text-white">Submit</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

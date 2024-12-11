@@ -111,7 +111,9 @@ export default function CreatePost() {
   return (
     <View className="flex-1 bg-white h-full pb-4">
       <View className="flex-1 px-2">
-        <Text className="text-xl font-bold mb-2">Create a New Publication</Text>
+        <Text className="text-3xl font-bold mb-2">
+          Create a New Publication
+        </Text>
         <View className="border border-gray-500 rounded-xl mb-2">
           <TextInput
             className="text-xl ml-3"

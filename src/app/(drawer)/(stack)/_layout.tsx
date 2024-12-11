@@ -124,6 +124,7 @@ export default function AppLayout() {
         <Stack.Screen
           name="s/[sub]/create"
           options={{
+            title: "Create",
             animation: "slide_from_right",
           }}
         />
