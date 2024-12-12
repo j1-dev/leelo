@@ -127,7 +127,8 @@ export default function Comm() {
                 <Text className="text-xs text-gray-500 mt-2">
                   {relativeTime(new Date(comment.created_at).toISOString())}
                 </Text>
-                {user.id === comment.user_id ? (
+                {user.id === comment.user_id ||
+                subCtx?.mods?.includes(user.id) ? (
                   <TouchableOpacity
                     className="absolute right-[31px] top-3"
                     onPress={() => handleDeleteComment(comment.id)}

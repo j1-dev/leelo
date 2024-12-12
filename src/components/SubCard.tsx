@@ -32,7 +32,7 @@ export default function SubCard({
 
   return (
     <View
-      className={`bg-white p-4 border rounded-xl`}
+      className="bg-white p-4 border rounded-xl"
       style={{ borderColor: subforum.accent }}
     >
       <Link

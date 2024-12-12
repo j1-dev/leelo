@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   Keyboard,
+  Dimensions,
 } from "react-native";
 import { useState } from "react";
 import { Subforum } from "@/lib/utils/types";
@@ -27,6 +28,7 @@ export default function CreateSub() {
   const [searchQuery, setSearchQuery] = useState(""); // Search term
   const [users, setUsers] = useState([]); // Available users for selection
   const { user } = useAuth();
+  const { height } = Dimensions.get("window");
 
   const handleSubmit = async () => {
     const sub: Subforum = {
@@ -199,53 +201,72 @@ export default function CreateSub() {
           visible={modalVisible}
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
+          transparent={true} // Make the modal background transparent
         >
-          <View className="flex-1 bg-white p-4">
-            <TextInput
-              className="border border-gray-300 p-3 mb-4 rounded"
-              placeholder="Search Users"
-              value={searchQuery}
-              onChangeText={handleSearch}
-            />
-            <FlatList
-              data={filteredUsers}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View className="flex-row justify-between items-center border-b border-gray-200 p-3">
-                  <Text className="text-lg">{item.username}</Text>
-                  <TouchableOpacity
-                    onPress={() =>
-                      moderators.includes(item.username)
-                        ? removeModerator(item.username)
-                        : addModerator(item.username)
-                    }
-                  >
-                    <Ionicons
-                      name={
-                        moderators.includes(item.username)
-                          ? "remove-circle-outline"
-                          : "add-circle-outline"
-                      }
-                      size={24}
-                      color={
-                        moderators.includes(item.username) ? "red" : "blue"
-                      }
-                    />
-                  </TouchableOpacity>
-                </View>
-              )}
-              ListEmptyComponent={
-                <Text className="text-gray-500 text-center mt-4">
-                  No users found.
-                </Text>
-              }
-            />
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              className="mt-4 p-4 rounded-xl bg-red-500 flex items-center"
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-end", // Align the modal content at the bottom
+              // backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim the background
+            }}
+          >
+            <View
+              style={{
+                height: height * 0.8, // Set the modal height to 80% of the screen
+                backgroundColor: "white",
+                borderTopLeftRadius: 20, // Add rounded corners to the top
+                borderTopRightRadius: 20,
+                padding: 16,
+                borderWidth: 2,
+                borderColor: "gray",
+              }}
             >
-              <Text className="text-white font-bold text-lg">Done</Text>
-            </TouchableOpacity>
+              <TextInput
+                className="border border-gray-300 p-3 mb-4 rounded"
+                placeholder="Search Users"
+                value={searchQuery}
+                onChangeText={handleSearch}
+              />
+              <FlatList
+                data={filteredUsers}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View className="flex-row justify-between items-center border-b border-gray-200 p-3">
+                    <Text className="text-lg">{item.username}</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        moderators.includes(item.username)
+                          ? removeModerator(item.username)
+                          : addModerator(item.username)
+                      }
+                    >
+                      <Ionicons
+                        name={
+                          moderators.includes(item.username)
+                            ? "remove-circle-outline"
+                            : "add-circle-outline"
+                        }
+                        size={24}
+                        color={
+                          moderators.includes(item.username) ? "red" : "blue"
+                        }
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                ListEmptyComponent={
+                  <Text className="text-gray-500 text-center mt-4">
+                    No users found.
+                  </Text>
+                }
+              />
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="mt-4 p-4 rounded-xl bg-red-500 flex items-center"
+              >
+                <Text className="text-white font-bold text-lg">Done</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Modal>
       </View>

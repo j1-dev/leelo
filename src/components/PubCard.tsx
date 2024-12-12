@@ -84,7 +84,7 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
         subCtx.setSubId(sub);
         router.push(`/s/${sub}/p/${pub.id}`);
       }}
-      className={`bg-white mx-3 border p-3 relative rounded-xl`}
+      className="bg-white p-4 border rounded-xl"
       style={{ borderColor: accent }}
     >
       <View>

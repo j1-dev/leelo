@@ -40,7 +40,7 @@ export default function Home() {
         data={pubs}
         keyExtractor={(item) => item.pub.id}
         renderItem={({ item }) => (
-          <View className="py-1">
+          <View className="p-2">
             <PubCard
               pub={item.pub}
               sub={item.pub.sub_id}

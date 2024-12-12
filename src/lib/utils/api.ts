@@ -36,6 +36,24 @@ export const fetchUsers = async (): Promise<User[]> => {
   return data;
 };
 
+export const fetchModerators = async (subId: string): Promise<string[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("moderators")
+      .select("user_id")
+      .eq("sub_id", subId);
+
+    if (error) {
+      throw new Error(`Error fetching moderators: ${error.message}`);
+    }
+
+    return data.map((moderator) => moderator.user_id);
+  } catch (error) {
+    console.error("Error fetching moderators:", error);
+    throw error;
+  }
+};
+
 export const fetchSub = async (subId: string): Promise<Subforum | null> => {
   const { data, error } = await supabase
     .from("subforums")

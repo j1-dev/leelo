@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fetchPubs, fetchSub } from "@/lib/utils/api";
+import { fetchModerators, fetchPubs, fetchSub } from "@/lib/utils/api";
 
 const SubContext = createContext({
   setSubId: null,
   name: "",
   accent: null,
   createdBy: "",
-  // mods: null
+  mods: null,
   pubs: null,
   setPubs: null,
   setUpdate: null,
@@ -24,6 +24,7 @@ const SubProvider = ({ children }) => {
   const [accent, setAccent] = useState<string>("");
   const [createdBy, setCreatedBy] = useState<string>("");
   const [pubs, setPubs] = useState(null);
+  const [mods, setMods] = useState(null);
 
   const updatePublication = (pubId: string, changes: Partial<Comment>) => {
     setPubs((prevPubs) => {
@@ -38,17 +39,29 @@ const SubProvider = ({ children }) => {
 
   useEffect(() => {
     if (subId !== "") {
-      fetchPubs(subId).then((pubData) => {
-        setPubs(pubData);
-      });
-      fetchSub(subId)
-        .then((sub) => {
-          setAccent(sub.accent);
-          setName(sub.name);
-          setCreatedBy(sub.created_by);
-        })
-        .catch((error) => console.error(error));
-      setUpdate(false);
+      const fetchData = async () => {
+        try {
+          const [modData, pubData, sub] = await Promise.all([
+            fetchModerators(subId),
+            fetchPubs(subId),
+            fetchSub(subId),
+          ]);
+
+          setMods(modData);
+          setPubs(pubData);
+          if (sub) {
+            setAccent(sub.accent);
+            setName(sub.name);
+            setCreatedBy(sub.created_by);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setUpdate(false);
+        }
+      };
+
+      fetchData();
     }
   }, [subId, update]);
 
@@ -59,6 +72,7 @@ const SubProvider = ({ children }) => {
         name,
         accent,
         pubs,
+        mods,
         setPubs,
         createdBy,
         setUpdate,

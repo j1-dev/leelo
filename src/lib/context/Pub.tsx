@@ -39,31 +39,29 @@ const PubProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    setComments(null);
-    const getComments = async (id: string) => {
-      try {
-        const comments = await fetchComments(pubId);
-        setComments(comments);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const getPub = async (id: string) => {
-      try {
-        const pub = await fetchPub(id);
-        setTitle(pub.title);
-        setScore(pub.score);
-        setUserId(pub.user_id);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     if (pubId !== "") {
-      getComments(pubId);
-      getPub(pubId);
-      setUpdate(false);
+      const fetchData = async () => {
+        try {
+          const [comments, pub] = await Promise.all([
+            fetchComments(pubId),
+            fetchPub(pubId),
+          ]);
+
+          setComments(comments);
+          if (pub) {
+            setTitle(pub.title);
+            setScore(pub.score);
+            setUserId(pub.user_id);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setUpdate(false);
+        }
+      };
+
+      setComments(null);
+      fetchData();
     }
   }, [pubId, update]);
 

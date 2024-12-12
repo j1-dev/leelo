@@ -171,7 +171,8 @@ export default function Pub() {
                 />
               </View>
             )}
-            {user.id === publication.user_id ? (
+            {user.id === publication.user_id ||
+            subCtx?.mods?.includes(user.id) ? (
               <TouchableOpacity
                 className="absolute right-[31px] top-10"
                 onPress={() => handleDeletePub(publication.id)}
