@@ -7,7 +7,6 @@ import { useState } from "react";
 import { followSub, unfollowSub } from "@/lib/utils/api";
 import Feather from "@expo/vector-icons/Feather";
 
-// Define props as a single object
 interface SubCardProps {
   subforum: Subforum;
   userFollows: boolean;

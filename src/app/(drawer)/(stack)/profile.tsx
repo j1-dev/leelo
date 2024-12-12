@@ -23,7 +23,10 @@ export default function Profile() {
   const [profilePic, setProfilePic] = useState("");
 
   useEffect(() => {
-    fetchUser(user.id).then((res) => setProfilePic(res.profile_pic));
+    fetchUser(user.id).then((res) => {
+      setUsername(res.username);
+      setProfilePic(res.profile_pic);
+    });
   }, []);
 
   // Handle profile picture change
@@ -114,11 +117,11 @@ export default function Profile() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center p-4 bg-white">
+    <View className="flex-1 items-center p-4 bg-white h-screen">
       <TouchableOpacity onPress={handleChangeProfilePic}>
         <Image
           source={{ uri: profilePic || "https://via.placeholder.com/150" }}
-          className="w-32 h-32 rounded-full mb-4"
+          className="w-40 h-40 rounded-3xl mb-4 mt-10"
         />
         <Text className="text-blue-500">Change Profile Picture</Text>
       </TouchableOpacity>
@@ -127,7 +130,7 @@ export default function Profile() {
         value={username}
         onChangeText={setUsername}
         placeholder="Username"
-        className="border rounded p-2 w-full mb-4"
+        className="border rounded p-2 w-full mb-4 mt-32"
       />
       <Button title="Update Username" onPress={handleChangeUsername} />
 
@@ -136,7 +139,7 @@ export default function Profile() {
         onChangeText={setPassword}
         placeholder="New Password"
         secureTextEntry
-        className="border rounded p-2 w-full mt-4 mb-4"
+        className="border rounded p-2 w-full mt-10 mb-4"
       />
       <Button title="Update Password" onPress={handleChangePassword} />
     </View>

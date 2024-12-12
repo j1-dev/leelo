@@ -8,7 +8,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { Button } from "@rneui/themed";
 import { Publication } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import {

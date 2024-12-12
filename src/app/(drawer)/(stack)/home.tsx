@@ -1,19 +1,33 @@
 import { fetchFollowedPubs } from "@/lib/utils/api";
 import { useAuth } from "@/lib/context/Auth";
 import { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import {
+  View,
+  ActivityIndicator,
+  FlatList,
+  Text,
+  RefreshControl,
+} from "react-native";
 import PubCard from "@/components/PubCard";
 
 export default function Home() {
   const [pubs, setPubs] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const { user, loading } = useAuth();
 
   useEffect(() => {
+    getPubs();
+  }, []);
+
+  const getPubs = () => {
     fetchFollowedPubs(user.id).then((res) => {
-      console.log(res);
       setPubs(res);
     });
-  }, []);
+  };
+
+  const onRefresh = () => {
+    getPubs();
+  };
 
   if (loading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
@@ -22,17 +36,28 @@ export default function Home() {
   return (
     // <View className="bg-white flex h-screen relative">{renderSubs(subs)}</View>
     <View className="bg-white flex h-screen relative">
-      {pubs?.map((item) => {
-        return (
-          <View className="py-1" key={Math.random()}>
+      <FlatList
+        data={pubs}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View className="py-1">
             <PubCard
               pub={item.pub}
               sub={item.pub.sub_id}
               accent={item.accent}
+              key={Math.random()}
             />
           </View>
-        );
-      })}
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <Text className="text-center text-gray-500 mt-4">
+            No subforums available.
+          </Text>
+        }
+      />
     </View>
   );
 }

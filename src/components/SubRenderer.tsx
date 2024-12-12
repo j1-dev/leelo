@@ -5,10 +5,17 @@ import SubCard from "./SubCard"; // Adjust the import path based on your project
 import { useAuth } from "@/lib/context/Auth";
 import { useEffect, useState } from "react";
 import { fetchFollowedSubs } from "@/lib/utils/api";
+import { RefreshControl } from "react-native";
 
-export const renderSubs = (subList: Subforum[]) => {
+interface SubRendererProps {
+  subList: Subforum[];
+  onReload?: () => void;
+}
+
+export default function SubRenderer({ subList, onReload }: SubRendererProps) {
   const { user } = useAuth();
   const [follows, setFollows] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchFollowedSubs(user.id)
@@ -20,8 +27,13 @@ export const renderSubs = (subList: Subforum[]) => {
       });
   }, []);
 
+  const onRefresh = async () => {
+    onReload();
+  };
+
   return (
     <FlatList
+      className="h-full bg-white"
       data={subList}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
@@ -34,6 +46,9 @@ export const renderSubs = (subList: Subforum[]) => {
           />
         </View>
       )}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       ListEmptyComponent={
         <Text className="text-center text-gray-500 mt-4">
           No subforums available.
@@ -41,4 +56,4 @@ export const renderSubs = (subList: Subforum[]) => {
       }
     />
   );
-};
+}

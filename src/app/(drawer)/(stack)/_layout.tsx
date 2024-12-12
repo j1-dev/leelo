@@ -15,8 +15,11 @@ import HomeTabBar from "@/components/HomeTabBar";
 import HeaderLeftButton from "@/components/HeaderLeftButton";
 import { Platform } from "react-native";
 import { WHITE_LOGO_URL } from "@/components/Auth";
+import { useEffect, useState } from "react";
+import { fetchUser } from "@/lib/utils/api";
 
 export default function AppLayout() {
+  const [profilePic, setProfilePic] = useState(null);
   const router = useRouter();
   const segments = useSegments();
   const showDrawerButton = segments[segments.length - 1] === "home";
@@ -34,6 +37,12 @@ export default function AppLayout() {
   if (!session) {
     return <Redirect href="/" />;
   }
+
+  useEffect(() => {
+    fetchUser(user.id).then((userData) => {
+      setProfilePic(userData.profile_pic);
+    });
+  }, []);
 
   return (
     <View className="bg-white h-full w-full absolute bottom-0">
@@ -75,7 +84,7 @@ export default function AppLayout() {
               <TouchableOpacity onPress={() => router.push("/home")}>
                 <Image
                   className="max-w-md mx-auto w-[42px] h-[42px] rounded-[25px] mt-1 mr-1 z-50"
-                  src={WHITE_LOGO_URL}
+                  src={profilePic || WHITE_LOGO_URL}
                   style={{
                     resizeMode: "cover",
                   }}
