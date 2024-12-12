@@ -23,8 +23,24 @@ export default function Sub() {
   );
 
   const handleDeleteSub = (subId: string) => {
-    deleteSub(subId);
-    router.back();
+    Alert.alert(
+      "Confirmar borrado",
+      "¿Está seguro de que quiere borrar este subforo? Esta acción no se podrá deshacer",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Borrar",
+          style: "destructive",
+          onPress: () => {
+            deleteSub(subId);
+            router.push("/home");
+          },
+        },
+      ],
+    );
   };
 
   return (

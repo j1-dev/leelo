@@ -18,23 +18,11 @@ export default function CommentBar({
   value,
   onChangeText,
   onSubmit,
-  placeholder = "Write a comment...",
-  buttonText = "Send",
+  placeholder = "Escribe un comentario...",
+  buttonText = "Enviar",
   commentId,
   pubHeight,
 }: CommentInputProps) {
-  const pubCtx = usePub();
-  const hasParentComment = (): boolean => {
-    if (!!commentId) {
-      const comments = pubCtx.comments as Comment[];
-      const currentComment = comments?.filter(
-        (c: Comment) => c.id === commentId,
-      );
-      return currentComment?.[0]?.parent_comment !== null;
-    } else {
-      return false;
-    }
-  };
   return (
     <KeyboardAvoidingView
       className="bottom-0 absolute w-full p-4 bg-white rounded-lg h-28"

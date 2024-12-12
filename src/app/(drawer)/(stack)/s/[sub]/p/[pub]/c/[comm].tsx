@@ -36,10 +36,14 @@ export default function Comm() {
   const commentRef = useRef();
 
   useEffect(() => {
+    // Cargar comentario y respuesta
     const loadCommentAndReplies = async () => {
       try {
+        // Cargar comentario actual
         const commentData = await fetchComment(comm as string);
         setComment(commentData);
+
+        // Cargar comentario padre si lo tiene
         if (!!commentData.parent_comment) {
           const parentData = await fetchComment(commentData.parent_comment);
           setParentComment(parentData);
@@ -55,33 +59,55 @@ export default function Comm() {
     setLoading(false);
   }, [comm, pub]);
 
+  // Función para enviar el comentario
   const handleReplySubmit = async () => {
     if (newReply.trim().length === 0) {
-      Alert.alert("Error", "Reply cannot be empty");
+      Alert.alert("Error", "La respuesta no puede estar vacía");
       return;
     }
     try {
       await submitComment(user.id, pub as string, newReply, comm as string);
-      setNewReply("");
-      pubCtx.setUpdate(true);
+      setNewReply(""); // Resetear la caja de comentario
+      pubCtx.setUpdate(true); // Actualizar el contexto de la publicación
     } catch (error) {
-      console.error("Error submitting reply:", error);
+      console.error("Error enviando respuesta:", error);
     }
   };
 
+  // Función para actualizar la altura del layout del comentario. Solo es útil
+  // para IOS
   const handleCommentLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     setCommentHeight(height);
   };
 
+  // Función para borrar comentario
   const handleDeleteComment = (commentId: string) => {
-    deleteComment(commentId);
-    pubCtx.setComments((prevComments) =>
-      prevComments.filter((comment) => comment.id !== commentId),
+    Alert.alert(
+      "Confiramr borrado",
+      "¿Está seguro de que quiere borrar este comentario? Esta acción no se podrá deshacer",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Borrar",
+          style: "destructive",
+          onPress: () => {
+            deleteComment(commentId);
+            // Borrar comentario de la colección local del contexto de la publicación
+            pubCtx.setComments((prevComments) =>
+              prevComments.filter((comment) => comment.id !== commentId),
+            );
+            router.back();
+          },
+        },
+      ],
     );
-    router.back();
   };
 
+  // Si está cargando mostrar un spinner
   if (loading || isLoading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
@@ -127,6 +153,7 @@ export default function Comm() {
                 <Text className="text-xs text-gray-500 mt-2">
                   {relativeTime(new Date(comment.created_at).toISOString())}
                 </Text>
+                {/* Solo enseñar bottón de borrar si es el creador o es moderador del sub */}
                 {user.id === comment.user_id ||
                 subCtx?.mods?.includes(user.id) ? (
                   <TouchableOpacity
@@ -142,6 +169,7 @@ export default function Comm() {
         )}
       </View>
       <SafeAreaView className="h-screen flex-1 bg-white">
+        {/* Renderizado recursivo de comentarios */}
         {pubCtx.comments
           ? renderComments(
               pubCtx.comments,
@@ -153,6 +181,7 @@ export default function Comm() {
               subCtx.accent,
             )
           : null}
+        {/* Barra para comentar */}
         <CommentBar
           value={newReply}
           onChangeText={setNewReply}

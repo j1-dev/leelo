@@ -11,17 +11,17 @@ export default function HomeTabBar({ show }: { show: boolean }) {
 
   const tabs = [
     {
-      name: "Home",
+      name: "Inicio",
       route: "/home",
       icon: "home",
     },
     {
-      name: "Discover",
+      name: "Descubre",
       route: "/discover",
       icon: "search",
     },
-    { name: "Create", route: "/create", icon: "plus-square" },
-    { name: "Profile", route: "/profile", icon: "user" },
+    { name: "Crea", route: "/create", icon: "plus-square" },
+    { name: "Perfil", route: "/profile", icon: "user" },
   ];
 
   // Animated value to control the tab bar position

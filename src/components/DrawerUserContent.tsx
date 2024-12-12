@@ -50,7 +50,7 @@ export const DrawerUserContent = (props) => {
               color={pathname === "/home" ? "#fff" : "#000"}
             />
           )}
-          label={"Home"}
+          label={"Inicio"}
           labelStyle={{
             fontSize: 18,
             color: pathname === "/home" ? "#fff" : "#000",
@@ -61,7 +61,7 @@ export const DrawerUserContent = (props) => {
             marginBottom: 5,
           }}
           onPress={() => {
-            router.push("/discover");
+            router.push("/home");
           }}
         />
 
@@ -73,7 +73,7 @@ export const DrawerUserContent = (props) => {
               color={pathname === "/profile" ? "#fff" : "#000"}
             />
           )}
-          label={"Profile"}
+          label={"Perfil"}
           labelStyle={{
             fontSize: 18,
             color: pathname === "/profile" ? "#fff" : "#000",
@@ -96,7 +96,7 @@ export const DrawerUserContent = (props) => {
               color={pathname === "/favourites" ? "#fff" : "#000"}
             />
           )}
-          label={"Favourites"}
+          label={"Favoritos"}
           labelStyle={{
             fontSize: 18,
             color: pathname === "/favourites" ? "#fff" : "#000",
@@ -110,35 +110,13 @@ export const DrawerUserContent = (props) => {
           }}
         />
 
-        <DrawerItem
-          icon={({ color, size }) => (
-            <Ionicons
-              name="settings-outline"
-              size={size}
-              color={pathname === "/settings" ? "#fff" : "#000"}
-            />
-          )}
-          label={"Settings"}
-          labelStyle={{
-            fontSize: 18,
-            color: pathname === "/settings" ? "#fff" : "#000",
-          }}
-          style={{
-            backgroundColor: pathname === "/settings" ? "#333" : "#fff",
-            borderRadius: 3,
-            marginBottom: 5,
-          }}
-          onPress={() => {
-            router.push("/settings");
-          }}
-        />
         <View className="h-0 border-b-[1px] border-gray-300" />
       </DrawerContentScrollView>
       <DrawerItem
         icon={({ color, size }) => (
           <Ionicons name="log-out" size={size} color="#fff" />
         )}
-        label={"Log-Out"}
+        label={"Cerrar sesión"}
         labelStyle={{
           fontSize: 18,
           color: "#fff",
@@ -151,7 +129,8 @@ export const DrawerUserContent = (props) => {
           marginBlock: 20,
         }}
         onPress={() => {
-          signOut();
+          router.push("/");
+          // signOut();
         }}
       />
     </View>

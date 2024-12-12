@@ -32,7 +32,7 @@ export default function AppLayout() {
   const { user, session, loading } = useAuth();
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <Text>Cargando...</Text>;
   }
 
   if (!session) {
@@ -103,28 +103,28 @@ export default function AppLayout() {
         <Stack.Screen
           name="home"
           options={{
-            title: "Home",
+            title: "Inicio",
             animation: "slide_from_right",
           }}
         />
         <Stack.Screen
           name="create"
           options={{
-            title: "Create",
+            title: "Crear Sub",
             animation: "slide_from_right",
           }}
         />
         <Stack.Screen
           name="discover"
           options={{
-            title: "Discover",
+            title: "Descubre",
             animation: "slide_from_right",
           }}
         />
         <Stack.Screen
           name="profile"
           options={{
-            title: "Profile",
+            title: "Perfil",
             animation: "slide_from_right",
           }}
         />
@@ -137,7 +137,7 @@ export default function AppLayout() {
         <Stack.Screen
           name="s/[sub]/create"
           options={{
-            title: "Create",
+            title: "Crear Publicación",
             animation: "slide_from_right",
           }}
         />

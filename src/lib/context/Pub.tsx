@@ -54,7 +54,7 @@ const PubProvider = ({ children }) => {
             setUserId(pub.user_id);
           }
         } catch (error) {
-          console.error("Error fetching data:", error);
+          console.error("Error recuperando datos:", error);
         } finally {
           setUpdate(false);
         }
@@ -77,7 +77,7 @@ const PubProvider = ({ children }) => {
         score,
         setUpdate,
         updateComment,
-      }} // Add updateComment to context
+      }}
     >
       {children}
     </PubContext.Provider>

@@ -11,7 +11,6 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { supabase } from "@/lib/utils/supabase"; // Adjust the path as necessary
-import { User } from "@/lib/utils/types"; // Adjust the path as necessary
 import { useAuth } from "@/lib/context/Auth";
 import { decode } from "base64-arraybuffer";
 import { fetchUser } from "@/lib/utils/api";
@@ -21,6 +20,7 @@ export default function Profile() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [passwordError, setPasswordError] = useState(true);
 
   useEffect(() => {
     fetchUser(user.id).then((res) => {
@@ -59,7 +59,7 @@ export default function Profile() {
         });
 
       if (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error al subir la imagen:", error);
         return;
       }
 
@@ -69,7 +69,7 @@ export default function Profile() {
         .createSignedUrl(filePath, 60 * 60 * 24 * 7); // URL valid for 7 days
 
       if (urlError) {
-        console.error("Error generating signed URL:", urlError);
+        console.error("Error generando URL firmada:", urlError);
         return;
       }
 
@@ -80,7 +80,7 @@ export default function Profile() {
         .eq("id", user?.id);
 
       if (updateError) {
-        console.error("Error updating profile picture:", updateError);
+        console.error("Error subiendo foto de perfil:", updateError);
       }
     }
   };
@@ -94,14 +94,13 @@ export default function Profile() {
         .eq("id", user?.id);
 
       if (error) {
-        console.error("Error updating username:", error);
+        console.error("Error actualizando nombre de usuario:", error);
       } else {
-        alert("Username updated successfully");
+        alert("Nombre de usuario actualizado correctamente");
       }
     }
   };
 
-  // Handle password change
   const handleChangePassword = async () => {
     if (password.trim() !== "") {
       const { error } = await supabase.auth.updateUser({
@@ -109,11 +108,17 @@ export default function Profile() {
       });
 
       if (error) {
-        console.error("Error updating password:", error);
+        console.error("Error actualizando contraseña:", error);
       } else {
-        alert("Password updated successfully");
+        alert("Contraseña actualizada correctamente");
       }
     }
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,!?])[A-Za-z\d!@#$%^&*.,!?]{9,}$/;
+    setPasswordError(!passwordRegex.test(password));
   };
 
   return (
@@ -124,32 +129,41 @@ export default function Profile() {
       />
       <TouchableOpacity onPress={handleChangeProfilePic}>
         <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
-          Change Profile Picture
+          Cambiar foto de perfil
         </Text>
       </TouchableOpacity>
 
       <TextInput
         value={username}
         onChangeText={setUsername}
-        placeholder="Username"
+        placeholder="Nombre de usuario"
         className="border border-gray-300 p-3 w-full mb-4 mt-16 rounded text-3xl"
       />
       <TouchableOpacity onPress={handleChangeUsername}>
         <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
-          Update Username
+          Actualizar nombre de usuario
         </Text>
       </TouchableOpacity>
 
       <TextInput
         value={password}
-        onChangeText={setPassword}
-        placeholder="New Password"
+        onChangeText={(text) => {
+          setPassword(text);
+          validatePassword(text);
+        }}
+        placeholder="Contraseña"
         secureTextEntry
         className="border border-gray-300 p-3 w-full mt-10 mb-4 rounded text-3xl"
       />
-      <TouchableOpacity onPress={handleChangePassword}>
-        <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
-          Update Password
+      {passwordError && (
+        <Text className="text-red-500 text-xs mb-2">
+          Las contraseñas deben tener una letra mayúscula, un número, un
+          carácter especial y al menos 9 carácteres
+        </Text>
+      )}
+      <TouchableOpacity onPress={handleChangePassword} disabled={passwordError}>
+        <Text className="rounded-xl my-2 p-4 enabled:bg-blue-500 disabled:bg-gray-300 flex justify-center items-center text-white font-xl font-bold">
+          Actualizar contraseña
         </Text>
       </TouchableOpacity>
     </View>

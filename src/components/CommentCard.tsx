@@ -36,7 +36,6 @@ export default function CommentCard({
 }: CommentCardProps) {
   const { updateComment } = usePub();
 
-  // Local state to track score and user's vote
   const [localScore, setLocalScore] = useState<number>(item.score);
   const [currentVote, setCurrentVote] = useState<number | null>(null);
   const [userName, setUserName] = useState<string>("");
@@ -85,7 +84,7 @@ export default function CommentCard({
       await voteComment(item.user_id, item.id, vote);
     } catch (error) {
       // If there's an error, revert optimistic UI change
-      console.error("Error voting on comment:", error);
+      console.error("Error votando comentario:", error);
       setLocalScore(item.score); // Revert to original score
       setCurrentVote(null); // Revert vote state
     }

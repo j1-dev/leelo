@@ -44,12 +44,12 @@ export const fetchModerators = async (subId: string): Promise<string[]> => {
       .eq("sub_id", subId);
 
     if (error) {
-      throw new Error(`Error fetching moderators: ${error.message}`);
+      throw new Error(`Error recuperando moderadores ${error.message}`);
     }
 
     return data.map((moderator) => moderator.user_id);
   } catch (error) {
-    console.error("Error fetching moderators:", error);
+    console.error("Error recuperando moderadores:", error);
     throw error;
   }
 };
@@ -99,7 +99,7 @@ export const deleteSub = async (subId: string): Promise<void> => {
   const { error } = await supabase.from("subforums").delete().eq("id", subId);
 
   if (error) {
-    throw new Error(`Error deleting subforum: ${error.message}`);
+    throw new Error(`Error borrando subforo: ${error.message}`);
   }
 };
 
@@ -142,7 +142,7 @@ export const fetchFollowedPubs = async (userId: string) => {
       .eq("user_id", userId);
 
     if (error)
-      throw new Error(`Error fetching followed subforums: ${error.message}`);
+      throw new Error(`Error recuperando subforos seguidos: ${error.message}`);
     if (!data || data.length === 0) return []; // No followed subforums
 
     const subforumIds = data.map((follow) => follow.sub_id);
@@ -159,7 +159,7 @@ export const fetchFollowedPubs = async (userId: string) => {
       .order("created_at", { ascending: false });
 
     if (pubsError)
-      throw new Error(`Error fetching publications: ${pubsError.message}`);
+      throw new Error(`Error recuperando publicaciones: ${pubsError.message}`);
     return publications.map((pub) => ({
       pub: {
         id: pub.id,
@@ -174,7 +174,7 @@ export const fetchFollowedPubs = async (userId: string) => {
       accent: pub.subforums.accent,
     }));
   } catch (error) {
-    console.error("Error fetching followed publications:", error);
+    console.error("Error recuperando publicaciones:", error);
     throw error;
   }
 };
@@ -193,7 +193,7 @@ export const deletePub = async (pubId: string): Promise<void> => {
     .eq("pub_id", pubId);
 
   if (commentsError) {
-    throw new Error(`Error deleting comments: ${commentsError.message}`);
+    throw new Error(`Error borrando comentarios: ${commentsError.message}`);
   }
 
   // Then, delete the publication itself
@@ -203,7 +203,7 @@ export const deletePub = async (pubId: string): Promise<void> => {
     .eq("id", pubId);
 
   if (error) {
-    throw new Error(`Error deleting publication: ${error.message}`);
+    throw new Error(`Error borrando publicacíon: ${error.message}`);
   }
 };
 
@@ -224,7 +224,7 @@ export const calculateScore = async (publicationId) => {
 
     return score;
   } catch (error) {
-    console.error("Error calculating score:", error.message);
+    console.error("Error calculando puntuación:", error.message);
     return null;
   }
 };
@@ -268,7 +268,7 @@ export const fetchCommentVote = async (commentId: string, userId: string) => {
 
   if (error && error.code !== "PGRST116") {
     // code PGRST116 means no rows found
-    throw new Error(`Error fetching vote: ${error.message}`);
+    throw new Error(`Error recuperando voto: ${error.message}`);
   }
 
   return data;
@@ -284,7 +284,7 @@ export const fetchPublicationVote = async (pubId: string, userId: string) => {
 
   if (error && error.code !== "PGRST116") {
     // code PGRST116 means no rows found
-    throw new Error(`Error fetching vote: ${error.message}`);
+    throw new Error(`Error recuperando voto: ${error.message}`);
   }
 
   return data;
@@ -297,7 +297,7 @@ export const submitComment = async (
   parentCommentId: string | null = null,
 ): Promise<void> => {
   if (!userId) {
-    throw new Error("User not authenticated");
+    throw new Error("Usuario no autenticado");
   }
 
   const { error } = await supabase.from("comments").insert([
@@ -315,7 +315,6 @@ export const submitComment = async (
 };
 
 export const deleteComment = async (commentId: string): Promise<void> => {
-  // First, delete any child comments (if any)
   const { error: childCommentsError } = await supabase
     .from("comments")
     .delete()
@@ -323,7 +322,7 @@ export const deleteComment = async (commentId: string): Promise<void> => {
 
   if (childCommentsError) {
     throw new Error(
-      `Error deleting child comments: ${childCommentsError.message}`,
+      `Error borrando comentarios hijo: ${childCommentsError.message}`,
     );
   }
 
@@ -334,7 +333,7 @@ export const deleteComment = async (commentId: string): Promise<void> => {
     .eq("id", commentId);
 
   if (error) {
-    throw new Error(`Error deleting comment: ${error.message}`);
+    throw new Error(`Error borrando comentario: ${error.message}`);
   }
 };
 
@@ -347,7 +346,6 @@ export const voteComment = async (
     throw new Error(`Error ${action}: ${error?.message}`);
   };
 
-  // Fetch existing vote and comment score
   const [
     { data: existingVote, error: voteError },
     { data: commentData, error: commentError },
@@ -498,19 +496,50 @@ export const relativeTime = (isoDate: string): string => {
   const month = 60 * 60 * 24 * 30;
   const year = 60 * 60 * 24 * 365;
 
+  const formatTime = (value: number, singular: string, plural: string) =>
+    value === 1 ? `Hace 1 ${singular}` : `Hace ${value} ${plural}`;
+
   if (diffInSeconds < minute) {
-    return `${Math.max(Math.floor(diffInSeconds / seconds), 1)}s ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / seconds), 1),
+      "segundo",
+      "segundos",
+    );
   } else if (diffInSeconds < hour) {
-    return `${Math.max(Math.floor(diffInSeconds / minute), 1)}m ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / minute), 1),
+      "minuto",
+      "minutos",
+    );
   } else if (diffInSeconds < day) {
-    return `${Math.max(Math.floor(diffInSeconds / hour), 1)}h ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / hour), 1),
+      "hora",
+      "horas",
+    );
   } else if (diffInSeconds < week) {
-    return `${Math.max(Math.floor(diffInSeconds / day), 1)} day ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / day), 1),
+      "día",
+      "días",
+    );
   } else if (diffInSeconds < month) {
-    return `${Math.max(Math.floor(diffInSeconds / week), 1)} week ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / week), 1),
+      "semana",
+      "semanas",
+    );
   } else if (diffInSeconds < year) {
-    return `${Math.max(Math.floor(diffInSeconds / month), 1)} month ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / month), 1),
+      "mes",
+      "meses",
+    );
   } else {
-    return `${Math.max(Math.floor(diffInSeconds / year), 1)} year ago`;
+    return formatTime(
+      Math.max(Math.floor(diffInSeconds / year), 1),
+      "año",
+      "años",
+    );
   }
 };

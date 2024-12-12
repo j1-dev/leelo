@@ -17,6 +17,7 @@ export default function Auth() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [passwordError, setPasswordError] = useState(true);
 
   const signInWithEmail = async () => {
     setLoading(true);
@@ -70,7 +71,9 @@ export default function Auth() {
       if (insertError) {
         Alert.alert(insertError.message);
       } else {
-        Alert.alert("Please check your inbox for email verification!");
+        Alert.alert(
+          "Por favor, compruebe su bandeja de entrada para confirmar su email.",
+        );
       }
 
       setLoading(false);
@@ -79,6 +82,12 @@ export default function Auth() {
 
   const clickButton = () => {
     !isEnabled ? signUpWithEmail() : signInWithEmail();
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,!?])[A-Za-z\d!@#$%^&*.,!?]{9,}$/;
+    setPasswordError(!passwordRegex.test(password));
   };
 
   return (
@@ -94,11 +103,11 @@ export default function Auth() {
         {!isEnabled && (
           <View className="mb-4 relative">
             <Input
-              label="Username"
+              label="Nombre de usuario"
               leftIcon={{ type: "font-awesome", name: "user" }}
               onChangeText={(text) => setUsername(text)}
               value={username}
-              placeholder="Username"
+              placeholder="Nombre de usuario"
               autoCapitalize={"none"}
               inputContainerStyle={{ borderBottomColor: "#ccc" }}
               labelStyle={{ color: "#555" }}
@@ -112,31 +121,42 @@ export default function Auth() {
             leftIcon={{ type: "font-awesome", name: "envelope" }}
             onChangeText={(text) => setEmail(text)}
             value={email}
-            placeholder="email@address.com"
+            placeholder="email@correo.com"
             autoCapitalize={"none"}
             inputContainerStyle={{ borderBottomColor: "#ccc" }}
             labelStyle={{ color: "#555" }}
             inputStyle={{ color: "#333" }}
           />
         </View>
-        <View className="mb-8">
+        <View className="mb-2">
           <Input
-            label="Password"
+            label="Contraseña"
             leftIcon={{ type: "font-awesome", name: "lock" }}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={(text) => {
+              setPassword(text);
+              validatePassword(text);
+            }}
             value={password}
             secureTextEntry={true}
-            placeholder="Password"
+            placeholder="Contraseña"
             autoCapitalize={"none"}
-            inputContainerStyle={{ borderBottomColor: "#ccc" }}
+            inputContainerStyle={{
+              borderBottomColor: !passwordError ? "#ccc" : "#c11",
+            }}
             labelStyle={{ color: "#555" }}
             inputStyle={{ color: "#333" }}
           />
         </View>
+        {passwordError && !isEnabled && (
+          <Text className="text-red-500 text-xs mb-2">
+            Las contraseñas deben tener una letra mayúscula, un número, un
+            carácter especial y al menos 9 carácteres
+          </Text>
+        )}
         <View>
           <Button
-            title={!isEnabled ? "Sign up" : "Sign in"}
-            disabled={loading}
+            title={!isEnabled ? "Registrarse" : "Iniciar sesión"}
+            disabled={loading || (passwordError && !isEnabled)}
             onPress={() => clickButton()}
             buttonStyle={
               !isEnabled
@@ -147,7 +167,7 @@ export default function Auth() {
           />
         </View>
         <View className="m-auto flex-row items-center justify-between mt-4">
-          <Text className="mr-2">Sign up</Text>
+          <Text className="mr-2">Registrarse</Text>
           <Switch
             value={isEnabled}
             onValueChange={() => setIsEnabled((e) => !e)}
@@ -155,7 +175,7 @@ export default function Auth() {
             thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
           />
-          <Text className="ml-2">Sign in</Text>
+          <Text className="ml-2">Iniciar sesión</Text>
         </View>
       </View>
     </View>

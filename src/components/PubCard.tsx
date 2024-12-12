@@ -71,7 +71,7 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
       await votePublication(pub.user_id, pub.id, vote);
     } catch (error) {
       // If there's an error, revert optimistic UI change
-      console.error("Error voting on comment:", error);
+      console.error("Error votando comentario:", error);
       setLocalScore(pub.score); // Revert to original score
       setCurrentVote(null); // Revert vote state
     }

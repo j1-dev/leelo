@@ -41,8 +41,10 @@ export default function Pub() {
   const router = useRouter();
 
   useEffect(() => {
+    // Cargar publicación y comentarios
     const loadPubAndComments = async () => {
       try {
+        // Pasar id de la publicación al contexto
         pubCtx.setPubId(pub);
         const pubData = await fetchPub(pub as string);
         setPublication(pubData);
@@ -51,6 +53,7 @@ export default function Pub() {
         console.error(error);
       }
     };
+    // Cargar sentido del voto si existe
     const getVote = () => {
       fetchPublicationVote(pubCtx.pubId, pubCtx.userId).then((res) =>
         setCurrentVote(res?.vote || null),
@@ -62,26 +65,28 @@ export default function Pub() {
     setLoading(false);
   }, []);
 
+  // Función para actualizar la altura del layout de la publicación.
   const handlePublicationLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     setPublicationHeight(height);
   };
 
+  // Función para manejar el voto en el front-end
   const handleVote = async (vote: number) => {
-    // Optimistic update: Adjust score based on user's vote
+    // Guardar puntuación
     let newScore = localScore;
 
     if (currentVote === vote) {
-      // User is undoing their vote, subtract the vote
+      // Si el usuario deshace el voto, restarlo de la puntuación
       newScore -= vote;
       setCurrentVote(null);
     } else {
-      // User is either voting for the first time or switching votes
+      // El usuario está votando por primera vez o cambiando el sentido del voto
       if (currentVote !== null) {
-        // If there's an existing vote, reverse the old vote and apply the new one
+        // Si ya hay voto, revertir el sentido
         newScore += vote * 2;
       } else {
-        // First time voting, simply add the vote
+        // Primera vez votando, añadir el voto
         newScore += vote;
       }
       setCurrentVote(vote);
@@ -89,39 +94,60 @@ export default function Pub() {
 
     setLocalScore(newScore);
 
-    // Call API to update vote in the backend
+    // Llamar a la api para actualizar la puntuación el el back-end
     try {
       subCtx.setUpdate(true);
       subCtx.updatePublication(publication.id, { score: newScore });
       await votePublication(publication.user_id, publication.id, vote);
     } catch (error) {
-      // If there's an error, revert optimistic UI change
-      console.error("Error voting on comment:", error);
-      setLocalScore(publication.score); // Revert to original score
-      setCurrentVote(null); // Revert vote state
+      // Si hay un error, revertir la operación
+      console.error("Error al votar el comentario:", error);
+      setLocalScore(publication.score);
+      setCurrentVote(null);
     }
   };
 
+  // Función para enviar el comentario
   const handleCommentSubmit = async () => {
     if (newComment.trim().length === 0) {
-      Alert.alert("Error", "Comment cannot be empty");
+      Alert.alert("Error", "El comentario no puede estar vacío");
       return;
     }
 
     try {
       await submitComment(user.id, pub as string, newComment);
-      setNewComment("");
-      pubCtx.setUpdate(true);
+      setNewComment(""); // Resetear la caja de comentario
+      pubCtx.setUpdate(true); // Actualizar el contexto de la publicación
     } catch (error) {
-      Alert.alert("Error", "Failed to submit comment");
+      Alert.alert("Error", "Error al enviar el comentario");
     }
   };
 
+  // Función para borrar publicación
   const handleDeletePub = (pubId: string) => {
-    deletePub(pubId);
-    subCtx.setPubs((prevPubs) => prevPubs.filter((pub) => pub.id !== pubId));
-    // subCtx.setUpdate(true);
-    router.back();
+    Alert.alert(
+      "Confirmar borrado",
+      "¿Está seguro de que quiere borrar esta publicación? Esta acción no se podrá deshacer",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Borrar",
+          style: "destructive",
+          onPress: () => {
+            deletePub(pubId);
+            // Borrar publicación de la colección local del contexto del subforo
+            subCtx.setPubs((prevPubs) =>
+              prevPubs.filter((pub) => pub.id !== pubId),
+            );
+            // subCtx.setUpdate(true);
+            router.back();
+          },
+        },
+      ],
+    );
   };
 
   if (loading || !publication)
@@ -129,19 +155,14 @@ export default function Pub() {
 
   return (
     <View className="relative h-full bg-white">
-      {pubCtx.title.length <= 23 ? (
-        <Stack.Screen
-          options={{
-            headerTitle: pubCtx.title,
-          }}
-        />
-      ) : (
-        <Stack.Screen
-          options={{
-            headerTitle: pubCtx.title.slice(0, 23) + "...",
-          }}
-        />
-      )}
+      <Stack.Screen
+        options={{
+          headerTitle:
+            pubCtx.title.length <= 23
+              ? pubCtx.title
+              : pubCtx.title.slice(0, 23) + "...",
+        }}
+      />
 
       {publication && (
         <View
@@ -171,6 +192,7 @@ export default function Pub() {
                 />
               </View>
             )}
+            {/* Solo enseñar bottón de borrar si es el creador o es moderador del sub */}
             {user.id === publication.user_id ||
             subCtx?.mods?.includes(user.id) ? (
               <TouchableOpacity
@@ -182,26 +204,26 @@ export default function Pub() {
             ) : null}
             <View className="absolute right-4 top-0">
               <View className="flex-row">
-                {/* Upvote Button */}
+                {/* Voto positivo */}
                 <TouchableOpacity onPress={() => handleVote(1)}>
                   <AntDesign
                     name="arrowup"
                     className="mr-1 mt-1"
                     size={18}
-                    color={currentVote === 1 ? "green" : "gray"} // Highlight if upvoted
+                    color={currentVote === 1 ? "green" : "gray"}
                   />
                 </TouchableOpacity>
 
-                {/* Display score */}
+                {/* Puntuación */}
                 <Text className="text-lg font-bold mx-1">{localScore}</Text>
 
-                {/* Downvote Button */}
+                {/* Voto negativo */}
                 <TouchableOpacity onPress={() => handleVote(-1)}>
                   <AntDesign
                     name="arrowdown"
                     className="ml-1 mt-1"
                     size={18}
-                    color={currentVote === -1 ? "red" : "gray"} // Highlight if downvoted
+                    color={currentVote === -1 ? "red" : "gray"}
                   />
                 </TouchableOpacity>
               </View>
@@ -210,6 +232,7 @@ export default function Pub() {
         </View>
       )}
       <SafeAreaView className="h-screen flex-1 bg-white">
+        {/* Renderizado recursivo de comentarios */}
         {pubCtx.comments
           ? renderComments(
               pubCtx.comments,
@@ -221,6 +244,7 @@ export default function Pub() {
               subCtx.accent ? subCtx.accent : "00FF00",
             )
           : null}
+        {/* Barra para comentar */}
         <CommentBar
           value={newComment}
           onChangeText={setNewComment}

@@ -51,7 +51,7 @@ export default function SubRenderer({ subList, onReload }: SubRendererProps) {
       }
       ListEmptyComponent={
         <Text className="text-center text-gray-500 mt-4">
-          No subforums available.
+          No hay subforos disponibles.
         </Text>
       }
     />

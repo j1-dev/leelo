@@ -58,24 +58,20 @@ export default function CreateSub() {
 
           if (moderatorsError) {
             console.error(
-              "Error inserting moderators:",
+              "Error insertando moderadores:",
               moderatorsError.message,
             );
-            Alert.alert("Error", "There was an issue adding moderators.");
+            Alert.alert("Error", "Hubo un error al añadir moderadores.");
             return;
           }
         }
 
-        Alert.alert(
-          "Success",
-          "Your subforum has been created and moderators added!",
-        );
-        router.push(`/home`); // Redirect to the desired page after submission
+        Alert.alert("Éxito", "Su subforo ha sido creado.");
+        router.replace(`/home`); // Redirect to the desired page after submission
       });
       // Redirect to the desired page after submission
     } catch (error) {
-      console.error("Error submitting subforum:", error.message);
-      Alert.alert("Error", "There was an issue submitting your sub.");
+      Alert.alert("Error", "Hubo un error al enviar el subforo.");
     }
   };
 
@@ -89,8 +85,7 @@ export default function CreateSub() {
       const data = await fetchUsers();
       setUsers(data);
     } catch (error) {
-      console.error("Error fetching users:", error.message);
-      Alert.alert("Error", "Unable to fetch users.");
+      Alert.alert("Error", "Error al recuperar usuarios.");
     }
   };
 
@@ -116,16 +111,16 @@ export default function CreateSub() {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View className="flex-1 bg-white h-full pb-4">
         <View className="flex-1 px-4 ">
-          <Text className="text-3xl font-bold mb-4">Create a New Subforum</Text>
+          <Text className="text-3xl font-bold mb-4">Crea un nuevo subforo</Text>
           <TextInput
             className="border border-gray-300 p-3 mb-4 rounded"
-            placeholder="Name"
+            placeholder="Nombre"
             value={name}
             onChangeText={setName}
           />
           <TextInput
             className="border border-gray-300 p-3 mb-4 rounded h-40 text-gray-800"
-            placeholder="Content"
+            placeholder="Descripción"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -158,7 +153,7 @@ export default function CreateSub() {
         <View className="mx-4">
           {moderators.length > 0 && (
             <View className="bg-gray-100 p-3 rounded mb-4">
-              <Text className="font-bold mb-2">Selected Moderators:</Text>
+              <Text className="font-bold mb-2">Selecciona moderadores: </Text>
               {moderators.map((mod, index) => (
                 <View
                   key={index}
@@ -185,14 +180,14 @@ export default function CreateSub() {
             className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
           >
             <Text className="text-xl font-bold text-white">
-              Add Moderator/s
+              Añadir moderador/es
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSubmit}
             className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
           >
-            <Text className="text-xl font-bold text-white">Submit</Text>
+            <Text className="text-xl font-bold text-white">Enviar</Text>
           </TouchableOpacity>
         </View>
 
@@ -207,7 +202,6 @@ export default function CreateSub() {
             style={{
               flex: 1,
               justifyContent: "flex-end", // Align the modal content at the bottom
-              // backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim the background
             }}
           >
             <View
@@ -256,7 +250,7 @@ export default function CreateSub() {
                 )}
                 ListEmptyComponent={
                   <Text className="text-gray-500 text-center mt-4">
-                    No users found.
+                    No se encontraron usuarios.
                   </Text>
                 }
               />
@@ -264,7 +258,7 @@ export default function CreateSub() {
                 onPress={() => setModalVisible(false)}
                 className="mt-4 p-4 rounded-xl bg-red-500 flex items-center"
               >
-                <Text className="text-white font-bold text-lg">Done</Text>
+                <Text className="text-white font-bold text-lg">Hecho</Text>
               </TouchableOpacity>
             </View>
           </View>

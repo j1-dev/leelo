@@ -70,7 +70,7 @@ export const renderComments = (
                 href={`s/${sub}/p/${pub}/c/${parentId}`}
                 className="text-blue-500 underline"
               >
-                <Text>Show more comments</Text>
+                <Text>Mostrar más comentarios</Text>
               </Link>
             </TouchableOpacity>
           )}

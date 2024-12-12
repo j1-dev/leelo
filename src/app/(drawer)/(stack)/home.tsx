@@ -53,7 +53,7 @@ export default function Home() {
         }
         ListEmptyComponent={
           <Text className="text-center text-gray-500 mt-4">
-            No publications available.
+            No hay publicaciones disponibles.
           </Text>
         }
       />

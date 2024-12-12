@@ -58,9 +58,6 @@ export default function SubCard({
         ) : (
           <Feather name="plus" size={30} color={"#007AFF"} />
         )}
-        <Text className="text-xs text-gray-500">
-          {follows ? "unfollow" : "follow"}
-        </Text>
       </TouchableOpacity>
     </View>
   );

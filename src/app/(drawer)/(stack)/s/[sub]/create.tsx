@@ -15,7 +15,7 @@ import { useLocalSearchParams, router } from "expo-router";
 import { submitPub } from "@/lib/utils/api";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { supabase } from "@/lib/utils/supabase"; // Import Supabase client
+import { supabase } from "@/lib/utils/supabase";
 import { decode } from "base64-arraybuffer";
 import { useSub } from "@/lib/context/Sub";
 import Feather from "@expo/vector-icons/Feather";
@@ -23,17 +23,17 @@ import Feather from "@expo/vector-icons/Feather";
 export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [imageUri, setImageUri] = useState<string | null>(null); // State for the selected image URI
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const { sub } = useLocalSearchParams();
   const subCtx = useSub();
-  const { user, signOut, loading } = useAuth();
+  const { user } = useAuth();
 
   const handleImagePick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
-        "Permission denied",
-        "You need to grant permission to access the gallery.",
+        "Permiso denegado",
+        "Debe dar permiso para acceder a la galería.",
       );
       return;
     }
@@ -47,7 +47,7 @@ export default function CreatePost() {
 
     if (!result.canceled) {
       const img = result.assets[0];
-      setImageUri(img.uri); // Set the image URI to display
+      setImageUri(img.uri);
     }
   };
 
@@ -83,14 +83,13 @@ export default function CreatePost() {
           throw new Error(error.message);
         }
 
-        // Get the public URL of the uploaded image
         const { data: urlData, error: urlError } = await supabase.storage
           .from("publication_images")
           .createSignedUrl(data.path, 60 * 60 * 24 * 7);
-        pub.img_url = urlData.signedUrl; // Add image URL to publication data
+
+        pub.img_url = urlData.signedUrl;
       } catch (uploadError) {
-        console.error("Error uploading image:", uploadError.message);
-        Alert.alert("Error", "There was an issue uploading the image.");
+        Alert.alert("Error", "Ha habido un error subiendo la imagen.");
         return;
       }
     }
@@ -100,14 +99,13 @@ export default function CreatePost() {
       try {
         await submitPub(pub);
         subCtx.setUpdate(true);
-        Alert.alert("Success", "Your publication has been submitted!");
-        router.push(`s/${sub}/`); // Redirect to the desired page after submission
+        Alert.alert("Éxito", "Su publicación se ha enviado.");
+        router.replace(`s/${sub}/`); // Redirect to the desired page after submission
       } catch (error) {
-        console.error("Error submitting publication:", error.message);
-        Alert.alert("Error", "There was an issue submitting your publication.");
+        Alert.alert("Error", "Ha habido un error al subir su publicación.");
       }
     } else {
-      Alert.alert("Error", "Title and Content are required!");
+      Alert.alert("Error", "Título y contenido obligatorio");
     }
   };
 
@@ -119,13 +117,11 @@ export default function CreatePost() {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View className="flex-1 bg-white h-full pb-4">
         <View className="flex-1 px-2">
-          <Text className="text-3xl font-bold mb-2">
-            Create a New Publication
-          </Text>
+          <Text className="text-3xl font-bold mb-2">Crear una publicación</Text>
           <View className="border border-gray-500 rounded-xl mb-2">
             <TextInput
               className="text-xl ml-3"
-              placeholder="Title"
+              placeholder="Título"
               value={title}
               onChangeText={setTitle}
             />
@@ -133,7 +129,7 @@ export default function CreatePost() {
           <View className="border border-gray-500 rounded-xl mb-2">
             <TextInput
               className="h-40 text-xl ml-3"
-              placeholder="Content"
+              placeholder="Contenido"
               value={content}
               onChangeText={setContent}
               multiline
@@ -159,7 +155,7 @@ export default function CreatePost() {
             onPress={handleImagePick}
             className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
           >
-            <Text className="text-xl font-bold text-white">Upload Image</Text>
+            <Text className="text-xl font-bold text-white">Subir imagen</Text>
           </TouchableOpacity>
         </View>
 
@@ -168,7 +164,7 @@ export default function CreatePost() {
             onPress={handleSubmit}
             className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
           >
-            <Text className="text-xl font-bold text-white">Submit</Text>
+            <Text className="text-xl font-bold text-white">Enviar</Text>
           </TouchableOpacity>
         </View>
       </View>
