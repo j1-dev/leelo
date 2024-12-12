@@ -16,6 +16,7 @@ import {
   deletePub,
   votePublication,
   fetchPublicationVote,
+  relativeTime,
 } from "@/lib/utils/api";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { usePub } from "@/lib/context/Pub";
@@ -128,11 +129,20 @@ export default function Pub() {
 
   return (
     <View className="relative h-full bg-white">
-      <Stack.Screen
-        options={{
-          headerTitle: pubCtx.title,
-        }}
-      />
+      {pubCtx.title.length <= 23 ? (
+        <Stack.Screen
+          options={{
+            headerTitle: pubCtx.title,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          options={{
+            headerTitle: pubCtx.title.slice(0, 23) + "...",
+          }}
+        />
+      )}
+
       {publication && (
         <View
           className={`w-full p-4 bg-white border-b-[1px]`}
@@ -141,16 +151,25 @@ export default function Pub() {
           onLayout={handlePublicationLayout}
         >
           <ScrollView className="border relative border-white">
-            <Text className="text-2xl font-bold">{publication.title}</Text>
-            <Text className="text-base mt-2">{publication.content}</Text>
+            <Text className="text-2xl font-bold w-4/5">
+              {publication.title}
+            </Text>
+            <Text className="text-base mt-2 w-4/5">{publication.content}</Text>
             <Text className="text-xs text-gray-500 mt-2">
-              {new Date(publication.created_at).toLocaleString()}
+              {relativeTime(new Date(publication.created_at).toISOString())}
             </Text>
             {!!publication.img_url && (
-              <Image
-                style={{ width: 200, height: 200, resizeMode: "cover" }}
-                src={publication.img_url}
-              />
+              <View className="flex-1 items-center mt-3">
+                <Image
+                  style={{
+                    width: 200,
+                    height: 200,
+                    resizeMode: "cover",
+                    borderRadius: 25,
+                  }}
+                  src={publication.img_url}
+                />
+              </View>
             )}
             {user.id === publication.user_id ? (
               <TouchableOpacity

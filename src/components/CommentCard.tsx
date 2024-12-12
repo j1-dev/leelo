@@ -3,7 +3,12 @@ import { router } from "expo-router";
 import { Comment } from "@/lib/utils/types";
 import { getShadesOfAccent } from "@/lib/utils/colors";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { fetchCommentVote, fetchUserName, voteComment } from "@/lib/utils/api";
+import {
+  fetchCommentVote,
+  fetchUserName,
+  relativeTime,
+  voteComment,
+} from "@/lib/utils/api";
 import { usePub } from "@/lib/context/Pub";
 import { useState, useEffect } from "react";
 
@@ -106,7 +111,7 @@ export default function CommentCard({
             {item.content}
           </Text>
           <Text className="text-xs text-gray-500">
-            {new Date(item.created_at).toLocaleString()}
+            {relativeTime(new Date(item.created_at).toISOString())}
           </Text>
           <View className="absolute right-3 top-3">
             <View className="flex-row">

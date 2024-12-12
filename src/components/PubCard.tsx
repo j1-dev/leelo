@@ -7,6 +7,7 @@ import {
   votePublication,
   fetchPublicationVote,
   fetchPub,
+  relativeTime,
 } from "@/lib/utils/api";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useSub } from "@/lib/context/Sub";
@@ -87,9 +88,11 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
       style={{ borderColor: accent }}
     >
       <View>
-        <Text className="text-lg font-bold text-gray-800">{pub.title}</Text>
+        <Text className="text-lg font-bold text-gray-800 w-4/5">
+          {pub.title}
+        </Text>
         <Text className="text-sm text-gray-500">
-          {new Date(pub.created_at).toLocaleString()}
+          {relativeTime(new Date(pub.created_at).toISOString())}
         </Text>
       </View>
       <View className="absolute right-4 top-5">

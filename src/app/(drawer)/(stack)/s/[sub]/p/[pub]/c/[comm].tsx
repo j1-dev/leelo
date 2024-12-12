@@ -7,7 +7,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, Link, Stack, useRouter } from "expo-router";
-import { deleteComment, fetchComment, submitComment } from "@/lib/utils/api";
+import {
+  deleteComment,
+  fetchComment,
+  relativeTime,
+  submitComment,
+} from "@/lib/utils/api";
 import { Comment, Subforum } from "@/lib/utils/types";
 import { useAuth } from "@/lib/context/Auth";
 import { usePub } from "@/lib/context/Pub";
@@ -83,18 +88,26 @@ export default function Comm() {
 
   return (
     <View className="bg-white relative h-full">
-      <Stack.Screen
-        options={{
-          headerTitle: pubCtx.title,
-        }}
-      />
+      {pubCtx.title.length <= 23 ? (
+        <Stack.Screen
+          options={{
+            headerTitle: pubCtx.title,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          options={{
+            headerTitle: pubCtx.title.slice(0, 23) + "...",
+          }}
+        />
+      )}
       <View ref={commentRef} onLayout={handleCommentLayout}>
         {parentComment && (
           <Link href={`s/${sub}/p/${pub}/c/${parentComment.id}`}>
             <View className="mb-4 p-4 bg-white rounded-lg">
               <Text className="text-lg font-bold">{parentComment.content}</Text>
               <Text className="text-xs text-gray-500 mt-2">
-                by User {parentComment.user_id}
+                {relativeTime(new Date(parentComment.created_at).toISOString())}
               </Text>
             </View>
           </Link>
@@ -108,9 +121,11 @@ export default function Comm() {
               onPress={() => router.push(`s/${sub}/p/${pub}/c/${comment.id}`)}
             >
               <View className="border relative border-white">
-                <Text className="text-2xl font-bold">{comment.content}</Text>
+                <Text className="text-2xl font-bold w-4/5">
+                  {comment.content}
+                </Text>
                 <Text className="text-xs text-gray-500 mt-2">
-                  by User {comment.user_id}
+                  {relativeTime(new Date(comment.created_at).toISOString())}
                 </Text>
                 {user.id === comment.user_id ? (
                   <TouchableOpacity

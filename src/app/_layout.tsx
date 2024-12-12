@@ -3,6 +3,7 @@ import "@/global.css";
 import AuthProvider from "@/lib/context/Auth";
 import PubProvider from "@/lib/context/Pub";
 import SubProvider from "@/lib/context/Sub";
+import { StatusBar } from "expo-status-bar";
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
@@ -10,6 +11,7 @@ export default function Root() {
     <AuthProvider>
       <SubProvider>
         <PubProvider>
+          <StatusBar style="dark" backgroundColor="white" translucent={true} />
           <Stack
             screenOptions={{
               animation: "slide_from_right",

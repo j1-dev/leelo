@@ -12,7 +12,7 @@ export default function HeaderLeftButton({ show }: HeaderLeftButtonProps) {
   const nav = useNavigation<DrawerNavigationProp<{}>>();
 
   return (
-    <View className="top-14 left-4 z-10">
+    <View className="top-14 left-4 z-10 w-10">
       <Feather
         name={show ? "menu" : "arrow-left"}
         size={32}

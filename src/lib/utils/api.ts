@@ -30,6 +30,12 @@ export const fetchUser = async (
   return await fetchUserQuery(userId, "*");
 };
 
+export const fetchUsers = async (): Promise<User[]> => {
+  const { data, error } = await supabase.from("users").select("*");
+  if (error) throw error;
+  return data;
+};
+
 export const fetchSub = async (subId: string): Promise<Subforum | null> => {
   const { data, error } = await supabase
     .from("subforums")
@@ -80,9 +86,13 @@ export const deleteSub = async (subId: string): Promise<void> => {
 };
 
 export const submitSub = async (sub: Subforum) => {
-  const { error } = await supabase.from("subforums").insert([sub]);
+  const { data, error } = await supabase
+    .from("subforums")
+    .insert([sub])
+    .select("id")
+    .single();
   if (error) throw error;
-  fetchPubs(sub.id);
+  return data;
 };
 
 export const fetchPub = async (pubId: string): Promise<Publication | null> => {
@@ -127,7 +137,8 @@ export const fetchFollowedPubs = async (userId: string) => {
         subforums(accent)
       `,
       )
-      .in("sub_id", subforumIds);
+      .in("sub_id", subforumIds)
+      .order("created_at", { ascending: false });
 
     if (pubsError)
       throw new Error(`Error fetching publications: ${pubsError.message}`);
@@ -151,9 +162,9 @@ export const fetchFollowedPubs = async (userId: string) => {
 };
 
 export const submitPub = async (pub: Publication) => {
-  const { error } = await supabase.from("publications").insert([pub]);
+  const { data, error } = await supabase.from("publications").insert([pub]);
   if (error) throw error;
-  fetchPubs(pub.sub_id);
+  return data;
 };
 
 export const deletePub = async (pubId: string): Promise<void> => {
@@ -454,4 +465,34 @@ export const votePublication = async (
   if (scoreError) supabaseError("updating comment score", scoreError);
 
   return { success: true, newScore };
+};
+
+export const relativeTime = (isoDate: string): string => {
+  const now = new Date();
+  const date = new Date(isoDate);
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  const seconds = 1;
+  const minute = 60;
+  const hour = 60 * 60;
+  const day = 60 * 60 * 24;
+  const week = 60 * 60 * 24 * 7;
+  const month = 60 * 60 * 24 * 30;
+  const year = 60 * 60 * 24 * 365;
+
+  if (diffInSeconds < minute) {
+    return `${Math.max(Math.floor(diffInSeconds / seconds), 1)}s ago`;
+  } else if (diffInSeconds < hour) {
+    return `${Math.max(Math.floor(diffInSeconds / minute), 1)}m ago`;
+  } else if (diffInSeconds < day) {
+    return `${Math.max(Math.floor(diffInSeconds / hour), 1)}h ago`;
+  } else if (diffInSeconds < week) {
+    return `${Math.max(Math.floor(diffInSeconds / day), 1)} day ago`;
+  } else if (diffInSeconds < month) {
+    return `${Math.max(Math.floor(diffInSeconds / week), 1)} week ago`;
+  } else if (diffInSeconds < year) {
+    return `${Math.max(Math.floor(diffInSeconds / month), 1)} month ago`;
+  } else {
+    return `${Math.max(Math.floor(diffInSeconds / year), 1)} year ago`;
+  }
 };

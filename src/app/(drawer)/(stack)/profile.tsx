@@ -118,30 +118,40 @@ export default function Profile() {
 
   return (
     <View className="flex-1 items-center p-4 bg-white h-screen">
+      <Image
+        source={{ uri: profilePic || "https://via.placeholder.com/150" }}
+        className="w-40 h-40 rounded-3xl mb-4 mt-10"
+      />
       <TouchableOpacity onPress={handleChangeProfilePic}>
-        <Image
-          source={{ uri: profilePic || "https://via.placeholder.com/150" }}
-          className="w-40 h-40 rounded-3xl mb-4 mt-10"
-        />
-        <Text className="text-blue-500">Change Profile Picture</Text>
+        <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
+          Change Profile Picture
+        </Text>
       </TouchableOpacity>
 
       <TextInput
         value={username}
         onChangeText={setUsername}
         placeholder="Username"
-        className="border rounded p-2 w-full mb-4 mt-32"
+        className="border border-gray-300 p-3 w-full mb-4 mt-16 rounded text-3xl"
       />
-      <Button title="Update Username" onPress={handleChangeUsername} />
+      <TouchableOpacity onPress={handleChangeUsername}>
+        <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
+          Update Username
+        </Text>
+      </TouchableOpacity>
 
       <TextInput
         value={password}
         onChangeText={setPassword}
         placeholder="New Password"
         secureTextEntry
-        className="border rounded p-2 w-full mt-10 mb-4"
+        className="border border-gray-300 p-3 w-full mt-10 mb-4 rounded text-3xl"
       />
-      <Button title="Update Password" onPress={handleChangePassword} />
+      <TouchableOpacity onPress={handleChangePassword}>
+        <Text className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center text-white font-xl font-bold">
+          Update Password
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

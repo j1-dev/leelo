@@ -38,14 +38,13 @@ export default function Home() {
     <View className="bg-white flex h-screen relative">
       <FlatList
         data={pubs}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.pub.id}
         renderItem={({ item }) => (
           <View className="py-1">
             <PubCard
               pub={item.pub}
               sub={item.pub.sub_id}
               accent={item.accent}
-              key={Math.random()}
             />
           </View>
         )}
@@ -54,7 +53,7 @@ export default function Home() {
         }
         ListEmptyComponent={
           <Text className="text-center text-gray-500 mt-4">
-            No subforums available.
+            No publications available.
           </Text>
         }
       />

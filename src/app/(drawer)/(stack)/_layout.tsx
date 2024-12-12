@@ -17,6 +17,7 @@ import { Platform } from "react-native";
 import { WHITE_LOGO_URL } from "@/components/Auth";
 import { useEffect, useState } from "react";
 import { fetchUser } from "@/lib/utils/api";
+import { StatusBar } from "expo-status-bar";
 
 export default function AppLayout() {
   const [profilePic, setProfilePic] = useState(null);
@@ -47,6 +48,7 @@ export default function AppLayout() {
   return (
     <View className="bg-white h-full w-full absolute bottom-0">
       {Platform.OS === "ios" && <HeaderLeftButton show={showDrawerButton} />}
+      <StatusBar style="dark" backgroundColor="white" translucent={true} />
       <Stack
         screenOptions={{
           gestureEnabled: false,
@@ -79,19 +81,21 @@ export default function AppLayout() {
               }
             } else return null;
           },
-          headerRight: () => {
-            return (
-              <TouchableOpacity onPress={() => router.push("/home")}>
-                <Image
-                  className="max-w-md mx-auto w-[42px] h-[42px] rounded-[25px] mt-1 mr-1 z-50"
-                  src={profilePic || WHITE_LOGO_URL}
-                  style={{
-                    resizeMode: "cover",
-                  }}
-                />
-              </TouchableOpacity>
-            );
-          },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/home");
+              }}
+            >
+              <Image
+                className="w-[42px] h-[42px] rounded-[25px] z-50"
+                src={profilePic || WHITE_LOGO_URL}
+                style={{
+                  resizeMode: "cover",
+                }}
+              />
+            </TouchableOpacity>
+          ),
           headerBackVisible: false,
           headerTitleAlign: "center",
         }}

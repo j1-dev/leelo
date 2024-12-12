@@ -147,7 +147,7 @@ export default function Auth() {
           />
         </View>
         <View className="m-auto flex-row items-center justify-between mt-4">
-          <Text>Sign up</Text>
+          <Text className="mr-2">Sign up</Text>
           <Switch
             value={isEnabled}
             onValueChange={() => setIsEnabled((e) => !e)}

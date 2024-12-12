@@ -5,6 +5,8 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { Publication } from "@/lib/utils/types";
@@ -16,6 +18,7 @@ import * as FileSystem from "expo-file-system";
 import { supabase } from "@/lib/utils/supabase"; // Import Supabase client
 import { decode } from "base64-arraybuffer";
 import { useSub } from "@/lib/context/Sub";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -108,55 +111,67 @@ export default function CreatePost() {
     }
   };
 
-  return (
-    <View className="flex-1 bg-white h-full pb-4">
-      <View className="flex-1 px-2">
-        <Text className="text-3xl font-bold mb-2">
-          Create a New Publication
-        </Text>
-        <View className="border border-gray-500 rounded-xl mb-2">
-          <TextInput
-            className="text-xl ml-3"
-            placeholder="Title"
-            value={title}
-            onChangeText={setTitle}
-          />
-        </View>
-        <View className="border border-gray-500 rounded-xl mb-2">
-          <TextInput
-            className="h-40 text-xl ml-3"
-            placeholder="Content"
-            value={content}
-            onChangeText={setContent}
-            multiline
-          />
-        </View>
+  const removeImage = () => {
+    setImageUri(null);
+  };
 
-        {imageUri && (
-          <View className="mb-4">
-            <Image
-              source={{ uri: imageUri }}
-              style={{ width: 100, height: 100, borderRadius: 8 }}
+  return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View className="flex-1 bg-white h-full pb-4">
+        <View className="flex-1 px-2">
+          <Text className="text-3xl font-bold mb-2">
+            Create a New Publication
+          </Text>
+          <View className="border border-gray-500 rounded-xl mb-2">
+            <TextInput
+              className="text-xl ml-3"
+              placeholder="Title"
+              value={title}
+              onChangeText={setTitle}
             />
           </View>
-        )}
+          <View className="border border-gray-500 rounded-xl mb-2">
+            <TextInput
+              className="h-40 text-xl ml-3"
+              placeholder="Content"
+              value={content}
+              onChangeText={setContent}
+              multiline
+            />
+          </View>
 
-        <TouchableOpacity
-          onPress={handleImagePick}
-          className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
-        >
-          <Text className="text-xl font-bold text-white">Upload Image</Text>
-        </TouchableOpacity>
-      </View>
+          {imageUri && (
+            <View className="flex-1 items-center">
+              <Image
+                source={{ uri: imageUri }}
+                style={{ width: 150, height: 150, borderRadius: 8 }}
+              />
+              <TouchableOpacity
+                className="mt-3 border-2 rounded-full border-[#cc1111] p-3"
+                onPress={removeImage}
+              >
+                <Feather name="trash-2" size={26} color={"#c11"} />
+              </TouchableOpacity>
+            </View>
+          )}
 
-      <View className="mt-auto mx-3">
-        <TouchableOpacity
-          onPress={handleSubmit}
-          className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
-        >
-          <Text className="text-xl font-bold text-white">Submit</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleImagePick}
+            className="rounded-xl my-2 p-4 bg-blue-500 flex justify-center items-center"
+          >
+            <Text className="text-xl font-bold text-white">Upload Image</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="mt-auto mx-3">
+          <TouchableOpacity
+            onPress={handleSubmit}
+            className="rounded-xl my-2 p-4 bg-green-500 flex justify-center items-center"
+          >
+            <Text className="text-xl font-bold text-white">Submit</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
