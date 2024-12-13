@@ -34,7 +34,7 @@ export default function SubCard({
 
   return (
     <View
-      className="bg-white p-4 border rounded-xl"
+      className="bg-white p-4 border rounded-xl h-[84px]"
       style={{ borderColor: subforum.accent }} // Color de borde personalizado basado en el subforo
     >
       <Link
@@ -53,13 +53,13 @@ export default function SubCard({
       </Link>
       <TouchableOpacity
         onPress={() => toggleFollow()} // Alterna el estado de seguir
-        className="w-1/5 absolute -right-4 top-5 mx-auto"
+        className="absolute right-5 top-7 justify-center items-end "
       >
         {/* Muestra un icono diferente dependiendo de si el usuario sigue o no el subforo */}
         {follows ? (
-          <Feather name="minus" size={30} color={"#CA1200"} /> // Ícono para dejar de seguir
+          <Feather name="user-minus" size={30} color={"#CA1200"} /> // Ícono para dejar de seguir
         ) : (
-          <Feather name="plus" size={30} color={"#007AFF"} /> // Ícono para seguir
+          <Feather name="user-plus" size={30} color={"#007AFF"} /> // Ícono para seguir
         )}
       </TouchableOpacity>
     </View>
