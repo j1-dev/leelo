@@ -19,6 +19,7 @@ export default function Auth() {
   const [isEnabled, setIsEnabled] = useState(false);
   const [passwordError, setPasswordError] = useState(true);
 
+  // Función para iniciar sesión con email y contraseña
   const signInWithEmail = async () => {
     setLoading(true);
     const {
@@ -30,18 +31,17 @@ export default function Auth() {
     });
 
     setLoading(false);
-
     if (error) {
       Alert.alert(error.message);
       return;
     }
-
-    router.push("/home");
+    router.push("/home"); // Redirige al usuario a la pantalla de inicio después de iniciar sesión
     setTimeout(() => {
-      router.replace("/home");
+      router.replace("/home"); // Reemplaza la pantalla actual con la de inicio
     }, 0);
   };
 
+  // Función para registrar un nuevo usuario con email y contraseña
   const signUpWithEmail = async () => {
     setLoading(true);
     const {
@@ -59,10 +59,10 @@ export default function Auth() {
     }
 
     if (user) {
-      // Insert the user into the users table
+      // Inserta al usuario en la tabla de usuarios de la base de datos
       const { error: insertError } = await supabase.from("users").insert([
         {
-          id: user.id, // Use the user's ID from Supabase auth
+          id: user.id, // Usa el ID del usuario desde Supabase auth
           username: username,
           email: email,
         },
@@ -73,40 +73,44 @@ export default function Auth() {
       } else {
         Alert.alert(
           "Por favor, compruebe su bandeja de entrada para confirmar su email.",
-        );
+        ); // Informa al usuario que confirme su correo electrónico
       }
 
       setLoading(false);
     }
   };
 
+  // Función que decide si se debe registrar o iniciar sesión según el estado de 'isEnabled'
   const clickButton = () => {
-    !isEnabled ? signUpWithEmail() : signInWithEmail();
+    !isEnabled ? signUpWithEmail() : signInWithEmail(); // Si no está habilitado, registra, de lo contrario, inicia sesión
   };
 
+  // Función que valida la contraseña con una expresión regular
   const validatePassword = (password) => {
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,!?])[A-Za-z\d!@#$%^&*.,!?]{9,}$/;
-    setPasswordError(!passwordRegex.test(password));
+    setPasswordError(!passwordRegex.test(password)); // Establece si la contraseña es válida
   };
 
   return (
     <View className="flex h-screen">
       <View className="w-full px-4 m-auto h-screen">
+        {/* Muestra el logo de la empresa */}
         <Image
           className="max-w-md mx-auto w-[250px] h-[250px] rounded-[25px] mb-5 mt-16"
           src={WHITE_LOGO_URL}
           style={{
-            resizeMode: "cover",
+            resizeMode: "cover", // Ajusta la imagen para que se cubra correctamente
           }}
         />
+        {/* Si no estamos en modo "Iniciar sesión", mostramos el campo de nombre de usuario */}
         {!isEnabled && (
           <View className="mb-4 relative">
             <Input
               label="Nombre de usuario"
               leftIcon={{ type: "font-awesome", name: "user" }}
-              onChangeText={(text) => setUsername(text)}
-              value={username}
+              onChangeText={(text) => setUsername(text)} // Actualiza el estado del nombre de usuario
+              value={username} // Muestra el valor actual del nombre de usuario
               placeholder="Nombre de usuario"
               autoCapitalize={"none"}
               inputContainerStyle={{ borderBottomColor: "#ccc" }}
@@ -115,12 +119,13 @@ export default function Auth() {
             />
           </View>
         )}
+        {/* Campo de entrada para el correo electrónico */}
         <View className="mb-4">
           <Input
             label="Email"
             leftIcon={{ type: "font-awesome", name: "envelope" }}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
+            onChangeText={(text) => setEmail(text)} // Actualiza el estado del email
+            value={email} // Muestra el valor actual del email
             placeholder="email@correo.com"
             autoCapitalize={"none"}
             inputContainerStyle={{ borderBottomColor: "#ccc" }}
@@ -128,16 +133,17 @@ export default function Auth() {
             inputStyle={{ color: "#333" }}
           />
         </View>
+        {/* Campo de entrada para la contraseña */}
         <View className="mb-2">
           <Input
             label="Contraseña"
             leftIcon={{ type: "font-awesome", name: "lock" }}
             onChangeText={(text) => {
               setPassword(text);
-              validatePassword(text);
+              validatePassword(text); // Valida la contraseña al cambiar
             }}
-            value={password}
-            secureTextEntry={true}
+            value={password} // Muestra el valor actual de la contraseña
+            secureTextEntry={true} // Oculta el texto de la contraseña
             placeholder="Contraseña"
             autoCapitalize={"none"}
             inputContainerStyle={{
@@ -147,17 +153,19 @@ export default function Auth() {
             inputStyle={{ color: "#333" }}
           />
         </View>
+        {/* Muestra un mensaje de error si la contraseña no es válida */}
         {passwordError && !isEnabled && (
           <Text className="text-red-500 text-xs mb-2">
             Las contraseñas deben tener una letra mayúscula, un número, un
             carácter especial y al menos 9 carácteres
           </Text>
         )}
+        {/* Botón para registrar o iniciar sesión */}
         <View>
           <Button
             title={!isEnabled ? "Registrarse" : "Iniciar sesión"}
-            disabled={loading || (passwordError && !isEnabled)}
-            onPress={() => clickButton()}
+            disabled={loading || (passwordError && !isEnabled)} // Desactiva el botón si está cargando o la contraseña es inválida
+            onPress={() => clickButton()} // Llama a la función para iniciar sesión o registrarse
             buttonStyle={
               !isEnabled
                 ? { backgroundColor: "#2196F3" }
@@ -166,11 +174,12 @@ export default function Auth() {
             containerStyle={{ borderRadius: 8 }}
           />
         </View>
+        {/* Switch para cambiar entre registro e inicio de sesión */}
         <View className="m-auto flex-row items-center justify-between mt-4">
           <Text className="mr-2">Registrarse</Text>
           <Switch
-            value={isEnabled}
-            onValueChange={() => setIsEnabled((e) => !e)}
+            value={isEnabled} // Controla el valor del Switch
+            onValueChange={() => setIsEnabled((e) => !e)} // Cambia entre registro e inicio de sesión
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"

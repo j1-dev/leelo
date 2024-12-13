@@ -6,12 +6,14 @@ import SubProvider from "@/lib/context/Sub";
 import { StatusBar } from "expo-status-bar";
 
 export default function Root() {
-  // Set up the auth context and render our layout inside of it.
+  // Configura los contextos de autenticación, publicaciones y subforos, y luego renderiza la aplicación
   return (
     <AuthProvider>
       <SubProvider>
         <PubProvider>
+          {/* Configura la barra de estado con texto oscuro, fondo blanco y translucidez */}
           <StatusBar style="dark" backgroundColor="white" translucent={true} />
+          {/* Configuración del Stack para manejar la navegación entre pantallas */}
           <Stack
             screenOptions={{
               animation: "slide_from_right",

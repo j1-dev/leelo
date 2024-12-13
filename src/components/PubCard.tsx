@@ -23,100 +23,97 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
   const pubCtx = usePub();
   const subCtx = useSub();
   const { updatePublication, setUpdate } = useSub();
-  const [localScore, setLocalScore] = useState(pub.score);
-  const [currentVote, setCurrentVote] = useState<number | null>(null);
+  const [localScore, setLocalScore] = useState(pub.score); // Estado local para la puntuación
+  const [currentVote, setCurrentVote] = useState<number | null>(null); // Estado para la votación actual (1: upvote, -1: downvote)
 
+  // useFocusEffect se ejecuta cuando la pantalla recibe foco
   useFocusEffect(
     useCallback(() => {
       const getScore = async () => {
-        const pubData = await fetchPub(pub.id);
-        setLocalScore(pubData.score);
+        const pubData = await fetchPub(pub.id); // Obtiene la publicación para obtener la puntuación actual
+        setLocalScore(pubData.score); // Actualiza la puntuación local
       };
       const getVote = () => {
-        fetchPublicationVote(pub.id, pub.user_id).then((res) =>
-          setCurrentVote(res?.vote || null),
+        fetchPublicationVote(pub.id, pub.user_id).then(
+          (res) => setCurrentVote(res?.vote || null), // Obtiene el voto actual del usuario
         );
       };
       getScore();
       getVote();
-    }, []),
+    }, []), // Solo se ejecuta una vez cuando la vista recibe foco
   );
 
+  // Maneja el proceso de votar
   const handleVote = async (vote: number) => {
-    // Optimistic update: Adjust score based on user's vote
     let newScore = localScore;
 
     if (currentVote === vote) {
-      // User is undoing their vote, subtract the vote
-      newScore -= vote;
-      setCurrentVote(null);
+      newScore -= vote; // Si el usuario deshace su voto, resta el valor
+      setCurrentVote(null); // Voto deshecho
     } else {
-      // User is either voting for the first time or switching votes
       if (currentVote !== null) {
-        // If there's an existing vote, reverse the old vote and apply the new one
-        newScore += vote * 2;
+        newScore += vote * 2; // Cambiar voto (revertir el anterior y agregar el nuevo)
       } else {
-        // First time voting, simply add the vote
-        newScore += vote;
+        newScore += vote; // Primer voto
       }
-      setCurrentVote(vote);
+      setCurrentVote(vote); // Actualiza el voto actual
     }
 
-    setLocalScore(newScore);
+    setLocalScore(newScore); // Actualiza la puntuación local de la publicación
 
-    // Call API to update vote in the backend
     try {
-      setUpdate(true);
-      updatePublication(pub.id, { score: newScore });
-      await votePublication(pub.user_id, pub.id, vote);
+      setUpdate(true); // Indica que se debe actualizar la publicación
+      updatePublication(pub.id, { score: newScore }); // Actualiza la publicación con la nueva puntuación
+      await votePublication(pub.user_id, pub.id, vote); // Llama a la API para registrar el voto
     } catch (error) {
-      // If there's an error, revert optimistic UI change
-      console.error("Error votando comentario:", error);
-      setLocalScore(pub.score); // Revert to original score
-      setCurrentVote(null); // Revert vote state
+      // Si hay un error, revierte la actualización optimista
+      console.error("Error votando publicación:", error);
+      setLocalScore(pub.score); // Revertir la puntuación local
+      setCurrentVote(null); // Revertir el estado de votación
     }
   };
 
   return (
     <TouchableOpacity
       onPress={() => {
-        pubCtx.setPubId(pub.id);
-        subCtx.setSubId(sub);
-        router.push(`/s/${sub}/p/${pub.id}`);
+        pubCtx.setPubId(pub.id); // Establece el id de la publicación en el contexto
+        subCtx.setSubId(sub); // Establece el id del subforo en el contexto
+        router.push(`/s/${sub}/p/${pub.id}`); // Navega a la página de la publicación
       }}
       className="bg-white p-4 border rounded-xl"
-      style={{ borderColor: accent }}
+      style={{ borderColor: accent }} // Establece el color del borde basado en el color de acento
     >
       <View>
         <Text className="text-lg font-bold text-gray-800 w-4/5">
           {pub.title}
         </Text>
         <Text className="text-sm text-gray-500">
-          {relativeTime(new Date(pub.created_at).toISOString())}
+          {relativeTime(new Date(pub.created_at).toISOString())}{" "}
+          {/* Muestra la fecha relativa */}
         </Text>
       </View>
       <View className="absolute right-4 top-5">
         <View className="flex-row">
-          {/* Upvote Button */}
+          {/* Botón de upvote */}
           <TouchableOpacity onPress={() => handleVote(1)}>
             <AntDesign
               name="arrowup"
               className="mr-1 mt-1"
               size={18}
-              color={currentVote === 1 ? "green" : "gray"} // Highlight if upvoted
+              color={currentVote === 1 ? "green" : "gray"} // Colorea el ícono según el voto
             />
           </TouchableOpacity>
 
-          {/* Display score */}
+          {/* Muestra la puntuación */}
           <Text className="text-lg font-bold mx-1">{localScore}</Text>
 
-          {/* Downvote Button */}
+          {/* Botón de downvote */}
           <TouchableOpacity onPress={() => handleVote(-1)}>
             <AntDesign
               name="arrowdown"
               className="ml-1 mt-1"
               size={18}
-              color={currentVote === -1 ? "red" : "gray"} // Highlight if downvoted
+              color={currentVote === -1 ? "red" : "gray"} // Colorea el ícono según el voto
             />
           </TouchableOpacity>
         </View>

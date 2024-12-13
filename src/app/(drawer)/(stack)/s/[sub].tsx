@@ -4,10 +4,10 @@ import { Stack, router, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/lib/context/Auth";
-import { renderPubs } from "@/components/PubRenderer"; // Adjust the import path based on your project structure
+import { renderPubs } from "@/components/PubRenderer";
 import { useSub } from "@/lib/context/Sub";
 import { Alert } from "react-native";
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { useFocusEffect } from "@react-navigation/native";
 import Feather from "@expo/vector-icons/Feather";
 
 export default function Sub() {
@@ -16,12 +16,15 @@ export default function Sub() {
   const subCtx = useSub();
   const { sub } = useLocalSearchParams();
 
+  // useFocusEffect se ejecuta cada vez que esta vista está enfocada
+  // updatear el contexto del subforo
   useFocusEffect(
     useCallback(() => {
       subCtx.setUpdate(true);
     }, [subCtx.pubs]),
   );
 
+  // Función para manejar el borro del subforo
   const handleDeleteSub = (subId: string) => {
     Alert.alert(
       "Confirmar borrado",
@@ -61,6 +64,7 @@ export default function Sub() {
           />
         </TouchableOpacity>
       </View>
+      {/* Solo mostrar botón de borrar si el usuario actual es el creador del subforo */}
       {user.id === subCtx.createdBy ? (
         <View className="absolute z-50 bottom-36 right-6">
           <TouchableOpacity onPress={() => handleDeleteSub(sub as string)}>

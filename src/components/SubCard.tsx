@@ -18,45 +18,48 @@ export default function SubCard({
   userFollows,
   userId,
 }: SubCardProps) {
-  const sub = useSub();
-  const [follows, setFollows] = useState(userFollows);
+  const sub = useSub(); // Contexto de subforo
+  const [follows, setFollows] = useState(userFollows); // Estado local para manejar el estado de seguir/subir
 
+  // Función para alternar el estado de seguimiento
   const toggleFollow = () => {
     if (follows) {
       unfollowSub(userId, subforum.id);
     } else {
       followSub(userId, subforum.id);
     }
+    // Cambia el estado local para actualizar la interfaz
     setFollows(!follows);
   };
 
   return (
     <View
       className="bg-white p-4 border rounded-xl"
-      style={{ borderColor: subforum.accent }}
+      style={{ borderColor: subforum.accent }} // Color de borde personalizado basado en el subforo
     >
       <Link
-        href={`/s/${subforum.id}`}
+        href={`/s/${subforum.id}`} // Redirige al subforo cuando se hace clic
         className="w-full flex-1 relative"
-        onPress={() => sub.setSubId(subforum.id)}
+        onPress={() => sub.setSubId(subforum.id)} // Establece el ID del subforo en el contexto
       >
         <View className="w-4/5 absolute left-0">
           <Text className="text-xl font-bold text-gray-800">
-            {subforum.name}
+            {subforum.name} {/* Muestra el nombre del subforo */}
           </Text>
           <Text className="text-sm text-gray-500 mt-2">
-            {subforum.description}
+            {subforum.description} {/* Muestra la descripción del subforo */}
           </Text>
         </View>
       </Link>
       <TouchableOpacity
-        onPress={() => toggleFollow()}
+        onPress={() => toggleFollow()} // Alterna el estado de seguir
         className="w-1/5 absolute -right-4 top-5 mx-auto"
       >
+        {/* Muestra un icono diferente dependiendo de si el usuario sigue o no el subforo */}
         {follows ? (
-          <Feather name="minus" size={30} color={"#CA1200"} />
+          <Feather name="minus" size={30} color={"#CA1200"} /> // Ícono para dejar de seguir
         ) : (
-          <Feather name="plus" size={30} color={"#007AFF"} />
+          <Feather name="plus" size={30} color={"#007AFF"} /> // Ícono para seguir
         )}
       </TouchableOpacity>
     </View>

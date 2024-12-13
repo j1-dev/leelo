@@ -15,29 +15,33 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const { user, loading } = useAuth();
 
+  // Efecto que se ejecuta al montar el componente, cargando las publicaciones seguidas
   useEffect(() => {
     getPubs();
   }, []);
 
+  // Función para obtener las publicaciones seguidas por el usuario
   const getPubs = () => {
     fetchFollowedPubs(user.id).then((res) => {
-      setPubs(res);
+      setPubs(res); // Guarda las publicaciones obtenidas en el estado
     });
   };
 
+  // Función para manejar el evento de refresco, vuelve a obtener las publicaciones
   const onRefresh = () => {
-    getPubs();
+    setRefreshing(true); // Activa el estado de refresco
+    getPubs(); // Vuelve a llamar a la API para obtener las publicaciones
   };
 
+  // Si el estado de carga es verdadero, muestra un indicador de actividad
   if (loading) {
     return <ActivityIndicator size={90} color="#0000ff" className="mt-60" />;
   }
 
   return (
-    // <View className="bg-white flex h-screen relative">{renderSubs(subs)}</View>
     <View className="bg-white flex h-screen relative">
       <FlatList
-        data={pubs}
+        data={pubs} // Lista de publicaciones a mostrar
         keyExtractor={(item) => item.pub.id}
         renderItem={({ item }) => (
           <View className="p-2">
@@ -49,7 +53,7 @@ export default function Home() {
           </View>
         )}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> // Control de refresco
         }
         ListEmptyComponent={
           <Text className="text-center text-gray-500 mt-4">

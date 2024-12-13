@@ -12,9 +12,8 @@ const SubContext = createContext({
   setUpdate: null,
   updatePublication: null,
 });
-
 export const useSub = () => {
-  return useContext(SubContext);
+  return useContext(SubContext); // Custom hook para acceder al contexto
 };
 
 const SubProvider = ({ children }) => {
@@ -26,11 +25,12 @@ const SubProvider = ({ children }) => {
   const [pubs, setPubs] = useState(null);
   const [mods, setMods] = useState(null);
 
+  // Función para actualizar una publicación dentro del estado de publicaciones
   const updatePublication = (pubId: string, changes: Partial<Comment>) => {
     setPubs((prevPubs) => {
       return prevPubs.map((pub) => {
         if (pub.id === pubId) {
-          return { ...pub, ...changes };
+          return { ...pub, ...changes }; // Si encuentra la publicación, aplica los cambios
         }
         return pub;
       });
@@ -41,6 +41,7 @@ const SubProvider = ({ children }) => {
     if (subId !== "") {
       const fetchData = async () => {
         try {
+          // Obtiene datos de moderadores, publicaciones y detalles del subforo en paralelo
           const [modData, pubData, sub] = await Promise.all([
             fetchModerators(subId),
             fetchPubs(subId),
@@ -61,9 +62,9 @@ const SubProvider = ({ children }) => {
         }
       };
 
-      fetchData();
+      fetchData(); // Llama a la función de obtención de datos
     }
-  }, [subId, update]);
+  }, [subId, update]); // Dependencias: se ejecuta cuando subId o update cambian
 
   return (
     <SubContext.Provider

@@ -28,7 +28,9 @@ export default function CreatePost() {
   const subCtx = useSub();
   const { user } = useAuth();
 
+  // Función para subir una imágen de la galería
   const handleImagePick = async () => {
+    // Pedir permiso para usar la galería
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -38,6 +40,7 @@ export default function CreatePost() {
       return;
     }
 
+    // Abrir galería y seleccionar imágen
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -45,13 +48,16 @@ export default function CreatePost() {
       quality: 1,
     });
 
+    // Si no se cancela, se pone la imagen en una variable de estado
     if (!result.canceled) {
       const img = result.assets[0];
       setImageUri(img.uri);
     }
   };
 
+  // Función para enviar publicación
   const handleSubmit = async () => {
+    // Crear publicación vacia
     const pub: Publication = {
       sub_id: sub as string,
       user_id: user.id,
@@ -61,8 +67,10 @@ export default function CreatePost() {
       created_at: new Date().toISOString(),
     };
 
+    // Si se ha seleccionado una imagen
     if (imageUri) {
       try {
+        // Preparación para subir la imágen al bucket "publication_images" de supabase
         const publicationId = pub.created_at;
         const fileName = `image.jpg`;
         const fileUri = imageUri;
@@ -83,6 +91,8 @@ export default function CreatePost() {
           throw new Error(error.message);
         }
 
+        // Una vez subida la foto, crear url firmada para ponerla en el campo img_url de la
+        // tabla "publications"
         const { data: urlData, error: urlError } = await supabase.storage
           .from("publication_images")
           .createSignedUrl(data.path, 60 * 60 * 24 * 7);
@@ -94,13 +104,13 @@ export default function CreatePost() {
       }
     }
 
-    // Proceed with submission if title and content are not empty
+    // Si hay título y contenido, mandar publicación
     if (title !== "" && content !== "") {
       try {
         await submitPub(pub);
         subCtx.setUpdate(true);
         Alert.alert("Éxito", "Su publicación se ha enviado.");
-        router.replace(`s/${sub}/`); // Redirect to the desired page after submission
+        router.replace(`s/${sub}/`); // Redireccionar al subforo anterior
       } catch (error) {
         Alert.alert("Error", "Ha habido un error al subir su publicación.");
       }
@@ -109,6 +119,7 @@ export default function CreatePost() {
     }
   };
 
+  // Quitar la imágen
   const removeImage = () => {
     setImageUri(null);
   };

@@ -1,6 +1,11 @@
 import { supabase } from "@/lib/utils/supabase";
 import { Subforum, Publication, Comment, User } from "@/lib/utils/types";
 
+/**
+ * Obtiene el nombre de usuario de un usuario según su ID.
+ * @param userId - El ID del usuario.
+ * @returns El nombre de usuario del usuario.
+ */
 export const fetchUserName = async (userId: string): Promise<string> => {
   const { data, error } = await supabase
     .from("users")
@@ -11,6 +16,12 @@ export const fetchUserName = async (userId: string): Promise<string> => {
   return data.username as string;
 };
 
+/**
+ * Obtiene campos específicos de un usuario según el query proporcionado.
+ * @param userId - El ID del usuario.
+ * @param query - Un string con los campos a consultar (por ejemplo, "username, email").
+ * @returns Un objeto parcial del usuario con los campos solicitados.
+ */
 export const fetchUserQuery = async (
   userId: string,
   query: string,
@@ -24,18 +35,32 @@ export const fetchUserQuery = async (
   return data as Partial<User>;
 };
 
+/**
+ * Obtiene todos los datos de un usuario.
+ * @param userId - El ID del usuario.
+ * @returns Un objeto de usuario con todos sus campos.
+ */
 export const fetchUser = async (
   userId: string,
 ): Promise<User | Partial<User>> => {
   return await fetchUserQuery(userId, "*");
 };
 
+/**
+ * Obtiene una lista de todos los usuarios.
+ * @returns Un array de objetos de usuario.
+ */
 export const fetchUsers = async (): Promise<User[]> => {
   const { data, error } = await supabase.from("users").select("*");
   if (error) throw error;
   return data;
 };
 
+/**
+ * Obtiene una lista de moderadores para un subforo específico.
+ * @param subId - El ID del subforo.
+ * @returns Una lista de IDs de usuarios que son moderadores.
+ */
 export const fetchModerators = async (subId: string): Promise<string[]> => {
   try {
     const { data, error } = await supabase
@@ -54,6 +79,11 @@ export const fetchModerators = async (subId: string): Promise<string[]> => {
   }
 };
 
+/**
+ * Obtiene un subforo por su ID.
+ * @param subId - El ID del subforo.
+ * @returns Un objeto del subforo o null si no se encuentra.
+ */
 export const fetchSub = async (subId: string): Promise<Subforum | null> => {
   const { data, error } = await supabase
     .from("subforums")
@@ -64,12 +94,21 @@ export const fetchSub = async (subId: string): Promise<Subforum | null> => {
   return data;
 };
 
+/**
+ * Obtiene una lista de todos los subforos.
+ * @returns Un array de objetos de subforos.
+ */
 export const fetchSubs = async (): Promise<Subforum[]> => {
   const { data, error } = await supabase.from("subforums").select("*");
   if (error) throw error;
   return data;
 };
 
+/**
+ * Permite a un usuario seguir un subforo específico.
+ * @param userId - El ID del usuario.
+ * @param subId - El ID del subforo a seguir.
+ */
 export const followSub = async (userId: String, subId: String) => {
   const { error } = await supabase
     .from("user_follows_subforum")
@@ -77,6 +116,11 @@ export const followSub = async (userId: String, subId: String) => {
   if (error) throw error;
 };
 
+/**
+ * Permite a un usuario dejar de seguir un subforo específico.
+ * @param userId - El ID del usuario.
+ * @param subId - El ID del subforo a dejar de seguir.
+ */
 export const unfollowSub = async (userId: String, subId: String) => {
   const { error } = await supabase
     .from("user_follows_subforum")
@@ -86,6 +130,11 @@ export const unfollowSub = async (userId: String, subId: String) => {
   if (error) throw error;
 };
 
+/**
+ * Obtiene los subforos que un usuario sigue.
+ * @param userId - El ID del usuario.
+ * @returns Una lista de IDs de subforos que el usuario sigue.
+ */
 export const fetchFollowedSubs = async (userId: string) => {
   const { data, error } = await supabase
     .from("user_follows_subforum")
@@ -95,6 +144,10 @@ export const fetchFollowedSubs = async (userId: string) => {
   return data;
 };
 
+/**
+ * Elimina un subforo por su ID.
+ * @param subId - El ID del subforo a eliminar.
+ */
 export const deleteSub = async (subId: string): Promise<void> => {
   const { error } = await supabase.from("subforums").delete().eq("id", subId);
 
@@ -103,6 +156,11 @@ export const deleteSub = async (subId: string): Promise<void> => {
   }
 };
 
+/**
+ * Envía un nuevo subforo a la base de datos.
+ * @param sub - El objeto del subforo a crear.
+ * @returns El objeto del subforo recién creado.
+ */
 export const submitSub = async (sub: Subforum) => {
   const { data, error } = await supabase
     .from("subforums")
@@ -113,6 +171,11 @@ export const submitSub = async (sub: Subforum) => {
   return data;
 };
 
+/**
+ * Obtiene una publicación por su ID.
+ * @param pubId - El ID de la publicación.
+ * @returns El objeto de la publicación o null si no se encuentra.
+ */
 export const fetchPub = async (pubId: string): Promise<Publication | null> => {
   const { data, error } = await supabase
     .from("publications")
@@ -123,6 +186,11 @@ export const fetchPub = async (pubId: string): Promise<Publication | null> => {
   return data;
 };
 
+/**
+ * Obtiene una lista de todas las publicaciones de un subforo específico.
+ * @param subId - El ID del subforo.
+ * @returns Un array de objetos de publicaciones.
+ */
 export const fetchPubs = async (
   subId: string,
 ): Promise<Publication[] | null> => {
@@ -134,6 +202,11 @@ export const fetchPubs = async (
   return data;
 };
 
+/**
+ * Obtiene todas las publicaciones de los subforos que un usuario sigue.
+ * @param userId - El ID del usuario.
+ * @returns Una lista de publicaciones con el acento de su subforo asociado.
+ */
 export const fetchFollowedPubs = async (userId: string) => {
   try {
     const { data, error } = await supabase
@@ -179,14 +252,23 @@ export const fetchFollowedPubs = async (userId: string) => {
   }
 };
 
+/**
+ * Envía una nueva publicación.
+ * @param pub - El objeto de la publicación a crear.
+ * @returns El objeto de la publicación recién creada.
+ */
 export const submitPub = async (pub: Publication) => {
   const { data, error } = await supabase.from("publications").insert([pub]);
   if (error) throw error;
   return data;
 };
 
+/**
+ * Elimina una publicación por su ID y todos los comentarios asociados.
+ * @param pubId - El ID de la publicación a eliminar.
+ */
 export const deletePub = async (pubId: string): Promise<void> => {
-  // First, delete comments associated with the publication
+  // Primero, elimina los comentarios asociados con la publicación
   const { error: commentsError } = await supabase
     .from("comments")
     .delete()
@@ -196,18 +278,32 @@ export const deletePub = async (pubId: string): Promise<void> => {
     throw new Error(`Error borrando comentarios: ${commentsError.message}`);
   }
 
-  // Then, delete the publication itself
-  const { error } = await supabase
+  // Luego, elimina la publicación
+  const { error: pubError } = await supabase
     .from("publications")
     .delete()
     .eq("id", pubId);
 
-  if (error) {
-    throw new Error(`Error borrando publicacíon: ${error.message}`);
+  if (pubError) {
+    throw new Error(`Error borrando publicación: ${pubError.message}`);
   }
 };
 
-export const calculateScore = async (publicationId) => {
+/**
+ * Calcula la puntuación total de una publicación sumando todos los votos registrados.
+ *
+ * Esta función recupera los votos de una publicación específica desde la base de datos
+ * y suma los valores de los votos para obtener una puntuación total. Los votos pueden ser positivos o negativos,
+ * dependiendo de cómo se registren en la base de datos.
+ *
+ * @param {string} publicationId - El ID de la publicación para la cual se calculará la puntuación.
+ * @returns {Promise<number | null>} Retorna la puntuación total calculada de la publicación, o `null` si ocurre un error.
+ * @throws {Error} Lanza un error si ocurre un problema al acceder a la base de datos o al procesar los datos.
+ *
+ */
+export const calculateScore = async (
+  publicationId: string,
+): Promise<number | null> => {
   try {
     // Query the votes table for the specific publication ID and calculate the score
     const { data, error } = await supabase
@@ -229,6 +325,11 @@ export const calculateScore = async (publicationId) => {
   }
 };
 
+/**
+ * Obtiene todos los comentarios de una publicación.
+ * @param pubId - El ID de la publicación.
+ * @returns Una lista de objetos de comentarios.
+ */
 export const fetchComments = async (
   pubId: string,
   parentCommentId: string | null = null,
@@ -242,6 +343,13 @@ export const fetchComments = async (
   return data as Comment[];
 };
 
+/**
+ * Recupera un comentario por su ID desde la base de datos.
+ *
+ * @param {string} commentId - El ID del comentario que se desea recuperar.
+ * @returns {Promise<Comment | null>} Retorna el comentario correspondiente si se encuentra, o null si no se encuentra.
+ * @throws {Error} Lanza un error si ocurre un problema al recuperar el comentario desde la base de datos.
+ */
 export const fetchComment = async (
   commentId: string,
 ): Promise<Comment | null> => {
@@ -258,6 +366,16 @@ export const fetchComment = async (
   return data as Comment;
 };
 
+/**
+ * Recupera el voto de un usuario sobre un comentario específico.
+ *
+ * @param {string} commentId - El ID del comentario sobre el que se votó.
+ * @param {string} userId - El ID del usuario que realizó el voto.
+ * @returns {Promise<{ vote: number } | null>} Retorna el voto del usuario (1 o -1) si se encuentra, o null si no hay voto registrado.
+ * @throws {Error} Lanza un error si ocurre un problema al recuperar el voto del comentario.
+ *
+ * @remarks Si no se encuentra un voto (cuando no hay datos), el error tiene el código `PGRST116`, que se maneja para no interrumpir el flujo.
+ */
 export const fetchCommentVote = async (commentId: string, userId: string) => {
   const { data, error } = await supabase
     .from("comment_votes")
@@ -274,6 +392,16 @@ export const fetchCommentVote = async (commentId: string, userId: string) => {
   return data;
 };
 
+/**
+ * Recupera el voto de un usuario sobre una publicación específica.
+ *
+ * @param {string} pubId - El ID de la publicación sobre la que se votó.
+ * @param {string} userId - El ID del usuario que realizó el voto.
+ * @returns {Promise<{ vote: number } | null>} Retorna el voto del usuario (1 o -1) si se encuentra, o null si no hay voto registrado.
+ * @throws {Error} Lanza un error si ocurre un problema al recuperar el voto de la publicación.
+ *
+ * @remarks Si no se encuentra un voto (cuando no hay datos), el error tiene el código `PGRST116`, que se maneja para no interrumpir el flujo.
+ */
 export const fetchPublicationVote = async (pubId: string, userId: string) => {
   const { data, error } = await supabase
     .from("publication_votes")
@@ -290,6 +418,11 @@ export const fetchPublicationVote = async (pubId: string, userId: string) => {
   return data;
 };
 
+/**
+ * Envía un nuevo comentario a una publicación.
+ * @param comment - El objeto de comentario a crear.
+ * @returns El objeto de comentario recién creado.
+ */
 export const submitComment = async (
   userId: string,
   pubId: string,
@@ -314,6 +447,10 @@ export const submitComment = async (
   }
 };
 
+/**
+ * Elimina un comentario por su ID.
+ * @param commentId - El ID del comentario a eliminar.
+ */
 export const deleteComment = async (commentId: string): Promise<void> => {
   const { error: childCommentsError } = await supabase
     .from("comments")
@@ -336,7 +473,16 @@ export const deleteComment = async (commentId: string): Promise<void> => {
     throw new Error(`Error borrando comentario: ${error.message}`);
   }
 };
-
+/**
+ * Vota un comentario, ya sea insertando, actualizando o eliminando un voto previo.
+ * También actualiza la puntuación del comentario después de cada acción.
+ *
+ * @param {string} userId - El ID del usuario que realiza el voto.
+ * @param {string} commentId - El ID del comentario que se está votando.
+ * @param {number} vote - El valor del voto, que puede ser 1 (positivo) o -1 (negativo).
+ * @returns {Promise<{ success: boolean, newScore: number }>} Retorna un objeto con el éxito de la operación y la nueva puntuación del comentario.
+ * @throws {Error} Si ocurre un error en cualquier parte del proceso (consultas, actualización, etc.).
+ */
 export const voteComment = async (
   userId: string,
   commentId: string,
@@ -346,6 +492,7 @@ export const voteComment = async (
     throw new Error(`Error ${action}: ${error?.message}`);
   };
 
+  // Realiza las consultas en paralelo: una para obtener el voto existente y otra para obtener la puntuación del comentario.
   const [
     { data: existingVote, error: voteError },
     { data: commentData, error: commentError },
@@ -359,6 +506,7 @@ export const voteComment = async (
     supabase.from("comments").select("score").eq("id", commentId).single(),
   ]);
 
+  // Manejo de errores para las consultas de votos y puntuación
   if (voteError && voteError.code !== "PGRST116")
     supabaseError("fetching vote", voteError);
   if (commentError || !commentData)
@@ -366,11 +514,12 @@ export const voteComment = async (
 
   let newScore = commentData.score;
 
+  // Si ya existe un voto para este comentario
   if (existingVote) {
     const { vote: existingVoteValue } = existingVote;
 
+    // Si el voto actual es el mismo que el anterior, eliminar el voto
     if (existingVoteValue === vote) {
-      // Remove vote
       const { error: deleteError } = await supabase
         .from("comment_votes")
         .delete()
@@ -378,9 +527,9 @@ export const voteComment = async (
         .eq("comment_id", commentId);
       if (deleteError) supabaseError("deleting vote", deleteError);
 
-      newScore -= vote;
+      newScore -= vote; // Restar el valor del voto al puntaje
     } else {
-      // Update vote
+      // Si el voto es diferente, actualizar el voto
       const { error: updateError } = await supabase
         .from("comment_votes")
         .update({ vote })
@@ -388,28 +537,39 @@ export const voteComment = async (
         .eq("comment_id", commentId);
       if (updateError) supabaseError("updating vote", updateError);
 
-      newScore += vote * 2; // Reverse previous vote and add new vote
+      newScore += vote * 2; // Revertir el voto anterior y agregar el nuevo
     }
   } else {
-    // Insert new vote
+    // Si no existe un voto previo, insertar un nuevo voto
     const { error: insertError } = await supabase
       .from("comment_votes")
       .insert([{ user_id: userId, comment_id: commentId, vote }]);
     if (insertError) supabaseError("inserting vote", insertError);
 
-    newScore += vote;
+    newScore += vote; // Agregar el voto al puntaje del comentario
   }
 
-  // Update comment score
+  // Actualizar la puntuación del comentario en la base de datos
   const { error: scoreError } = await supabase
     .from("comments")
     .update({ score: newScore })
     .eq("id", commentId);
   if (scoreError) supabaseError("updating comment score", scoreError);
 
+  // Retornar el resultado con la nueva puntuación del comentario
   return { success: true, newScore };
 };
 
+/**
+ * Vota una publicación, ya sea insertando, actualizando o eliminando un voto previo.
+ * Luego, actualiza la puntuación de la publicación basándose en el voto dado.
+ *
+ * @param {string} userId - El ID del usuario que realiza el voto.
+ * @param {string} pubId - El ID de la publicación que se está votando.
+ * @param {number} vote - El valor del voto, que puede ser 1 (positivo) o -1 (negativo).
+ * @returns {Promise<{ success: boolean, newScore: number }>} Retorna un objeto con el éxito de la operación y la nueva puntuación de la publicación.
+ * @throws {Error} Si ocurre un error en cualquier parte del proceso (consultas, actualización, etc.).
+ */
 export const votePublication = async (
   userId: string,
   pubId: string,
@@ -419,7 +579,7 @@ export const votePublication = async (
     throw new Error(`Error ${action}: ${error?.message}`);
   };
 
-  // Fetch existing vote and comment score
+  // Realiza las consultas en paralelo: una para obtener el voto existente y otra para obtener la puntuación de la publicación.
   const [
     { data: existingVote, error: voteError },
     { data: pubData, error: pubError },
@@ -433,17 +593,20 @@ export const votePublication = async (
     supabase.from("publications").select("score").eq("id", pubId).single(),
   ]);
 
+  // Manejo de errores para las consultas de votos y puntuación
   if (voteError && voteError.code !== "PGRST116")
     supabaseError("fetching vote", voteError);
-  if (pubError || !pubData) supabaseError("fetching comment score", pubError);
+  if (pubError || !pubData)
+    supabaseError("fetching publication score", pubError);
 
   let newScore = pubData.score;
 
+  // Si ya existe un voto para esta publicación
   if (existingVote) {
     const { vote: existingVoteValue } = existingVote;
 
+    // Si el voto actual es el mismo que el anterior, eliminar el voto
     if (existingVoteValue === vote) {
-      // Remove vote
       const { error: deleteError } = await supabase
         .from("publication_votes")
         .delete()
@@ -451,9 +614,9 @@ export const votePublication = async (
         .eq("pub_id", pubId);
       if (deleteError) supabaseError("deleting vote", deleteError);
 
-      newScore -= vote;
+      newScore -= vote; // Restar el valor del voto al puntaje
     } else {
-      // Update vote
+      // Si el voto es diferente, actualizar el voto
       const { error: updateError } = await supabase
         .from("publication_votes")
         .update({ vote })
@@ -461,25 +624,26 @@ export const votePublication = async (
         .eq("pub_id", pubId);
       if (updateError) supabaseError("updating vote", updateError);
 
-      newScore += vote * 2; // Reverse previous vote and add new vote
+      newScore += vote * 2; // Revertir el voto anterior y agregar el nuevo
     }
   } else {
-    // Insert new vote
+    // Si no existe un voto previo, insertar un nuevo voto
     const { error: insertError } = await supabase
       .from("publication_votes")
       .insert([{ user_id: userId, pub_id: pubId, vote }]);
     if (insertError) supabaseError("inserting vote", insertError);
 
-    newScore += vote;
+    newScore += vote; // Agregar el voto al puntaje de la publicación
   }
 
-  // Update comment score
+  // Actualizar la puntuación de la publicación en la base de datos
   const { error: scoreError } = await supabase
     .from("publications")
     .update({ score: newScore })
     .eq("id", pubId);
-  if (scoreError) supabaseError("updating comment score", scoreError);
+  if (scoreError) supabaseError("updating publication score", scoreError);
 
+  // Retornar el resultado con la nueva puntuación de la publicación
   return { success: true, newScore };
 };
 

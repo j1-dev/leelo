@@ -13,24 +13,26 @@ import { useAuth } from "@/lib/context/Auth";
 import { fetchUser } from "@/lib/utils/api";
 
 export const DrawerUserContent = (props) => {
-  const pathname = usePathname();
+  const pathname = usePathname(); // Obtiene la ruta actual
 
   const [userdata, setUserdata] = useState<User | null>(null);
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuth(); // Obtiene el usuario autenticado y la función para cerrar sesión
 
   useEffect(() => {
+    // Obtiene los datos del usuario al montar el componente o cuando cambia la ruta
     const getUser = async () => {
       fetchUser(user.id).then((res: any) => {
-        setUserdata(res);
+        setUserdata(res); // Establece los datos del usuario obtenidos
       });
     };
-    getUser();
-  }, [pathname]);
+    getUser(); // Llama a la función para obtener los datos del usuario
+  }, [pathname]); // Vuelve a ejecutar cuando cambia la ruta
 
   return (
     <View className="flex-1">
       <DrawerContentScrollView {...props}>
         <View className="flex-row px-2 py-5 border-b border-gray-300 mb-2">
+          {/* Muestra la foto de perfil del usuario */}
           <Image
             source={{ uri: userdata?.profile_pic }}
             width={80}
@@ -38,10 +40,13 @@ export const DrawerUserContent = (props) => {
             className="rounded-full"
           />
           <View className="mt-6 ml-2">
+            {/* Muestra el nombre de usuario y el correo */}
             <Text className="text-lg font-bold">{userdata?.username}</Text>
             <Text className="text-lg italic underline">{userdata?.email}</Text>
           </View>
         </View>
+
+        {/* Opción de menú para ir a la pantalla de inicio */}
         <DrawerItem
           icon={({ color, size }) => (
             <Feather
@@ -65,6 +70,7 @@ export const DrawerUserContent = (props) => {
           }}
         />
 
+        {/* Opción de menú para ir al perfil del usuario */}
         <DrawerItem
           icon={({ color, size }) => (
             <AntDesign
@@ -88,6 +94,7 @@ export const DrawerUserContent = (props) => {
           }}
         />
 
+        {/* Opción de menú para ir a los favoritos del usuario */}
         <DrawerItem
           icon={({ color, size }) => (
             <MaterialIcons
@@ -112,6 +119,8 @@ export const DrawerUserContent = (props) => {
 
         <View className="h-0 border-b-[1px] border-gray-300" />
       </DrawerContentScrollView>
+
+      {/* Opción de menú para cerrar sesión */}
       <DrawerItem
         icon={({ color, size }) => (
           <Ionicons name="log-out" size={size} color="#fff" />
@@ -129,8 +138,7 @@ export const DrawerUserContent = (props) => {
           marginBlock: 20,
         }}
         onPress={() => {
-          router.push("/");
-          // signOut();
+          router.push("/"); // Navega a la página principal
         }}
       />
     </View>

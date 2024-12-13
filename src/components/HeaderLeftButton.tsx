@@ -13,11 +13,13 @@ export default function HeaderLeftButton({ show }: HeaderLeftButtonProps) {
 
   return (
     <View className="top-14 left-4 z-10 w-10">
+      {/* Ícono que cambia según el valor de 'show' */}
       <Feather
-        name={show ? "menu" : "arrow-left"}
+        name={show ? "menu" : "arrow-left"} // Muestra el ícono de 'menu' o 'flecha izquierda' dependiendo de 'show'
         size={32}
         color="black"
         onPress={() => {
+          // Si 'show' es verdadero, abre el Drawer, de lo contrario navega hacia atrás
           show ? nav.openDrawer() : router.back();
         }}
       />

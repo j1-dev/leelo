@@ -1,3 +1,4 @@
+// Importaciones necesarias para crear la interfaz, manejar estados y gestionar la navegación.
 import {
   View,
   TextInput,
@@ -16,37 +17,42 @@ import { useAuth } from "@/lib/context/Auth";
 import { router } from "expo-router";
 import { submitSub, fetchUsers } from "@/lib/utils/api";
 import ColorPicker from "react-native-wheel-color-picker";
-import { Ionicons } from "@expo/vector-icons"; // Importing Expo Vector Icons
+import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "@/lib/utils/supabase";
 
 export default function CreateSub() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [accent, setAccent] = useState("#ff0000");
-  const [moderators, setModerators] = useState<string[]>([]); // Selected moderators
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Search term
-  const [users, setUsers] = useState([]); // Available users for selection
-  const { user } = useAuth();
-  const { height } = Dimensions.get("window");
+  // Declaración de los estados locales para los distintos campos de entrada y control de la vista.
+  const [name, setName] = useState(""); // Nombre del subforo
+  const [description, setDescription] = useState(""); // Descripción del subforo
+  const [accent, setAccent] = useState("#ff0000"); // Color de acento para el subforo
+  const [moderators, setModerators] = useState<string[]>([]); // Lista de moderadores seleccionados
+  const [modalVisible, setModalVisible] = useState(false); // Controla si el modal para seleccionar moderadores está visible
+  const [searchQuery, setSearchQuery] = useState(""); // Consulta de búsqueda para los usuarios
+  const [users, setUsers] = useState([]); // Lista de usuarios disponibles para ser seleccionados como moderadores
+  const { user } = useAuth(); // Obtiene el usuario autenticado
+  const { height } = Dimensions.get("window"); // Obtiene la altura de la pantalla del dispositivo
 
+  // Función que maneja el envío de los datos del nuevo subforo
   const handleSubmit = async () => {
+    // Crea un objeto subforo con los datos actuales
     const sub: Subforum = {
       name,
       description,
       created_at: new Date().toISOString(),
       accent,
-      created_by: user.id,
+      created_by: user.id, // El subforo es creado por el usuario autenticado
     };
     try {
       submitSub(sub).then(async (data) => {
-        const subId = data.id;
+        const subId = data.id; // Obtiene el ID del subforo recién creado
         const moderatorIds = moderators.map((username) => {
+          // Mapea los nombres de los moderadores a sus respectivos IDs
           const user = users.find((user) => user.username === username);
           return user.id;
         });
 
         if (moderatorIds.length > 0) {
+          // Si hay moderadores seleccionados, los agrega a la tabla "moderators"
           const moderatorsData = moderatorIds.map((user_id) => ({
             sub_id: subId,
             user_id: user_id,
@@ -67,47 +73,53 @@ export default function CreateSub() {
         }
 
         Alert.alert("Éxito", "Su subforo ha sido creado.");
-        router.replace(`/home`); // Redirect to the desired page after submission
+        router.replace(`/home`); // Redirige al usuario a la página principal
       });
-      // Redirect to the desired page after submission
     } catch (error) {
       Alert.alert("Error", "Hubo un error al enviar el subforo.");
     }
   };
 
+  // Abre el modal para añadir moderadores
   const handleAddMods = () => {
-    setModalVisible(true); // Show the modal
-    fetchAvailableUsers(); // Load users when modal opens
+    setModalVisible(true); // Muestra el modal
+    fetchAvailableUsers(); // Recupera la lista de usuarios disponibles para moderadores
   };
 
+  // Función que recupera los usuarios desde la API
   const fetchAvailableUsers = async () => {
     try {
-      const data = await fetchUsers();
+      const data = await fetchUsers(); // Recupera la lista de usuarios desde la API
       setUsers(data);
     } catch (error) {
       Alert.alert("Error", "Error al recuperar usuarios.");
     }
   };
 
+  // Actualiza el valor de búsqueda de usuarios
   const handleSearch = (text: string) => {
     setSearchQuery(text);
   };
 
+  // Filtra los usuarios según la búsqueda realizada
   const filteredUsers = users.filter((u: any) =>
     u.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  // Agrega un moderador a la lista si no está ya incluido
   const addModerator = (username: string) => {
     if (!moderators.includes(username)) {
       setModerators((prev) => [...prev, username]);
     }
   };
 
+  // Elimina un moderador de la lista
   const removeModerator = (username: string) => {
     setModerators((prev) => prev.filter((mod) => mod !== username));
   };
 
   return (
+    // Se cierra el teclado al hacer clic fuera de los campos de texto
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View className="flex-1 bg-white h-full pb-4">
         <View className="flex-1 px-4 ">
@@ -126,11 +138,11 @@ export default function CreateSub() {
             multiline
           />
           <View className="px-6">
+            {/* Componente para elegir el color de acento del subforo */}
             <ColorPicker
               color={accent}
               onColorChange={(color) => {
-                console.log(color);
-                setAccent(color);
+                setAccent(color); // Actualiza el color seleccionado
               }}
               thumbSize={50}
               swatchesOnly={true}
@@ -143,13 +155,13 @@ export default function CreateSub() {
             <View className="flex-1 items-center">
               <View
                 className={`w-20 h-20 mt-10 rounded-lg`}
-                style={{ backgroundColor: accent }}
+                style={{ backgroundColor: accent }} // Muestra el color seleccionado
               />
             </View>
           </View>
         </View>
 
-        {/* Display selected moderators */}
+        {/* Muestra los moderadores seleccionados */}
         <View className="mx-4">
           {moderators.length > 0 && (
             <View className="bg-gray-100 p-3 rounded mb-4">
@@ -173,7 +185,7 @@ export default function CreateSub() {
           )}
         </View>
 
-        {/* Buttons */}
+        {/* Botones para añadir moderadores o enviar el subforo */}
         <View className="mt-auto mx-4 mb-20">
           <TouchableOpacity
             onPress={handleAddMods}
@@ -191,24 +203,24 @@ export default function CreateSub() {
           </TouchableOpacity>
         </View>
 
-        {/* Modal for adding moderators */}
+        {/* Modal para añadir moderadores */}
         <Modal
           visible={modalVisible}
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
-          transparent={true} // Make the modal background transparent
+          transparent={true} // Hace que el fondo del modal sea transparente
         >
           <View
             style={{
               flex: 1,
-              justifyContent: "flex-end", // Align the modal content at the bottom
+              justifyContent: "flex-end", // Alinea el contenido del modal al fondo
             }}
           >
             <View
               style={{
-                height: height * 0.8, // Set the modal height to 80% of the screen
+                height: height * 0.8, // Establece la altura del modal al 80% de la pantalla
                 backgroundColor: "white",
-                borderTopLeftRadius: 20, // Add rounded corners to the top
+                borderTopLeftRadius: 20, // Agrega esquinas redondeadas arriba
                 borderTopRightRadius: 20,
                 padding: 16,
                 borderWidth: 2,
@@ -217,10 +229,11 @@ export default function CreateSub() {
             >
               <TextInput
                 className="border border-gray-300 p-3 mb-4 rounded"
-                placeholder="Search Users"
+                placeholder="Buscar usuarios"
                 value={searchQuery}
                 onChangeText={handleSearch}
               />
+              {/* Lista de usuarios filtrados según la búsqueda */}
               <FlatList
                 data={filteredUsers}
                 keyExtractor={(item) => item.id}
