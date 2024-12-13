@@ -9,6 +9,7 @@ import {
   RefreshControl,
 } from "react-native";
 import PubCard from "@/components/PubCard";
+import { useFocusEffect } from "expo-router";
 
 export default function Home() {
   const [pubs, setPubs] = useState(null);
@@ -16,9 +17,9 @@ export default function Home() {
   const { user, loading } = useAuth();
 
   // Efecto que se ejecuta al montar el componente, cargando las publicaciones seguidas
-  useEffect(() => {
+  useFocusEffect(() => {
     getPubs();
-  }, []);
+  });
 
   // Función para obtener las publicaciones seguidas por el usuario
   const getPubs = () => {

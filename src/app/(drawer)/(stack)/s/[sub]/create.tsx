@@ -109,16 +109,6 @@ export default function CreatePost() {
       }
     }
 
-    // Si los campos título y contenido están completos, mandar publicación
-    try {
-      await submitPub(pub);
-      subCtx.setUpdate(true);
-      Alert.alert("Éxito", "Su publicación se ha enviado.");
-      router.replace(`s/${sub}/`); // Redireccionar al subforo anterior
-    } catch (error) {
-      Alert.alert("Error", "Ha habido un error al subir su publicación.");
-    }
-
     // Si hay título y contenido, mandar publicación
     if (title !== "" && content !== "") {
       try {

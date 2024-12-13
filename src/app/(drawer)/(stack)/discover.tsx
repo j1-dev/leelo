@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/context/Auth";
 import { Subforum } from "@/lib/utils/types";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
+import { useFocusEffect } from "expo-router";
 
 export default function Home() {
   // Estado local para almacenar la lista de subforos
@@ -12,10 +13,10 @@ export default function Home() {
   // Obtenemos el estado de carga desde el contexto de autenticación
   const { loading } = useAuth();
 
-  // Efecto para obtener la lista de subforos al montar el componente
-  useEffect(() => {
+  // Efecto para obtener la lista de subforos al mostrar el componente
+  useFocusEffect(() => {
     getSubs();
-  }, []);
+  });
 
   // Función para obtener la lista de subforos desde la API
   const getSubs = () => {

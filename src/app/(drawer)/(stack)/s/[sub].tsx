@@ -53,7 +53,7 @@ export default function Sub() {
           headerTitle: subCtx.name,
         }}
       />
-      {renderPubs(subCtx.pubs, subCtx.accent)}
+      {renderPubs(subCtx.pubs, subCtx.accent, () => subCtx.setUpdate(true))}
       <View className="absolute z-50 bottom-36 left-6">
         <TouchableOpacity onPress={() => router.push(`/s/${sub}/create`)}>
           <Feather
