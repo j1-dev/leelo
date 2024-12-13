@@ -80,11 +80,11 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
         subCtx.setSubId(sub); // Establece el id del subforo en el contexto
         router.push(`/s/${sub}/p/${pub.id}`); // Navega a la página de la publicación
       }}
-      className="bg-white p-4 border rounded-xl"
+      className="bg-white p-4 border rounded-xl "
       style={{ borderColor: accent }} // Establece el color del borde basado en el color de acento
     >
       <View>
-        <Text className="text-lg font-bold text-gray-800 w-4/5">
+        <Text className="text-xl font-bold text-gray-800 w-4/5">
           {pub.title}
         </Text>
         <Text className="text-sm text-gray-500">
@@ -92,7 +92,7 @@ export default function PubCard({ pub, sub, accent }: PubCardProps) {
           {/* Muestra la fecha relativa */}
         </Text>
       </View>
-      <View className="absolute right-4 top-5">
+      <View className="absolute right-4 top-6">
         <View className="flex-row">
           {/* Botón de upvote */}
           <TouchableOpacity onPress={() => handleVote(1)}>
