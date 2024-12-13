@@ -129,6 +129,13 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
+          name="favourites"
+          options={{
+            title: "Favoritos",
+            animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
           name="discover"
           options={{
             title: "Descubre",

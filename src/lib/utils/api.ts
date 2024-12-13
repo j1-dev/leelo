@@ -253,6 +253,56 @@ export const fetchFollowedPubs = async (userId: string) => {
 };
 
 /**
+ * Obtiene las publicaciones que tienen votos positivos por parte del usuario.
+ * @param {string} userId - El ID del usuario.
+ * @returns {Promise<Array<{ pub: Publication, accent: string }>>} Lista de publicaciones con votos positivos y sus acentos de subforo.
+ */
+export const fetchFavoritedPubs = async (userId: string) => {
+  // Obtener las publicaciones con votos positivos del usuario
+  const { data, error } = await supabase
+    .from("publication_votes")
+    .select("pub_id, vote") // Seleccionamos el ID de la publicación y el voto
+    .eq("user_id", userId)
+    .gt("vote", 0); // Solo obtenemos las publicaciones con votos positivos
+
+  if (error) {
+    throw new Error(
+      `Error obteniendo publicaciones favoritas: ${error.message}`,
+    );
+  }
+
+  // Usamos los pub_id de los votos para obtener los detalles de las publicaciones
+  const pubIds = data.map((vote) => vote.pub_id);
+
+  // Obtener las publicaciones con los IDs filtrados
+  const { data: pubs, error: pubError } = await supabase
+    .from("publications")
+    .select("*, subforums(accent)") // Seleccionamos los datos de la publicación y el campo accent del subforo
+    .in("id", pubIds); // Obtenemos las publicaciones con esos IDs
+
+  if (pubError) {
+    throw new Error(
+      `Error obteniendo los detalles de las publicaciones: ${pubError.message}`,
+    );
+  }
+
+  // Mapear las publicaciones y devolver el formato deseado
+  return pubs.map((pub: any) => ({
+    pub: {
+      id: pub.id,
+      sub_id: pub.sub_id,
+      user_id: pub.user_id,
+      title: pub.title,
+      content: pub.content,
+      score: pub.score,
+      created_at: pub.created_at,
+      img_url: pub.img_url,
+    },
+    accent: pub.subforums.accent, // El acento del subforo
+  }));
+};
+
+/**
  * Envía una nueva publicación.
  * @param pub - El objeto de la publicación a crear.
  * @returns El objeto de la publicación recién creada.
