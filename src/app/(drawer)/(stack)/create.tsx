@@ -34,6 +34,12 @@ export default function CreateSub() {
 
   // Función que maneja el envío de los datos del nuevo subforo
   const handleSubmit = async () => {
+    // Verificación de que los campos no estén vacíos
+    if (name.trim() === "" || description.trim() === "") {
+      Alert.alert("Error", "Por favor, complete todos los campos.");
+      return; // No proceder con el envío si algún campo está vacío
+    }
+
     // Crea un objeto subforo con los datos actuales
     const sub: Subforum = {
       name,
@@ -42,6 +48,7 @@ export default function CreateSub() {
       accent,
       created_by: user.id, // El subforo es creado por el usuario autenticado
     };
+
     try {
       submitSub(sub).then(async (data) => {
         const subId = data.id; // Obtiene el ID del subforo recién creado

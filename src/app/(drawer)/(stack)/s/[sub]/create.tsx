@@ -57,7 +57,13 @@ export default function CreatePost() {
 
   // Función para enviar publicación
   const handleSubmit = async () => {
-    // Crear publicación vacia
+    // Verificación de que los campos título y contenido no estén vacíos
+    if (title.trim() === "" || content.trim() === "") {
+      Alert.alert("Error", "Título y contenido son obligatorios.");
+      return; // No proceder con el envío si algún campo está vacío
+    }
+
+    // Crear publicación vacía
     const pub: Publication = {
       sub_id: sub as string,
       user_id: user.id,
@@ -91,8 +97,7 @@ export default function CreatePost() {
           throw new Error(error.message);
         }
 
-        // Una vez subida la foto, crear url firmada para ponerla en el campo img_url de la
-        // tabla "publications"
+        // Una vez subida la foto, crear url firmada para ponerla en el campo img_url de la tabla "publications"
         const { data: urlData, error: urlError } = await supabase.storage
           .from("publication_images")
           .createSignedUrl(data.path, 60 * 60 * 24 * 7);
@@ -102,6 +107,16 @@ export default function CreatePost() {
         Alert.alert("Error", "Ha habido un error subiendo la imagen.");
         return;
       }
+    }
+
+    // Si los campos título y contenido están completos, mandar publicación
+    try {
+      await submitPub(pub);
+      subCtx.setUpdate(true);
+      Alert.alert("Éxito", "Su publicación se ha enviado.");
+      router.replace(`s/${sub}/`); // Redireccionar al subforo anterior
+    } catch (error) {
+      Alert.alert("Error", "Ha habido un error al subir su publicación.");
     }
 
     // Si hay título y contenido, mandar publicación
@@ -131,7 +146,7 @@ export default function CreatePost() {
           <Text className="text-3xl font-bold mb-2">Crear una publicación</Text>
           <View className="border border-gray-500 rounded-xl mb-2">
             <TextInput
-              className="text-xl ml-3"
+              className="text-xl m-3"
               placeholder="Título"
               value={title}
               onChangeText={setTitle}
@@ -143,7 +158,6 @@ export default function CreatePost() {
               placeholder="Contenido"
               value={content}
               onChangeText={setContent}
-              multiline
             />
           </View>
 
