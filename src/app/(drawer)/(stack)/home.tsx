@@ -1,15 +1,15 @@
-import { fetchFollowedPubs } from "@/lib/utils/api";
-import { useAuth } from "@/lib/context/Auth";
-import { useEffect, useState } from "react";
+import { fetchFollowedPubs } from '@/lib/utils/api';
+import { useAuth } from '@/lib/context/Auth';
+import { useCallback, useEffect, useState } from 'react';
 import {
   View,
   ActivityIndicator,
   FlatList,
   Text,
   RefreshControl,
-} from "react-native";
-import PubCard from "@/components/PubCard";
-import { useFocusEffect } from "expo-router";
+} from 'react-native';
+import PubCard from '@/components/PubCard';
+import { useFocusEffect } from 'expo-router';
 
 export default function Home() {
   const [pubs, setPubs] = useState(null);
@@ -17,9 +17,11 @@ export default function Home() {
   const { user, loading } = useAuth();
 
   // Efecto que se ejecuta al montar el componente, cargando las publicaciones seguidas
-  useFocusEffect(() => {
-    getPubs();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      getPubs();
+    }, [])
+  );
 
   // Función para obtener las publicaciones seguidas por el usuario
   const getPubs = () => {

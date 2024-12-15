@@ -1,11 +1,11 @@
-import { Text, View } from "react-native";
-import { Link } from "expo-router";
-import { Subforum } from "@/lib/utils/types";
-import { useSub } from "@/lib/context/Sub";
-import { TouchableOpacity } from "react-native";
-import { useState } from "react";
-import { followSub, unfollowSub } from "@/lib/utils/api";
-import Feather from "@expo/vector-icons/Feather";
+import { Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Subforum } from '@/lib/utils/types';
+import { useSub } from '@/lib/context/Sub';
+import { TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { followSub, unfollowSub } from '@/lib/utils/api';
+import Feather from '@expo/vector-icons/Feather';
 
 interface SubCardProps {
   subforum: Subforum;
@@ -53,13 +53,12 @@ export default function SubCard({
       </Link>
       <TouchableOpacity
         onPress={() => toggleFollow()} // Alterna el estado de seguir
-        className="absolute right-5 top-7 justify-center items-end "
-      >
+        className="absolute right-5 top-7 justify-center items-end ">
         {/* Muestra un icono diferente dependiendo de si el usuario sigue o no el subforo */}
         {follows ? (
-          <Feather name="user-minus" size={30} color={"#CA1200"} /> // Ícono para dejar de seguir
+          <Feather name="user-minus" size={30} color={'#CA1200'} /> // Ícono para dejar de seguir
         ) : (
-          <Feather name="user-plus" size={30} color={"#007AFF"} /> // Ícono para seguir
+          <Feather name="user-plus" size={30} color={'#007AFF'} /> // Ícono para seguir
         )}
       </TouchableOpacity>
     </View>

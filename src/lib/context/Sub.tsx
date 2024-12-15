@@ -28,7 +28,7 @@ const SubProvider = ({ children }) => {
   // Función para actualizar una publicación dentro del estado de publicaciones
   const updatePublication = (pubId: string, changes: Partial<Comment>) => {
     setPubs((prevPubs) => {
-      return prevPubs.map((pub) => {
+      return prevPubs?.map((pub) => {
         if (pub.id === pubId) {
           return { ...pub, ...changes }; // Si encuentra la publicación, aplica los cambios
         }

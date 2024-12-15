@@ -1,10 +1,10 @@
-import SubRenderer from "@/components/SubRenderer";
-import { fetchSubs } from "@/lib/utils/api";
-import { useAuth } from "@/lib/context/Auth";
-import { Subforum } from "@/lib/utils/types";
-import { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
-import { useFocusEffect } from "expo-router";
+import SubRenderer from '@/components/SubRenderer';
+import { fetchSubs } from '@/lib/utils/api';
+import { useAuth } from '@/lib/context/Auth';
+import { Subforum } from '@/lib/utils/types';
+import { useCallback, useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 
 export default function Home() {
   // Estado local para almacenar la lista de subforos
@@ -14,9 +14,11 @@ export default function Home() {
   const { loading } = useAuth();
 
   // Efecto para obtener la lista de subforos al mostrar el componente
-  useFocusEffect(() => {
-    getSubs();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      getSubs();
+    }, [])
+  );
 
   // Función para obtener la lista de subforos desde la API
   const getSubs = () => {
